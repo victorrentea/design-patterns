@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import lombok.Data;
+
 @SpringBootApplication
 public class SingletonPlayApp implements CommandLineRunner{
 	public static void main(String[] args) {
@@ -28,17 +30,26 @@ public class SingletonPlayApp implements CommandLineRunner{
 	}
 }
 
+@Data
 @Service
 class ReportExporter  {
+	private final ExportHelper helper;
 	
 	public void export() {
 		System.out.println("Origin Country: " + new LabelService().getCountryName("RO")); 
-		System.out.println("Dest Country: " + new LabelService().getCountryName("ES")); 
+		System.out.println("Dest Country: " + new LabelService().getCountryName("ES"));
+		helper.writeSenderDetails();
+	}
+}
+
+@Service 
+class ExportHelper {
+	public void writeSenderDetails() {
+		System.out.println("Sender Country: " + new LabelService().getCountryName("RO"));
 	}
 }
 
 class LabelService {
-
 	private Map<Object, String> countries;
 	
 	public LabelService() {
