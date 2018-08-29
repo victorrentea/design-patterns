@@ -3,6 +3,8 @@ package victor.training.oo.creational.singleton;
 import static victor.training.oo.stuff.Helper.workSomeTime;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -15,59 +17,49 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @SpringBootApplication
-public class SingletonPlayApp {
+public class SingletonPlayApp implements CommandLineRunner{
 	public static void main(String[] args) {
 		SpringApplication.run(SingletonPlayApp.class);
 	}
-}
-@Component
-class SingletonPlay implements CommandLineRunner {
 	@Autowired
-	private AppConfiguration config;
-	
+	private ReportExporter exporter;
 	public void run(String... args) throws Exception {
-		 // TODO
-
-		// INITIAL(
-//		System.out.println("Configuration setting a = " + new AppConfiguration().getProperty("a")); 
-//		System.out.println("Configuration setting b = " + new AppConfiguration().getProperty("b")); 
-//		System.out.println("Configuration setting a = " + new AppConfiguration().getProperty("a")); 
-		// INITIAL)
-
-		// SOLUTION(
-		System.out.println("Configuration setting a = " + config.getProperty("a")); 
-		System.out.println("Configuration setting b = " + config.getProperty("b")); 
-		System.out.println("Configuration setting a = " + config.getProperty("a")); 
-		// SOLUTION)
-
+		exporter.export();
 	}
 }
 
 @Service
-class AppConfiguration {
-
-	private Properties properties;
+class ReportExporter  {
 	
-	@PostConstruct
-	public void init() {
-		properties = readConfiguration();
+	public void export() {
+		System.out.println("Origin Country: " + new LabelService().getCountryName("RO")); 
+		System.out.println("Dest Country: " + new LabelService().getCountryName("ES")); 
 	}
+}
 
-	private Properties readConfiguration() {
-		System.out.println("Fetching encrypted configuration over HTTPS from Thailand");
-		workSomeTime();
-		Properties props = new Properties();
-		try {
-			props.load(AppConfiguration.class.getResourceAsStream("dummy.properties"));
-			System.out.println("Done");
-			return props;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+class LabelService {
+
+	private Map<Object, String> countries;
+	
+	public LabelService() {
+		countries = CountryRepo.loadCountryNamesAsMap();
 	}
 	
-	public String getProperty(String propertyName) {
-		return properties.getProperty(propertyName);
+	public String getCountryName(String isoCode) {
+		return countries.get(isoCode);
 	}
 
+}
+
+class CountryRepo {
+	public static Map<Object, String> loadCountryNamesAsMap() {
+		// connect to database, get data
+		workSomeTime("Load country names");
+
+		Map<Object, String> map = new HashMap<>();
+		map.put("RO", "Romania");
+		map.put("ES", "Spain");
+		return map; 
+	}
+	
 }
