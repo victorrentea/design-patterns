@@ -12,20 +12,14 @@ public class ObserverInGUI {
 		MyFrame myFrame = new MyFrame();
 		
 		// SOLUTION(
-		// polymorphic assignment - refer o implementare concreta printr-o interfata pe care o implementeaza
-		ActionListener actionListener = new MyButtonActionListener();
-		
-		myFrame.button1.addActionListener(actionListener);
+		myFrame.button1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "Button clicked");
+			}
+		});
 		// SOLUTION)
-		//TODO myFrame.button1.addActionListener(actionListener);
+		//TODO myFrame.button1.addActionListener(new ActionListener);
 	}
-}
-
-class MyButtonActionListener implements ActionListener {
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		JOptionPane.showMessageDialog(null, "Button clicked");
-	}
-
 }
 

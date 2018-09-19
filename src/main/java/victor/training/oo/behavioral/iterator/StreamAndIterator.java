@@ -9,7 +9,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class StreamVsIterator {
+public class StreamAndIterator {
 	public static void main(String[] args) {
 		List<Integer> list = asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 		
