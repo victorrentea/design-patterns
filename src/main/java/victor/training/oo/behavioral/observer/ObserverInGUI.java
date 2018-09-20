@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
-import victor.training.oo.structural.composite.MyFrame;
+import victor.training.oo.stuff.MyFrame;
 
 public class ObserverInGUI {
 	public static void main(String[] args) {

@@ -57,7 +57,7 @@ class StockManagementService {
 	private ApplicationEventPublisher publisher;
 
 	@EventListener
-	// @Order(1) // bad alternative // SOLUTION
+	// @Order(1) // bad idea // SOLUTION
 	// public void handle(OrderPlaced event) {// INITIAL
 	public OrderInStock handle(OrderPlaced event) { // SOLUTION
 		log.info("Checking stock for products in order " + event.orderId);
@@ -70,7 +70,7 @@ class StockManagementService {
 @Service
 class InvoiceService {
 	@EventListener // SOLUTION (
-	// @Order(100) //@Order(1) // bad? alternative
+	// @Order(100) // bad idea // SOLUTION
 	public void handle(OrderPlaced event) {
 		// public void handle(OrderInStock event) {
 		log.info("Generating invoice for order " + event.orderId);

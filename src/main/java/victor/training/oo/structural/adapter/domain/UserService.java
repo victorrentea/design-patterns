@@ -3,15 +3,18 @@ package victor.training.oo.structural.adapter.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.structural.adapter.external.LdapUser;
 import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
 
+@Slf4j
+@Service
 public class UserService {
+	@Autowired
 	private LdapUserWebserviceClient wsClient;
-	
-	public UserService(LdapUserWebserviceClient wsClient) {
-		this.wsClient = wsClient;
-	}
 
 	public void importUserFromLdap(String username) {
 		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
@@ -20,12 +23,12 @@ public class UserService {
 		}
 		LdapUser ldapUser = list.get(0);
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(username, fullName, ldapUser.getWorkEmail());
+		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 		
 		if (user.getWorkEmail() != null) {
-			System.out.println("Send welcome email to " + user.getWorkEmail());
+			log.debug("Send welcome email to " + user.getWorkEmail());
 		}
-		System.out.println("Insert user in my database");
+		log.debug("Insert user in my database");
 	}
 	
 	public List<User> searchUserInLdap(String username) {
@@ -33,15 +36,10 @@ public class UserService {
 		List<User> results = new ArrayList<>();
 		for (LdapUser ldapUser : list) {
 			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(username, fullName, ldapUser.getWorkEmail());
+			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 			results.add(user);
 		}
 		return results;
 	}
 	
-	public static void main(String[] args) {
-		UserService service = new UserService(new LdapUserWebserviceClient());
-		System.out.println(service.searchUserInLdap("doe"));
-		service.importUserFromLdap("jdoe");
-	}
 }

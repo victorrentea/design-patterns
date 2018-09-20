@@ -27,9 +27,6 @@ public class StrategySpringApp implements CommandLineRunner {
 @Service
 class CustomsService {
 	
-	@Autowired
-	private List<TaxCalculator> calculators;
-	
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 //		switch (originCountry) { // INITIAL(
 //		case "UK": return tobacoValue/2 + otherValue/2; 
@@ -46,6 +43,9 @@ class CustomsService {
 	}
 	
 	// SOLUTION (
+	@Autowired
+	private List<TaxCalculator> calculators;
+	
 	public TaxCalculator getTaxCalculatorFor(String originCountry) {
 //		for (TaxCalculator calculator : calculators) {
 //			if (calculator.isApplicable(originCountry)) {

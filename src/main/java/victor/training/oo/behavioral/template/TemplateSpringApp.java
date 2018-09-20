@@ -2,6 +2,29 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
+
+import lombok.Data;
+
+@SpringBootApplication
+public class TemplateSpringApp implements CommandLineRunner {
+	public static void main(String[] args) {
+		SpringApplication.run(TemplateSpringApp.class, args);
+	}
+
+	@Autowired
+	private EmailService service;
+	
+	public void run(String... args) throws Exception {
+		service.sendOrderReceivedEmail("a@b.com");
+	}
+}
+
+@Service
 class EmailService {
 
 	public void sendOrderReceivedEmail(String emailAddress) {
@@ -27,6 +50,7 @@ class EmailContext {
 	}
 }
 
+@Data
 class Email {
 	private final long id = new Random(System.nanoTime()).nextLong();
 	private String sender;
@@ -34,41 +58,4 @@ class Email {
 	private String body;
 	private String replyTo;
 	private String to;
-	public final String getSender() {
-		return sender;
-	}
-	public final void setSender(String sender) {
-		this.sender = sender;
-	}
-	public final String getSubject() {
-		return subject;
-	}
-	public final void setSubject(String subject) {
-		this.subject = subject;
-	}
-	public final String getBody() {
-		return body;
-	}
-	public final void setBody(String body) {
-		this.body = body;
-	}
-	public final String getReplyTo() {
-		return replyTo;
-	}
-	public final void setReplyTo(String replyTo) {
-		this.replyTo = replyTo;
-	}
-	public final String getTo() {
-		return to;
-	}
-	public final void setTo(String to) {
-		this.to = to;
-	}
-	public final long getId() {
-		return id;
-	}
-	@Override
-	public String toString() {
-		return "Email{subject="+subject+" to " + to +"}";
-	}
 }

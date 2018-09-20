@@ -3,6 +3,9 @@ package victor.training.oo.structural.adapter.external;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class LdapUserWebserviceClient {
 
 	public List<LdapUser> search(String uId, String fName, String lName) {
