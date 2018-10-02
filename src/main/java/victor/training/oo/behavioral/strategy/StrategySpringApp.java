@@ -17,9 +17,8 @@ public class StrategySpringApp implements CommandLineRunner {
 	@Autowired
 	private CustomsService service;
 	
-//	private ConfigProvider configProvider = new ConfigFileProvider();
-	@Autowired
-	private ConfigProvider configProvider;
+//	private ConfigProvider configProvider = new ConfigFileProvider(); // INITIAL
+	@Autowired private ConfigProvider configProvider; // SOLUTION
 	
 	public void run(String... args) throws Exception {
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
