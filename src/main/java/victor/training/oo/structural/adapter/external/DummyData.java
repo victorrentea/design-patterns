@@ -11,7 +11,7 @@ public class DummyData {
 		ldapUser1.setuId("jdoe");
 		ldapUser1.setCreationDate(new Date());
 		ldapUser1.setWorkEmail("0123456789");
-		ldapUser1.setEmailAddresses(Arrays.asList(new LdapUserPhone("WORK", "0123456789")));
+		ldapUser1.setEmailAddresses(Arrays.asList(new LdapUserPhone("WORK", "jdoe@bigcorp.com")));
 	}
 	public static final LdapUser ldapUser2 = new LdapUser();
 	static {
