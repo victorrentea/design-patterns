@@ -16,15 +16,18 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service // SOLUTION
 //public class ExpensiveOps { // INITIAL
 public class ExpensiveOps implements IExpensiveOps { // SOLUTION
 	
-	private BigDecimal TWO = new BigDecimal("2");
+	private static final BigDecimal TWO = new BigDecimal("2");
 	
 	@Cacheable("expensive")
 	public boolean isPrime(int n) { 
+		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
 			return true;
@@ -33,7 +36,7 @@ public class ExpensiveOps implements IExpensiveOps { // SOLUTION
 			return false;
 		}
 		for (BigDecimal divisor = new BigDecimal("3"); 
-			divisor.compareTo(number.divide(new BigDecimal("2"))) < 0;
+			divisor.compareTo(number.divide(TWO)) < 0;
 			divisor = divisor.add(TWO)) {
 			if (number.remainder(divisor).equals(BigDecimal.ZERO)) {
 				return false;
@@ -44,9 +47,10 @@ public class ExpensiveOps implements IExpensiveOps { // SOLUTION
 
 	@SneakyThrows
 	@Cacheable("expensive")
-	public String hashAllProjectFiles(File folder) {
+	public String hashAllFiles(File folder) {
+		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
-		for (int i = 0; i< 3; i++) { // pretend there is more work to do here
+		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
 			Files.walk(folder.toPath())
 				.map(Path::toFile)
 				.filter(File::isFile)

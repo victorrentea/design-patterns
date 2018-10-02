@@ -1,10 +1,8 @@
 package victor.training.oo.structural.proxy;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,14 +10,17 @@ import java.util.Map;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-//public class ExpensiveMathCachingProxy { // INITIAL
+//public class ExpensiveOpsCachingDecorator { // INITIAL
 //	private Map<List<?>, Object> cache = new HashMap<>(); // INITIAL 
-@Component
-@Primary
-public class ExpensiveOpsCachingDecorator implements IExpensiveOps { // SOLUTION (
+// Hint : cache.computeIfAbsent(getCacheKey("isPrime", number), k -> delegate.isPrime(number));
+// SOLUTION (
+//@Component
+//@Primary
+public class ExpensiveOpsCachingDecorator implements IExpensiveOps { 
 
 	private final IExpensiveOps delegate;
-// Note: Silly cache implementation. Such crap code might produce OutOfMemoryErrors.
+	
+	// FIXME Note: Silly cache implementation. Such crap code might produce OutOfMemoryErrors.
 	private Map<List<?>, Object> cache = new HashMap<>(); 
 	
 	public ExpensiveOpsCachingDecorator(IExpensiveOps delegate) {
@@ -29,8 +30,8 @@ public class ExpensiveOpsCachingDecorator implements IExpensiveOps { // SOLUTION
 	public boolean isPrime(int number) {
 		return (boolean) cache.computeIfAbsent(getCacheKey("isPrime", number), k -> delegate.isPrime(number));
 	}
-	public String hashAllProjectFiles(File folder) {
-		return  (String) cache.computeIfAbsent(getCacheKey("files", folder), k -> delegate.hashAllProjectFiles(folder));
+	public String hashAllFiles(File folder) {
+		return  (String) cache.computeIfAbsent(getCacheKey("files", folder), k -> delegate.hashAllFiles(folder));
 	}
 	
 	// SOLUTION )
@@ -38,7 +39,7 @@ public class ExpensiveOpsCachingDecorator implements IExpensiveOps { // SOLUTION
 	private List<Object> getCacheKey(String methodName, Object... args) {
 		List<Object> list = new ArrayList<>();
 		list.add(methodName);
-		list.addAll(asList(args));
+		list.addAll(Arrays.asList(args));
 		return list;
 	}
 	
