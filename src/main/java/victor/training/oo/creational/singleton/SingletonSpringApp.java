@@ -29,7 +29,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	}
 	
 	@Autowired 
-	private ReportExporter exporter;
+	private OrderExporter exporter;
 	
 	// TODO [1] instantiate manually, set dependencies, pass around
 	// TODO [2] make singleton; test multi-thread: state is [ | | | ]
@@ -44,23 +44,22 @@ public class SingletonSpringApp implements CommandLineRunner{
 
 @Slf4j
 @Service
-class ReportExporter  {
+class OrderExporter  {
 	@Autowired
-	private InvoiceDetailsWriter helper;
+	private InvoiceExporter invoiceExporter;
 	@Autowired
 	private CountryRepo countryRepo;
 	
 	public void export(Locale locale) {
 		LabelService labelService = null; // FIXME implement
 		log.debug("Origin Country: " + labelService.getCountryName("RO")); 
-		helper.writeSenderDetails(labelService);
+		invoiceExporter.writeSenderDetails(labelService);
 	}
 }
 
 @Slf4j
 @Service 
-class InvoiceDetailsWriter {
-	
+class InvoiceExporter {
 	public void writeSenderDetails(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
