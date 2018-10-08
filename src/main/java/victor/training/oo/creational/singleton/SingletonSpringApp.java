@@ -51,8 +51,7 @@ class ReportExporter  {
 	private CountryRepo countryRepo;
 	
 	public void export(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
-		labelService.loadFor(locale);
+		LabelService labelService = null; // FIXME implement
 		log.debug("Origin Country: " + labelService.getCountryName("RO")); 
 		helper.writeSenderDetails(labelService);
 	}
