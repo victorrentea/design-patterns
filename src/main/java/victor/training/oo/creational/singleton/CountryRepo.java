@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import victor.training.oo.stuff.ThreadUtils;
 @Slf4j
 @Repository
 public class CountryRepo {
+
 	public Map<String, String> loadCountryNamesAsMap(Locale locale) {
 		// connect to database, get data. fake some latency
 		log.debug("Loading country names for language: {} ...", locale );

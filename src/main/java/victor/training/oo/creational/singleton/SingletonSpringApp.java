@@ -3,27 +3,29 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.ObjectFactory;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SpringBootApplication
 public class SingletonSpringApp implements CommandLineRunner{
 	@Bean
 	public static CustomScopeConfigurer defineThreadScope() {
 		CustomScopeConfigurer configurer = new CustomScopeConfigurer();
-		configurer.addScope("thread", new SimpleThreadScope()); // WARNING. Leaks memory. Prefer 'request' scope or read here: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/support/SimpleThreadScope.html
+		configurer.addScope("thread", new SimpleThreadScope()); // WARNING: Leaks memory. Prefer 'request' scope or read here: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/support/SimpleThreadScope.html 
 		return configurer;
 	}
+	
 	public static void main(String[] args) {
 		SpringApplication.run(SingletonSpringApp.class);
 	}
@@ -31,14 +33,14 @@ public class SingletonSpringApp implements CommandLineRunner{
 	@Autowired 
 	private OrderExporter exporter;
 	
-	// TODO [1] instantiate manually, set dependencies, pass around
-	// TODO [2] make singleton; test multi-thread: state is [ | | | ]
-	// TODO [3] ObjectFactory + prototype scope; autowiring myself in cntr: no AOP
-	// TODO [4] thread/request scope. HOW it works?! Leaks.
-	// TODO [5] (after AOP): @Cacheable on thread?!
+	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
+	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
+	// TODO [3] prototype scope + ObjectFactory or @Lookup 
+	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
+	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
-		exporter.export(Locale.FRENCH);
 		exporter.export(Locale.ENGLISH);
+//		exporter.export(Locale.FRENCH);
 	}
 }
 
@@ -48,37 +50,45 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-	private CountryRepo countryRepo;
-	
+	private LabelService labelService;
+
 	public void export(Locale locale) {
-		LabelService labelService = null; // FIXME implement
-		log.debug("Origin Country: " + labelService.getCountryName("RO")); 
-		invoiceExporter.writeSenderDetails(labelService);
+		log.debug("Running export in " + locale);
+		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-	public void writeSenderDetails(LabelService labelService) {
+	@Autowired
+	private LabelService labelService;
+	
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
+@Slf4j
+@Service
 class LabelService {
-	private final CountryRepo countryRepo;
+	@Autowired
+	private CountryRepo countryRepo;
+	
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
 
 	private Map<String, String> countryNames;
 	
-	// a sort of @PostConstruct .. parameterized ?!
-	public void loadFor(Locale locale) {
-		countryNames = countryRepo.loadCountryNamesAsMap(locale);
+	@PostConstruct
+	public void load() {
+		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
 	}
 	
 	public String getCountryName(String iso2Code) {
+		log.debug("getCountryName() on instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
 	}
 }
