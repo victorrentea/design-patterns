@@ -19,13 +19,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service // SOLUTION
-//public class ExpensiveOps { // INITIAL
-public class ExpensiveOps implements IExpensiveOps { // SOLUTION
+public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	@Cacheable("expensive")
 	public boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -46,7 +43,6 @@ public class ExpensiveOps implements IExpensiveOps { // SOLUTION
 	}
 
 	@SneakyThrows
-	@Cacheable("expensive")
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");

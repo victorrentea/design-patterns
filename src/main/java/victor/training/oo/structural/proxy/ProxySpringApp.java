@@ -1,8 +1,11 @@
 package victor.training.oo.structural.proxy;
 
-import java.io.File;
+import static java.util.Arrays.asList;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,35 +15,24 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@EnableAspectJAutoProxy // SOLUTION
-@EnableCaching // SOLUTION
+@EnableAspectJAutoProxy 
+@EnableCaching 
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(ProxySpringApp.class, args);
 	}
 
-	@Autowired private IExpensiveOps ops; // SOLUTION
 	
-	// TODO [1] implement decorator [2] generic proxy [3] Spring aspect [4] Spring cache support
+	// TODO [1] implement decorator 
+	// TODO [2] generic java.lang.reflect.Proxy 
+	// TODO [3] apply decorator via Spring
+	// TODO [4] Spring aspect 
+	// TODO [5] Spring cache support
+	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-//		ExpensiveOps ops = new ExpensiveOps(); // INITIAL
-//		IExpensiveOps ops = new ExpensiveOpsCachingDecorator(new ExpensiveOps()); // SOLUTION
-		
-//		IExpensiveOps realOps = new ExpensiveOps();
-//		IExpensiveOps ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), new Class<?>[] {IExpensiveOps.class}, new InvocationHandler() {
-//			private Map<List<?>, Object> cache = new HashMap<>(); 
-//			private List<Object> getCacheKey(String methodName, Object... args) {
-//				List<Object> list = new ArrayList<>();
-//				list.add(methodName);
-//				list.addAll(asList(args));
-//				return list;
-//			}
-//			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//				return cache.computeIfAbsent(getCacheKey(method.getName(), args),
-//						Unchecked.function(k -> method.invoke(realOps, args)));
-//			}
-//		}); 
+		ExpensiveOps ops = new ExpensiveOps(); 
+
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -53,5 +45,12 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+	}
+	
+	private static List<Object> getCacheKey(String methodName, Object... args) {
+		List<Object> list = new ArrayList<>();
+		list.add(methodName);
+		list.addAll(asList(args));
+		return list;
 	}
 }

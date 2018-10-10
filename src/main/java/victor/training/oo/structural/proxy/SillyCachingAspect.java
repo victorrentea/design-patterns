@@ -18,17 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-//@Aspect
 public class SillyCachingAspect {
 	
 	@Around("execution(* ExpensiveOps.*(..))")
 	public Object logAround(ProceedingJoinPoint point) throws Throwable {
 		log.debug("(intercepted)");
-		return cache.computeIfAbsent(getCacheKey(point.getSignature().getName(), point.getArgs()),
-				Unchecked.function(k -> point.proceed()));
+		// TODO inspire from Decorator 
+		return point.proceed();
 	}
 	
-	private Map<List<?>, Object> cache = new HashMap<>(); 
+	// FIXME Note: Faking a cache here :). Such crap code might produce OutOfMemoryErrors.
+	private Map<List<?>, Object> cache = new HashMap<>();
+	
 	private List<Object> getCacheKey(String methodName, Object... args) {
 		List<Object> list = new ArrayList<>();
 		list.add(methodName);
