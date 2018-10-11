@@ -7,7 +7,10 @@ import victor.training.oo.structural.facade.entity.Customer;
 @Repository
 public class CustomerRepository {
 	public Customer getCustomerByEmail(String email) {
-		System.out.println("Lookup existing customer by email (natural key)");
-		return null; // let's say it doesn't find it
+		return null; // TODO
+	}
+
+	public boolean customerExistsWithEmail(String email) {
+		return false; // TODO
 	}
 }
