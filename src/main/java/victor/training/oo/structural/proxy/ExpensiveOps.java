@@ -23,7 +23,7 @@ public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	public boolean isPrime(int n) { 
+	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
