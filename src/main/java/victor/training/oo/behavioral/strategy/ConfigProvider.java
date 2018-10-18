@@ -12,8 +12,6 @@ public interface ConfigProvider {
 	Properties getProperties();
 }
 
-@Profile("localProps")
-@Component
 class ConfigFileProvider implements ConfigProvider {
 	
 	@SneakyThrows
@@ -26,8 +24,6 @@ class ConfigFileProvider implements ConfigProvider {
 	}
 }
 
-@Profile("!localProps")
-@Component
 class ConfigDatabaseProvider implements ConfigProvider {
 
 	public Properties getProperties() {
