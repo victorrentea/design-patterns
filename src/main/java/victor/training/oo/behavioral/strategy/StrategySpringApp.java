@@ -18,15 +18,17 @@ public class StrategySpringApp implements CommandLineRunner {
 			.run(args);
 	}
 
+	@Autowired
+	private CustomsService service;
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	private ConfigProvider configProvider; 
 	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) throws Exception {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CH,100,100) = " + service.computeCustomsTax("CH", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -34,6 +36,7 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
+@Service
 class UKCustomsTaxCalculator implements CustomsTaxCalculator {
 	public double calculateTax(double tobacoValue, double regularValue) {
 		// 30 more lines of logic here
@@ -57,6 +60,7 @@ class UKCustomsTaxCalculator implements CustomsTaxCalculator {
 		return "UK".equals(originCountry); 
 	}
 }
+@Service
 class CHCustomsTaxCalculator implements CustomsTaxCalculator {
 	public double calculateTax(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
@@ -66,6 +70,7 @@ class CHCustomsTaxCalculator implements CustomsTaxCalculator {
 		return "CH".equals(originCountry); 
 	}
 }
+@Service
 class EUCustomsTaxCalculator implements CustomsTaxCalculator{
 	public boolean accept(String originCountry) {
 		return asList("FR", "ES", "RO").contains(originCountry);
@@ -77,14 +82,17 @@ class EUCustomsTaxCalculator implements CustomsTaxCalculator{
 
 
 
+@Service
 class CustomsService {
+	@Autowired
+	private List<CustomsTaxCalculator> calculators;
+	
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 		CustomsTaxCalculator calculator = determineCalculator(originCountry); 
 		return calculator.calculateTax(tobacoValue, regularValue);
 	}
 
 	private CustomsTaxCalculator determineCalculator(String originCountry) {
-		List<CustomsTaxCalculator> calculators = asList(new UKCustomsTaxCalculator(), new CHCustomsTaxCalculator(),  new EUCustomsTaxCalculator() );
 		return calculators.stream()
 				.filter(c -> c.accept(originCountry))
 				.findFirst()
