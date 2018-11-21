@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -47,20 +48,18 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
-	@Autowired
-	private ThreadPoolTaskExecutor executor;
-	
 	// [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
 		
+		System.out.println("WHo are you ?!! " + barman.getClass());
 		
-		Future<Ale> futureAle = executor.submit(() -> barman.getOneAle());
-		Future<Wiskey> futureWhiskey = executor.submit(() -> barman.getOneWiskey());
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Wiskey> futureWhiskey = barman.getOneWiskey();
 		log.debug("Order sent");
 
-		Ale ale = futureAle.get();
+		Ale ale = futureAle.get(); // block main() here 
 		Wiskey wiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
 	}
@@ -69,16 +68,21 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
-		 log.debug("Pouring Ale...");
-		 ThreadUtils.sleep(1000);
-		 return new Ale();
+	@Async
+	public CompletableFuture<Ale> getOneAle() {
+		 return CompletableFuture.completedFuture(getOneAleNow());
 	 }
-	
-	 public Wiskey getOneWiskey() {
+	Ale getOneAleNow() {
+		log.debug("Pouring Ale...");
+		 Ale value = new Ale();
+		 ThreadUtils.sleep(1000);
+		return value;
+	}
+	@Async
+	 public CompletableFuture<Wiskey> getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 return CompletableFuture.completedFuture(new Wiskey());
 	 }
 }
 
