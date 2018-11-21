@@ -3,8 +3,14 @@ package victor.training.oo.structural.proxy;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +33,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	
 	// [1] implement decorator 
 	// [2] apply decorator via Spring
-	// TODO [3] generic java.lang.reflect.Proxy 
+	// [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
@@ -35,11 +41,44 @@ public class ProxySpringApp implements CommandLineRunner {
 		someDomainLogicCodeIDontWantToTouch();
 	}
 	
-	@Autowired
-	private IExpensiveOps ops;
+//	@Autowired
+//	private IExpensiveOps ops;
 
 
 	private void someDomainLogicCodeIDontWantToTouch() {
+		
+		
+		
+//		InvocationHandler h = (proxy, method, args) -> {
+//				return null; // TODO
+//		};
+		ExpensiveOps realOps = new ExpensiveOps();
+		
+		InvocationHandler h = new InvocationHandler() {
+			private Map<List<?>, Object> cache = new HashMap<>(); // INITIAL 
+
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				return cache.computeIfAbsent(
+						getCacheKey(method.getName(), args), 
+						k -> {
+							try {
+								return method.invoke(realOps, args);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								throw new RuntimeException(e);
+							}
+						});
+			}
+		};
+		IExpensiveOps ops = (IExpensiveOps) Proxy.newProxyInstance(
+				IExpensiveOps.class.getClassLoader(), 
+				new Class<?>[] {IExpensiveOps.class}, 
+				h);
+		
+		
+		
+		
+		
+		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
