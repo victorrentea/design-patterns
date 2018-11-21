@@ -18,11 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@Aspect
 public class SillyCachingAspect {
 	
-	@Around("execution(* ExpensiveOps.*(..))")
+//	@Around("execution(* *(..)) && @within(com.bnpp.asf.common.spring.Facade))")
+	@Around("execution(* ExpensiveOps.isPrime(..))")
 	public Object logAround(ProceedingJoinPoint point) throws Throwable {
-		log.debug("(intercepted)");
+		log.debug("(intercepted) " + point.getSignature().getName() + 
+				" with args "  + Arrays.toString(point.getArgs()));
 		// TODO inspire from Decorator 
 		return point.proceed();
 	}

@@ -41,43 +41,11 @@ public class ProxySpringApp implements CommandLineRunner {
 		someDomainLogicCodeIDontWantToTouch();
 	}
 	
-//	@Autowired
-//	private IExpensiveOps ops;
+	@Autowired
+	private IExpensiveOps ops;
 
 
 	private void someDomainLogicCodeIDontWantToTouch() {
-		
-		
-		
-//		InvocationHandler h = (proxy, method, args) -> {
-//				return null; // TODO
-//		};
-		ExpensiveOps realOps = new ExpensiveOps();
-		
-		InvocationHandler h = new InvocationHandler() {
-			private Map<List<?>, Object> cache = new HashMap<>(); // INITIAL 
-
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				return cache.computeIfAbsent(
-						getCacheKey(method.getName(), args), 
-						k -> {
-							try {
-								return method.invoke(realOps, args);
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								throw new RuntimeException(e);
-							}
-						});
-			}
-		};
-		IExpensiveOps ops = (IExpensiveOps) Proxy.newProxyInstance(
-				IExpensiveOps.class.getClassLoader(), 
-				new Class<?>[] {IExpensiveOps.class}, 
-				h);
-		
-		
-		
-		
-		
 		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
