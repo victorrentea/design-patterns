@@ -22,12 +22,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -45,26 +45,34 @@ public class ObserverSpringApp implements CommandLineRunner {
 	}
 }
 
+interface Cat1 {
+	long getOrderId();
+}
+
 @Data
-class OrderPlaced {
+class OrderPlaced implements Cat1{
 	public final long orderId;
 }
 @Data
-class OrderChecked {
+class OrderChecked implements Cat1{
 	public final long orderId;
 }
 
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
+	
+	@EventListener
+	public void stuff(Cat1 cat) {
+		log.info("Does this work? "  + cat);
+		
+	}
 
 	@EventListener
-	public void handle(OrderPlaced event) { 
+	public OrderChecked handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
-		publisher.publishEvent(new OrderChecked(13));
+		return new OrderChecked(13);
 	}
 }
 
