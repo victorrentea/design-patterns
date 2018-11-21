@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -19,10 +21,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ExpensiveOps {
+public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
+	
+	@Override
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -42,6 +46,7 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);

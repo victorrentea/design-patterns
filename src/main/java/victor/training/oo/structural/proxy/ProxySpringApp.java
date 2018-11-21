@@ -24,15 +24,21 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	
-	// TODO [1] implement decorator 
+	// [1] implement decorator 
 	// TODO [2] apply decorator via Spring
 	// TODO [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps(); 
+		IExpensiveOps ops = new ExpensiveOps(); 
 
+		ops = new ExpensiveOpsCachingDecorator(ops);
+		someDomainLogicCodeIDontWantToTouch(ops);
+	}
+
+
+	private void someDomainLogicCodeIDontWantToTouch(IExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
