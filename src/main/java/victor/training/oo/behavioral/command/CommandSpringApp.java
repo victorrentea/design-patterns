@@ -2,6 +2,7 @@ package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class CommandSpringApp {
 	@Bean
 	public ThreadPoolTaskExecutor executor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(2);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -46,13 +47,21 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
+	@Autowired
+	private ThreadPoolTaskExecutor executor;
 	
-	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
+	// [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Wiskey wiskey = barman.getOneWiskey();
+		
+		
+		Future<Ale> futureAle = executor.submit(() -> barman.getOneAle());
+		Future<Wiskey> futureWhiskey = executor.submit(() -> barman.getOneWiskey());
+		log.debug("Order sent");
+
+		Ale ale = futureAle.get();
+		Wiskey wiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
 	}
 }
