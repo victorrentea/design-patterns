@@ -29,7 +29,7 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor2() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(2);
 		executor.setMaxPoolSize(2);
@@ -68,7 +68,7 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	@Async
+	@Async("executor2")
 	public CompletableFuture<Ale> getOneAle() {
 		 return CompletableFuture.completedFuture(getOneAleNow());
 	 }
@@ -76,7 +76,9 @@ class Barman {
 		log.debug("Pouring Ale...");
 		 Ale value = new Ale();
 		 ThreadUtils.sleep(1000);
-		return value;
+		 throw new RuntimeException("break glass");
+//		 log.debug("Pouring Ale... DONE");
+//		return value;
 	}
 	@Async
 	 public CompletableFuture<Wiskey> getOneWiskey() {
