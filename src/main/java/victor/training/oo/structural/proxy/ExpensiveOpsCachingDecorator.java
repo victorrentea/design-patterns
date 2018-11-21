@@ -15,30 +15,23 @@ public class ExpensiveOpsCachingDecorator implements IExpensiveOps{
 		this.delegate = delegate;
 	}
 
-//	private Map<Integer, Boolean> primesCache = new HashMap<>();
-	
-	public Boolean isPrime(int n) {
-		if (cache.containsKey(getCacheKey("isPrime", n))) {
-			return (Boolean) cache.get(getCacheKey("isPrime", n));
-		}
-		Boolean rez = delegate.isPrime(n);
-		cache.put(getCacheKey("isPrime", n), rez);
-		return rez;
-	}
-	
-
-	
-//	private Map<File, Boolean> folderHashCache = new HashMap<>();
-	
-	
-	public String hashAllFiles(File folder) {
-		return delegate.hashAllFiles(folder); // TODO
-	}
-	
-	
 	// FIXME Note: Faking a cache here :). Such crap code might produce OutOfMemoryErrors.
 	private Map<List<?>, Object> cache = new HashMap<>(); // INITIAL 
+	
+	
+	
 
+	public Boolean isPrime(int n) {
+		return (Boolean) cache.computeIfAbsent(
+				getCacheKey("isPrime", n), 
+				k -> delegate.isPrime(n));
+	}
+	
+	public String hashAllFiles(File folder) {
+		return (String) cache.computeIfAbsent(
+				getCacheKey("hashAllFiles", folder), 
+				k -> delegate.hashAllFiles(folder));
+	}
 	
 	
 	
