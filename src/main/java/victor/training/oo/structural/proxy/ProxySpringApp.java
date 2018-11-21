@@ -34,7 +34,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// [1] implement decorator 
 	// [2] apply decorator via Spring
 	// [3] generic java.lang.reflect.Proxy 
-	// TODO [4] Spring aspect 
+	// [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
@@ -42,10 +42,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 	
 	@Autowired
-	private IExpensiveOps ops;
+	private ExpensiveOps ops;
 
 
 	private void someDomainLogicCodeIDontWantToTouch() {
+		
+		System.out.println("Who are you ???!!" + ops.getClass()); 
 		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
@@ -57,6 +59,8 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		
+		ops.killTheCache(new File(".."));
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}

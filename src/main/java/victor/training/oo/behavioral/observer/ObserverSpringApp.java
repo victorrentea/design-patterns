@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,10 @@ public class ObserverSpringApp implements CommandLineRunner {
 class OrderPlaced {
 	public final long orderId;
 }
+@Data
+class OrderChecked {
+	public final long orderId;
+}
 
 @Slf4j
 @Service
@@ -59,14 +64,15 @@ class StockManagementService {
 	public void handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
+		publisher.publishEvent(new OrderChecked(13));
 	}
 }
 
 @Slf4j
 @Service
 class InvoiceService {
-	
-	public void handle(OrderPlaced event) {
+	@EventListener
+	public void handleASDAS(OrderChecked event) {
 		log.info("Generating invoice for order " + event.orderId);
 		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
 	} 

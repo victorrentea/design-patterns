@@ -1,19 +1,17 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ExpensiveOps implements IExpensiveOps {
+public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
 	
-	@Override
+	@Cacheable("immutable")
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -47,10 +45,23 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 
-	@Override
+	@CacheEvict(value="canChange")
+	public void killTheCache(File folder) {
+		
+	}
+	
+	@Autowired
+	ExpensiveOps myself;
+	
+	@Cacheable("canChange")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
+		log.debug("before Surprise");
+		myself.isPrime(10000169);
+		new RuntimeException().printStackTrace();
+		
+		log.debug("After Surprise");
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
 			Files.walk(folder.toPath())
