@@ -17,22 +17,16 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ExpensiveOps {
+public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	private Map<Integer, Boolean> cacheBabesc = new HashMap<>();
 	
+	
+	/* (non-Javadoc)
+	 * @see victor.training.oo.structural.proxy.IExpensiveOps#isPrime(int)
+	 */
 	public Boolean isPrime(int n) {
-		if (cacheBabesc.containsKey(n)) {
-			return cacheBabesc.get(n);
-		}
-		Boolean rez = isPrime$$$$(n);
-		cacheBabesc.put(n, rez);
-		return rez;
-	}
-	
-	public Boolean isPrime$$$$(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -51,6 +45,9 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see victor.training.oo.structural.proxy.IExpensiveOps#hashAllFiles(java.io.File)
+	 */
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
