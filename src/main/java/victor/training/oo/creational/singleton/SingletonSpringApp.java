@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -55,9 +56,10 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-	private LabelService labelService;
+	private ObjectFactory<LabelService> labelServiceFactory;
 	
 	public void export(Locale locale) {
+		LabelService labelService = labelServiceFactory.getObject();
 		System.out.println("Instanta este : " + labelService);
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
