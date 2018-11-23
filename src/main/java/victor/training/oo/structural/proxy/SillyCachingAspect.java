@@ -1,6 +1,5 @@
 package victor.training.oo.structural.proxy;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +10,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.jooq.lambda.Unchecked;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +24,7 @@ public class SillyCachingAspect {
 		log.debug("(intercepted)");
 		 
 		List<Object> cacheKey = getCacheKey(point.getSignature().getName(), point.getArgs());
-		if (cache.containsKey(cacheKey)) {
-			return cache.get(cacheKey);
-		}
-		Object rez = point.proceed();
-		cache.put(cacheKey, rez);
-		return rez;
-		
-//		return point.proceed();
+		return cache.computeIfAbsent(cacheKey, Unchecked.function(x -> point.proceed()));
 	}
 	
 	// FIXME Note: Faking a cache here :). Such crap code might produce OutOfMemoryErrors.
