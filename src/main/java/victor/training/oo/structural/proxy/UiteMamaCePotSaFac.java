@@ -10,11 +10,13 @@ public class UiteMamaCePotSaFac {
 	public static void main(String[] args) {
 		// LOTR ep 2 saruman the white
 		
+		ExpensiveOps realOps = new ExpensiveOps();
+		
 		InvocationHandler h = new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				System.out.println("se invoca metoda " + method.getName() + 
 						" cu param " + Arrays.toString(args));
-				return true; // TODO
+				return method.invoke(realOps, args); // TODO
 			}
 		};
 		IExpensiveOps ops = (IExpensiveOps) Proxy.newProxyInstance(
