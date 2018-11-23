@@ -25,7 +25,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private IExpensiveOps ops;
+	private ExpensiveOps ops;
 	
 	// [1] implement decorator 
 	// [2] apply decorator via Spring
@@ -40,7 +40,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 
-	private void businessLogicPeCareNuVreauSalAting(IExpensiveOps ops) {
+	private void businessLogicPeCareNuVreauSalAting(ExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -51,6 +51,8 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		
+		ops.golesteCache();
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}

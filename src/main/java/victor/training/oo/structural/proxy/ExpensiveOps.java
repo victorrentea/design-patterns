@@ -12,6 +12,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,12 @@ public class ExpensiveOps implements IExpensiveOps {
 			}
 		}
 		return true;
+	}
+	
+	@CacheEvict(value="folderHashes", allEntries = true)
+	public void golesteCache() {
+		// chemata doar ca sa vada proxyul ca se cheama. 
+		// ALa se va uita la adnotarile pe aceasta metoda si va face chestii interesante
 	}
 
 	@Cacheable("folderHashes")
