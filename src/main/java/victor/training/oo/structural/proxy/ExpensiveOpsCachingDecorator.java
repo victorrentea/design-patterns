@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+
+@Primary
+@Service
 public class ExpensiveOpsCachingDecorator implements IExpensiveOps { 
 	
 	private final IExpensiveOps delegate;
