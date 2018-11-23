@@ -25,18 +25,3 @@ public class AdapterSpringApp implements CommandLineRunner {
 }
 
 
-class A {
-	public abstract void ceva();
-}
-class B extends A {
-	
-}
-
-class Client {
-	public static void main(String[] args) {
-		A a = new B();
-		if (a instanceof B) {
-			// fa ceva 
-		}
-	}
-}

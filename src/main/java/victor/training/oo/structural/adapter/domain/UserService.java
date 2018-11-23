@@ -24,7 +24,7 @@ import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
 public class UserService {
 	
 	@Autowired
-	private UserWSAdapter userWSAdapter;
+	private IUserWSAdapter userWSAdapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = userWSAdapter.findByUsername(username);
