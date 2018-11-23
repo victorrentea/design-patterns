@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	
 	// [1] make singleton; test multi-thread: state is [ | | | ]
 	// [2] instantiate manually, set dependencies, pass around; no AOP
-	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
+//	 [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
@@ -56,25 +57,25 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-	private ObjectFactory<LabelService> labelServiceFactory;
+	private LabelService labelService;
 	
 	public void export(Locale locale) {
-		LabelService labelService = labelServiceFactory.getObject();
+		System.out.println("Cine esti tu frate? " + labelService.getClass());
 		System.out.println("Instanta este : " + labelService);
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-//	@Autowired
-//	private LabelService labelService;
+	@Autowired
+	private LabelService labelService;
 	
-	public void exportInvoice(LabelService labelService) {
+	public void exportInvoice() {
 		System.out.println("Instanta este : " + labelService);
 
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
@@ -83,7 +84,7 @@ class InvoiceExporter {
 
 @Slf4j
 @Service
-@Scope("prototype")
+@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LabelService {
 	@Autowired
 	private CountryRepo countryRepo;
