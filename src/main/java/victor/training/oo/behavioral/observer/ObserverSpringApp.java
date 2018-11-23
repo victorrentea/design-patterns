@@ -60,12 +60,11 @@ class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
-	@Order(1)
 	@EventListener
 	public void handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
-//		publisher
+		publisher.publishEvent(new OrderProductsInStock(event.orderId));
 	}
 }
 
@@ -73,9 +72,8 @@ class StockManagementService {
 @Service
 class InvoiceService {
 	
-	@Order(5)
 	@EventListener
-	public void handle(OrderPlaced event) {
+	public void handle(OrderProductsInStock event) {
 		log.info("Generating invoice for order " + event.orderId);
 		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
 	} 
