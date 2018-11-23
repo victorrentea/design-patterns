@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +26,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
+	@Qualifier("unNumeDeFata")
 	private IExpensiveOps ops;
 	
 	// [1] implement decorator 
