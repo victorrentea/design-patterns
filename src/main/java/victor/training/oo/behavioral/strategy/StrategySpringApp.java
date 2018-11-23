@@ -19,13 +19,14 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	private ConfigProvider configProvider; 
 	
 	@Autowired
 	private CustomsService service;
 	// [1] Break CustomsService logic into Strategies
 	// [2] Convert it to Chain Of Responsibility
-	// TODO [3] Wire with Spring
+	// [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) throws Exception {
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));

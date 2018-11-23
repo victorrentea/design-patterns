@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 
@@ -12,6 +12,8 @@ public interface ConfigProvider {
 	Properties getProperties();
 }
 
+@Service
+@Profile("localProps")
 class ConfigFileProvider implements ConfigProvider {
 	
 	@SneakyThrows
@@ -23,6 +25,9 @@ class ConfigFileProvider implements ConfigProvider {
 		}
 	}
 }
+
+@Service
+@Profile("!localProps")
 
 class ConfigDatabaseProvider implements ConfigProvider {
 
