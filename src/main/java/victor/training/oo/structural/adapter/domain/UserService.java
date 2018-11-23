@@ -12,18 +12,26 @@ import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
 
 @Slf4j
 @Service
+// Domain Logic
+// ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
+//  ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
+	
 	@Autowired
-	private LdapUserWebserviceClient wsClient;
+	private UserWSAdapter userWSAdapter;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
+		List<User> list = userWSAdapter.findByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
+		User user = list.get(0);
 		
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -31,15 +39,8 @@ public class UserService {
 		log.debug("Insert user in my database");
 	}
 	
-	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
-		}
-		return results;
+	public List<User> findUserInLdap(String username) {
+		return userWSAdapter.findByUsername(username);
 	}
 	
 }

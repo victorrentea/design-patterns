@@ -20,6 +20,23 @@ public class AdapterSpringApp implements CommandLineRunner {
 	
 	public void run(String... args) throws Exception {
 		userService.importUserFromLdap("jdoe");
-		log.debug("Found users: " + userService.searchUserInLdap("doe"));
+		log.debug("Found users: " + userService.findUserInLdap("doe"));
+	}
+}
+
+
+class A {
+	public abstract void ceva();
+}
+class B extends A {
+	
+}
+
+class Client {
+	public static void main(String[] args) {
+		A a = new B();
+		if (a instanceof B) {
+			// fa ceva 
+		}
 	}
 }
