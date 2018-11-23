@@ -48,16 +48,13 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
-	@Autowired 
-	private ThreadPoolTaskExecutor executor;
-	
-	
 	// [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Future<Ale> viitoareAle = executor.submit(() -> barman.getOneAle());
-		Future<Wiskey> viitoareWiskey = executor.submit(() -> barman.getOneWiskey());
+		System.out.println("Cine-oi fi tu mah? " + barman.getClass());
+		Future<Ale> viitoareAle = barman.getOneAle();
+		Future<Wiskey> viitoareWiskey = barman.getOneWiskey();
 		log.debug("O plecat cu comanda mea");
 		Ale ale = viitoareAle.get();
 		Wiskey wiskey = viitoareWiskey.get();
@@ -68,16 +65,18 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public CompletableFuture<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 throw new IllegalStateException("Nu mai am Ale!!$!$&@!*$&@!#");
+//		 return CompletableFuture.completedFuture(new Ale());
 	 }
-	
-	 public Wiskey getOneWiskey() {
+	 @Async
+	 public CompletableFuture<Wiskey> getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 return CompletableFuture.completedFuture(new Wiskey());
 	 }
 }
 
