@@ -27,25 +27,27 @@ public class ExpensiveOps {
 		if (cacheBabesc.containsKey(n)) {
 			return cacheBabesc.get(n);
 		}
+		Boolean rez = isPrime$$$$(n);
+		cacheBabesc.put(n, rez);
+		return rez;
+	}
+	
+	public Boolean isPrime$$$$(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
-			cacheBabesc.put(n, true);
 			return true;
 		}
 		if (number.remainder(TWO).equals(BigDecimal.ZERO)) {
-			cacheBabesc.put(n, false);
 			return false;
 		}
 		for (BigDecimal divisor = new BigDecimal("3"); 
 			divisor.compareTo(number.divide(TWO)) < 0;
 			divisor = divisor.add(TWO)) {
 			if (number.remainder(divisor).equals(BigDecimal.ZERO)) {
-				cacheBabesc.put(n, false);
 				return false;
 			}
 		}
-		cacheBabesc.put(n, true);
 		return true;
 	}
 
