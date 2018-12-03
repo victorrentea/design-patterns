@@ -1,12 +1,14 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+
+@Primary
+@Service
 public class ExpensiveOpsCachingDecorator implements IExpensiveOps { 
 
 	private final IExpensiveOps delegate;
