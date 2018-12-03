@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import javax.management.RuntimeErrorException;
+
 import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -30,8 +32,8 @@ public class CommandSpringApp {
 	@Bean
 	public ThreadPoolTaskExecutor executor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(20);
-		executor.setMaxPoolSize(20);
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(2);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -54,17 +56,10 @@ class Drinker implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
+		barman.anuntalpefraier();
 		
-		CompletableFuture<Ale> futureAle = 
-				CompletableFuture.supplyAsync(() ->barman.getOneAle(), executor);
-		CompletableFuture<Wiskey> futureWiskey = 
-				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
-		CompletableFuture<Wiskey> futureWiskey2 = 
-				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
-		CompletableFuture<Wiskey> futureWiskey3 = 
-				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
-		CompletableFuture<Wiskey> futureWiskey4 = 
-				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Wiskey> futureWiskey = barman.getOneWiskey();
 		
 		log.debug("Da oare cine a fost fata aia dragutza? " + barman.getClass());
 		log.debug("A plecat cu comanda mea :(. Mi-o luat-o.");
@@ -77,15 +72,25 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return CompletableFuture.completedFuture(new Ale());
 	 }
-	 public Wiskey getOneWiskey() {
-		 log.debug("Pouring Wiskey...");
+	@Async
+	public Future<Wiskey> getOneWiskey() {
+		log.debug("Pouring Wiskey...");
+		ThreadUtils.sleep(1000);
+		return CompletableFuture.completedFuture(new Wiskey());
+	}
+	@Async
+	 public Void anuntalpefraier() {
+		 log.debug("anunt fraerul...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 log.debug("chestii");
+		 throw new RuntimeException();
+//		 return null;
 	 }
 }
 
