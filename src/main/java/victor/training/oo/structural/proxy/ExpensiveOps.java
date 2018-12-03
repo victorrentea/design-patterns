@@ -19,23 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class ExpensiveOps {
+public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
-	
-	private Map<Integer, Boolean> cache = new HashMap<>(); 
-	
 
+	/* (non-Javadoc)
+	 * @see victor.training.oo.structural.proxy.IExpensiveOps#isPrime(int)
+	 */
 	public Boolean isPrime(int n) {
-		if (cache.containsKey(n)) {
-			return cache.get(n);
-		}
-		Boolean prime = isPrime__(n);
-		cache.put(n, prime);
-		return prime;
-	}
-	
-	private Boolean isPrime__(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -54,6 +45,9 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see victor.training.oo.structural.proxy.IExpensiveOps#hashAllFiles(java.io.File)
+	 */
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
