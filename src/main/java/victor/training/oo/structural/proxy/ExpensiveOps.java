@@ -16,6 +16,8 @@ import org.jooq.lambda.Unchecked;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+
+
 @Slf4j
 public class ExpensiveOps {
 	
@@ -23,29 +25,32 @@ public class ExpensiveOps {
 	
 	private Map<Integer, Boolean> cache = new HashMap<>(); 
 	
+
 	public Boolean isPrime(int n) {
 		if (cache.containsKey(n)) {
 			return cache.get(n);
 		}
+		Boolean prime = isPrime__(n);
+		cache.put(n, prime);
+		return prime;
+	}
+	
+	private Boolean isPrime__(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
-			cache.put(n, true);
 			return true;
 		}
 		if (number.remainder(TWO).equals(BigDecimal.ZERO)) {
-			cache.put(n, false);
 			return false;
 		}
 		for (BigDecimal divisor = new BigDecimal("3"); 
 			divisor.compareTo(number.divide(TWO)) < 0;
 			divisor = divisor.add(TWO)) {
 			if (number.remainder(divisor).equals(BigDecimal.ZERO)) {
-				cache.put(n, false);
 				return false;
 			}
 		}
-		cache.put(n, true);
 		return true;
 	}
 
