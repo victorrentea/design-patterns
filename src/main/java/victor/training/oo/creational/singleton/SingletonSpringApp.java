@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +28,8 @@ public class SingletonSpringApp implements CommandLineRunner{
 	@Bean
 	public static CustomScopeConfigurer defineThreadScope() {
 		CustomScopeConfigurer configurer = new CustomScopeConfigurer();
-		configurer.addScope("thread", new SimpleThreadScope()); // WARNING: Leaks memory. Prefer 'request' scope or read here: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/support/SimpleThreadScope.html 
+		configurer.addScope("thread", new SimpleThreadScope()); 
+		// WARNING: Leaks memory. Prefer 'request' scope or read here: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/support/SimpleThreadScope.html 
 		return configurer;
 	}
 	
@@ -39,8 +42,8 @@ public class SingletonSpringApp implements CommandLineRunner{
 	
 	// [1] make singleton; test multi-thread: state is [E|V|I|L]
 	// [2] instantiate manually, set dependencies, pass around; no AOP
-	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
-	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
+	// [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
+	// [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
 		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
@@ -57,6 +60,7 @@ class OrderExporter  {
 	private LabelService labelService;
 
 	public void export(Locale locale) {
+		log.debug("Cine esti tu de fapt ? " + labelService.getClass());
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
@@ -77,10 +81,11 @@ class InvoiceExporter {
 
 @Slf4j
 @Service
-@Scope(scopeName = "prototype")
+@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LabelService {
 	private CountryRepo countryRepo;
 	
+	// Injecteaza automat countryRepo springul
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
@@ -91,6 +96,8 @@ class LabelService {
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 	
+	// Ar merge:
+	// @Transcational
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() on instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
