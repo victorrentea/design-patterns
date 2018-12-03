@@ -36,6 +36,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
 		IExpensiveOps ops = UiteMamaCePotSaFac.imbracaInCache(new ExpensiveOps());
+		System.out.println("Cine este ops ?" + ops.getClass());
 		logicaDeDomeniuPretioasaPeCareNuVreauSaOAting(ops);
 	}
 
