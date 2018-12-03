@@ -35,9 +35,9 @@ public class ObserverSpringApp implements CommandLineRunner {
 	@Autowired
 	private ObserverTransaction afterTransaction;
 
-	// TODO [1] also generate invoice
-	// TODO [2] control the order
-	// TODO [3] chain events
+	// [1] also generate invoice
+	// [2] control the order
+	// [3] chain events
 	// TODO [opt] Transaction-scoped events
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
@@ -57,14 +57,11 @@ class OrderStockConfirmed {
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
-
 	@EventListener
-	public void handle(OrderPlaced event) { 
+	public OrderStockConfirmed handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
-		publisher.publishEvent(new OrderStockConfirmed(event.orderId));
+		return new OrderStockConfirmed(event.orderId);
 	}
 }
 
