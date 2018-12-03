@@ -22,12 +22,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -42,6 +42,7 @@ public class ObserverSpringApp implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
 		//afterTransaction.runInTransaction();
+		System.out.println("GATA, comit tranzactia");
 	}
 }
 
@@ -75,6 +76,6 @@ class InvoiceService {
 	@EventListener
 	public void handle(OrderStockConfirmed event) {
 		log.info("Generating invoice for order " + event.orderId);
-		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
+		throw new RuntimeException("thrown from generate invoice");
 	} 
 }
