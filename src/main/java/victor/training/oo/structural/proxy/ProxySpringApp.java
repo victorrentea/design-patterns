@@ -25,16 +25,17 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	
-	@Autowired
-	private IExpensiveOps ops;
+//	@Autowired
+//	private IExpensiveOps ops;
 	
 	// [1] implement decorator 
-	// TODO [2] apply decorator via Spring
-	// TODO [3] generic java.lang.reflect.Proxy 
+	// [2] apply decorator via Spring
+	// [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
+		IExpensiveOps ops = UiteMamaCePotSaFac.imbracaInCache(new ExpensiveOps());
 		logicaDeDomeniuPretioasaPeCareNuVreauSaOAting(ops);
 	}
 
