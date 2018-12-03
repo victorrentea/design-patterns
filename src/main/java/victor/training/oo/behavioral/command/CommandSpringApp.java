@@ -30,8 +30,8 @@ public class CommandSpringApp {
 	@Bean
 	public ThreadPoolTaskExecutor executor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(2);
-		executor.setMaxPoolSize(2);
+		executor.setCorePoolSize(20);
+		executor.setMaxPoolSize(20);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -55,8 +55,16 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
 		
-		CompletableFuture<Ale> futureAle = barman.getOneAle();
-		CompletableFuture<Wiskey> futureWiskey = barman.getOneWiskey();
+		CompletableFuture<Ale> futureAle = 
+				CompletableFuture.supplyAsync(() ->barman.getOneAle(), executor);
+		CompletableFuture<Wiskey> futureWiskey = 
+				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
+		CompletableFuture<Wiskey> futureWiskey2 = 
+				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
+		CompletableFuture<Wiskey> futureWiskey3 = 
+				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
+		CompletableFuture<Wiskey> futureWiskey4 = 
+				CompletableFuture.supplyAsync(() -> barman.getOneWiskey(), executor);
 		
 		log.debug("Da oare cine a fost fata aia dragutza? " + barman.getClass());
 		log.debug("A plecat cu comanda mea :(. Mi-o luat-o.");
@@ -69,17 +77,15 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	@Async
-	public CompletableFuture<Ale> getOneAle() {
+	public Ale getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return CompletableFuture.completedFuture(new Ale());
+		 return new Ale();
 	 }
-	@Async
-	 public CompletableFuture<Wiskey> getOneWiskey() {
+	 public Wiskey getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
 		 ThreadUtils.sleep(1000);
-		 return CompletableFuture.completedFuture(new Wiskey());
+		 return new Wiskey();
 	 }
 }
 
