@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+//@Aspect
 public class SillyCachingAspect {
 	
 	@Around("execution(* ExpensiveOps.*(..))")

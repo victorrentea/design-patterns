@@ -12,6 +12,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
@@ -27,7 +29,11 @@ public class ExpensiveOps implements IExpensiveOps {
 	/* (non-Javadoc)
 	 * @see victor.training.oo.structural.proxy.IExpensiveOps#isPrime(int)
 	 */
+	@Cacheable("primes")
 	public Boolean isPrime(int n) {
+		
+//		new RuntimeException("Uite-asa aflu cine ruleaza inaintea mea").printStackTrace();
+		
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -45,10 +51,15 @@ public class ExpensiveOps implements IExpensiveOps {
 		}
 		return true;
 	}
+	
+	@CacheEvict(allEntries=true, cacheNames = "folders")
+	public void aruncaCachulCuFoldere() {
+	}
 
 	/* (non-Javadoc)
 	 * @see victor.training.oo.structural.proxy.IExpensiveOps#hashAllFiles(java.io.File)
 	 */
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);

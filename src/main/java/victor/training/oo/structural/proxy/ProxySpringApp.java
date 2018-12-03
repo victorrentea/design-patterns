@@ -25,8 +25,8 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	
-//	@Autowired
-//	private IExpensiveOps ops;
+	@Autowired
+	private ExpensiveOps ops;
 	
 	// [1] implement decorator 
 	// [2] apply decorator via Spring
@@ -35,14 +35,14 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		IExpensiveOps ops = UiteMamaCePotSaFac.imbracaInCache(new ExpensiveOps());
-		System.out.println("Cine este ops ?" + ops.getClass());
+//		IExpensiveOps ops = UiteMamaCePotSaFac.imbracaInCache(new ExpensiveOps());
+//		System.out.println("Cine este ops ?" + ops.getClass());
 		logicaDeDomeniuPretioasaPeCareNuVreauSaOAting(ops);
 	}
 
 	/// nu am voie sa mai ating mai jos
 
-	private void logicaDeDomeniuPretioasaPeCareNuVreauSaOAting(IExpensiveOps ops) {
+	private void logicaDeDomeniuPretioasaPeCareNuVreauSaOAting(ExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -53,6 +53,10 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		
+		//m-am prins ca s-o schimbat un fisier
+		ops.aruncaCachulCuFoldere();
+		
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
