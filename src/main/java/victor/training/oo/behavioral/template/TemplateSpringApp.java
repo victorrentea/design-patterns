@@ -17,22 +17,20 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private EmailService service;
+	private OrderReceivedEmailSender orderReceivedEmailSender;
 	@Autowired
-	private Hackareala hackareala;
+	private OrderShippedEmailSender orderShippedEmailSender;
 	
 	public void run(String... args) throws Exception {
-		service.sendOrderReceivedEmail("a@b.com");
-		
-		hackareala.sendOrderReceivedEmail("a@b.com");
+		orderReceivedEmailSender.sendEmail("a@b.com");
+		orderShippedEmailSender.sendEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+abstract class AbstractEmailSender {
 	//CHANGE REQUEST: ALSO SEND AN EMAIL PENTRU 'ORDER SHIPPED'
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int FISE = 3;
 		for (int i = 0; i < FISE; i++ ) {
@@ -46,16 +44,18 @@ class EmailService {
 		}
 	}
 
+	protected abstract void setContent(Email email);
+}
+@Service
+class OrderReceivedEmailSender extends AbstractEmailSender {
 	protected void setContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-
-
 @Service
-class Hackareala extends EmailService {
+class OrderShippedEmailSender extends AbstractEmailSender {
 	protected void setContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas. Speram s-ajunga (de data asta).");
