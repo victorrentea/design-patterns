@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
+import lombok.Setter;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -17,18 +18,23 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedEmailSender orderReceivedEmailSender;
+	private OrderReceivedContentWriter orderReceivedContentWriter;
 	@Autowired
-	private OrderShippedEmailSender orderShippedEmailSender;
+	private OrderShippedContentWriter orderShippedContentWriter;
 	
 	public void run(String... args) throws Exception {
-		orderReceivedEmailSender.sendEmail("a@b.com");
-		orderShippedEmailSender.sendEmail("a@b.com");
+		new EmailSender(orderReceivedContentWriter).sendEmail("a@b.com");
+		new EmailSender(orderShippedContentWriter).sendEmail("a@b.com");
 	}
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
 	//CHANGE REQUEST: ALSO SEND AN EMAIL PENTRU 'ORDER SHIPPED'
+	private final ContentWriter contentWriter;
+
+	public EmailSender(ContentWriter contentWriter) {
+		this.contentWriter = contentWriter;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -38,26 +44,29 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			setContent(email);
+			contentWriter.writeContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
-	protected abstract void setContent(Email email);
+}
+
+interface ContentWriter {
+	void writeContent(Email email);
 }
 
 @Service
-class OrderReceivedEmailSender extends AbstractEmailSender {
-	protected void setContent(Email email) {
+class OrderReceivedContentWriter implements ContentWriter {
+	public void writeContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
 @Service
-class OrderShippedEmailSender extends AbstractEmailSender {
-	protected void setContent(Email email) {
+class OrderShippedContentWriter implements ContentWriter {
+	public void writeContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas. Speram s-ajunga (de data asta).");
 	}
