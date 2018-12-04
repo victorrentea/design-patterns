@@ -20,13 +20,14 @@ public class StrategySpringApp implements CommandLineRunner {
 
 	
 	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	private CustomsService service;
 	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) throws Exception {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -34,18 +35,17 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
-
+@Service
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxCalculator ceva = selectTaxCalculator(originCountry); 
 		return ceva.calculate(tobacoValue, regularValue);
 	}
 
+	@Autowired
+	private List<TaxCalculator> calculators;
+	
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-		List<TaxCalculator> calculators = asList(
-				new UKTaxCalculator(),
-				new CNTaxCalculator(),
-				new EUTaxCalculator());
 		return calculators.stream()
 				.filter(calculator -> calculator.isApplicable(originCountry))
 				.findFirst()
@@ -58,6 +58,7 @@ interface TaxCalculator {
 	double calculate(double tobacoValue, double regularValue);
 }
 
+@Service
 class UKTaxCalculator  implements TaxCalculator{
 	public double calculate(double tobacoValue, double regularValue) {
 		return tobacoValue/2 + regularValue/2;
@@ -66,7 +67,7 @@ class UKTaxCalculator  implements TaxCalculator{
 		return "UK".equals(countryCode);
 	}
 }
-
+@Service
 class CNTaxCalculator  implements TaxCalculator{
 	public double calculate(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
@@ -75,7 +76,7 @@ class CNTaxCalculator  implements TaxCalculator{
 		return "CN".equals(countryCode);
 	}
 }
-
+@Service
 class EUTaxCalculator implements TaxCalculator{
 	public double calculate(double tobacoValue, double regularValue) {
 		return tobacoValue/3;
