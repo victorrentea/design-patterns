@@ -14,12 +14,13 @@ import org.springframework.stereotype.Service;
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(StrategySpringApp.class)
-			.profiles("localProps")
+			.profiles("prod")
 			.run(args);
 	}
 
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	private ConfigProvider configProvider; 
 	@Autowired
 	private CustomsService service;
 	

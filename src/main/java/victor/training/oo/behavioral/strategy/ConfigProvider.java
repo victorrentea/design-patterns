@@ -12,10 +12,13 @@ public interface ConfigProvider {
 	Properties getProperties();
 }
 
+@Profile("prod")
+@Component
 class ConfigFileProvider implements ConfigProvider {
 	
 	@SneakyThrows
 	public Properties getProperties() {
+		//implementare cu BUGURI
 		try (InputStream is = ConfigFileProvider.class.getResourceAsStream("/application.properties")) {
 			Properties properties = new Properties();
 			properties.load(is);
@@ -24,6 +27,8 @@ class ConfigFileProvider implements ConfigProvider {
 	}
 }
 
+@Profile("!prod")
+@Component
 class ConfigDatabaseProvider implements ConfigProvider {
 
 	public Properties getProperties() {
