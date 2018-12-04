@@ -18,28 +18,47 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailService service;
+	@Autowired
+	private Hackareala hackareala;
 	
 	public void run(String... args) throws Exception {
 		service.sendOrderReceivedEmail("a@b.com");
+		
+		hackareala.sendOrderReceivedEmail("a@b.com");
 	}
 }
 
 @Service
 class EmailService {
+	//CHANGE REQUEST: ALSO SEND AN EMAIL PENTRU 'ORDER SHIPPED'
 
 	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
-		for (int i = 0; i < MAX_RETRIES; i++ ) {
+		int FISE = 3;
+		for (int i = 0; i < FISE; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			setContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected void setContent(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+
+
+@Service
+class Hackareala extends EmailService {
+	protected void setContent(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimas. Speram s-ajunga (de data asta).");
 	}
 }
 
