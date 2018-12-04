@@ -18,25 +18,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedContentWriter orderReceivedContentWriter;
+	private EmailContentWriter emailContentWriter;
 	@Autowired
-	private OrderShippedContentWriter orderShippedContentWriter;
+	private EmailSender emailSender;
 	
 	public void run(String... args) throws Exception {
-		new EmailSender(orderReceivedContentWriter).sendEmail("a@b.com");
-		new EmailSender(orderShippedContentWriter).sendEmail("a@b.com");
+//		emailSender.sendEmail("a@b.com", email -> emailContentWriter.writeEmailReceivedContent(email));
+		emailSender.sendEmail("a@b.com", emailContentWriter::writeEmailReceivedContent);
+		emailSender.sendEmail("a@b.com", emailContentWriter::writeEmailShippedContent);
 	}
 }
 
+@Service
 class EmailSender {
 	//CHANGE REQUEST: ALSO SEND AN EMAIL PENTRU 'ORDER SHIPPED'
-	private final ContentWriter contentWriter;
 
-	public EmailSender(ContentWriter contentWriter) {
-		this.contentWriter = contentWriter;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, ContentWriter contentWriter) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int FISE = 3;
 		for (int i = 0; i < FISE; i++ ) {
@@ -49,24 +46,20 @@ class EmailSender {
 			if (success) break;
 		}
 	}
-
 }
 
+@FunctionalInterface
 interface ContentWriter {
 	void writeContent(Email email);
 }
 
 @Service
-class OrderReceivedContentWriter implements ContentWriter {
-	public void writeContent(Email email) {
+class EmailContentWriter {
+	public void writeEmailReceivedContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-
-@Service
-class OrderShippedContentWriter implements ContentWriter {
-	public void writeContent(Email email) {
+	public void writeEmailShippedContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas. Speram s-ajunga (de data asta).");
 	}
