@@ -46,6 +46,7 @@ abstract class AbstractEmailSender {
 
 	protected abstract void setContent(Email email);
 }
+
 @Service
 class OrderReceivedEmailSender extends AbstractEmailSender {
 	protected void setContent(Email email) {
