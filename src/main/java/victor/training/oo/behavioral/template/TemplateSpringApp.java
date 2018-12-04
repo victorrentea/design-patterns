@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.template;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -9,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
-import lombok.Setter;
+import victor.training.oo.behavioral.template.EmailSender.ContentWriter;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -24,8 +25,10 @@ public class TemplateSpringApp implements CommandLineRunner {
 	
 	public void run(String... args) throws Exception {
 //		emailSender.sendEmail("a@b.com", email -> emailContentWriter.writeEmailReceivedContent(email));
-		emailSender.sendEmail("a@b.com", emailContentWriter::writeEmailReceivedContent);
+//		emailSender.sendEmail("a@b.com", emailContentWriter::writeEmailReceivedContent);
 		emailSender.sendEmail("a@b.com", emailContentWriter::writeEmailShippedContent);
+//		ContentWriter v1 = emailContentWriter::writeEmailShippedContent;
+		Consumer<Email> v2 = emailContentWriter::writeEmailShippedContent;
 	}
 }
 
@@ -33,7 +36,11 @@ public class TemplateSpringApp implements CommandLineRunner {
 class EmailSender {
 	//CHANGE REQUEST: ALSO SEND AN EMAIL PENTRU 'ORDER SHIPPED'
 
-	public void sendEmail(String emailAddress, ContentWriter contentWriter) {
+//	@FunctionalInterface
+//	interface ContentWriter {
+//		void writeContent(Email email);
+//	}
+	public void sendEmail(String emailAddress, Consumer<Email> contentWriter) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int FISE = 3;
 		for (int i = 0; i < FISE; i++ ) {
@@ -41,20 +48,17 @@ class EmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			contentWriter.writeContent(email);
+			contentWriter.accept(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 }
 
-@FunctionalInterface
-interface ContentWriter {
-	void writeContent(Email email);
-}
 
 @Service
 class EmailContentWriter {
+	//@Autowired alta Dependinta
 	public void writeEmailReceivedContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
