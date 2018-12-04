@@ -1,5 +1,7 @@
 package victor.training.oo.behavioral.strategy;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,20 +42,28 @@ class CustomsService {
 	}
 
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-		switch (originCountry) { 
-		case "UK": return new UKTaxCalculator();
-		case "CN": return new CNTaxCalculator();
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator();
-		default: throw new IllegalArgumentException(originCountry);
-		}
+		List<TaxCalculator> calculators = asList(
+				new UKTaxCalculator(),
+				new CNTaxCalculator(),
+				new EUTaxCalculator());
+		return calculators.stream()
+				.filter(calculator -> calculator.isApplicable(originCountry))
+				.findFirst()
+//				.get();
+				.orElseThrow(() -> new IllegalArgumentException(originCountry));
 	}
+}
+interface TaxCalculator {
+	boolean isApplicable(String countryCode);
+	double calculate(double tobacoValue, double regularValue);
 }
 
 class UKTaxCalculator  implements TaxCalculator{
 	public double calculate(double tobacoValue, double regularValue) {
 		return tobacoValue/2 + regularValue/2;
+	}
+	public boolean isApplicable(String countryCode) {
+		return "UK".equals(countryCode);
 	}
 }
 
@@ -61,21 +71,18 @@ class CNTaxCalculator  implements TaxCalculator{
 	public double calculate(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
 	}
+	public boolean isApplicable(String countryCode) {
+		return "CN".equals(countryCode);
+	}
 }
 
-
-
-
-
-
-
-interface TaxCalculator {
-	double calculate(double tobacoValue, double regularValue);
-		
-}
 class EUTaxCalculator implements TaxCalculator{
 	public double calculate(double tobacoValue, double regularValue) {
 		return tobacoValue/3;
+	}
+
+	public boolean isApplicable(String countryCode) {
+		return asList("FR","ES","RO").contains(countryCode);
 	}
 }
 
