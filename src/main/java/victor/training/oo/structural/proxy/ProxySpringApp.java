@@ -30,6 +30,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
+	// TODO [7] AopContext.currentProxy();
 	public void run(String... args) throws Exception {
 		ExpensiveOps ops = new ExpensiveOps(); 
 
