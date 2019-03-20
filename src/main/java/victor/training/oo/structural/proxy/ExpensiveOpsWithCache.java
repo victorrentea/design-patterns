@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 }
 
 @Cached
-@Service
+//@Service
 public class ExpensiveOpsWithCache implements IExpensiveOps  {
 	
 	private final IExpensiveOps ops;

@@ -40,35 +40,38 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [7] AopContext.currentProxy();
 	public void run(String... args) throws Exception {
 		
-		ExpensiveOps realStuff = new ExpensiveOps();
-		
-		InvocationHandler h = new InvocationHandler() {
-			private Map<List<Object>, Object> cache = new HashMap<>();
-			
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				System.out.println("Secret services here. You are calling " + method.getName());
-				
-				List<Object> key = new ArrayList<>();
-				key.add(method.getName());
-				key.addAll(asList(args));
-				
-				return cache.computeIfAbsent(key, 
-						Unchecked.function(k -> method.invoke(realStuff, args)));
-			}
-		};
-		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
-				new Class<?>[] {IExpensiveOps.class}, h);
+//		ExpensiveOps realStuff = new ExpensiveOps();
+//		
+//		InvocationHandler h = new InvocationHandler() {
+//			private Map<List<Object>, Object> cache = new HashMap<>();
+//			
+//			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//				System.out.println("Secret services here. You are calling " + method.getName());
+//				
+//				List<Object> key = new ArrayList<>();
+//				key.add(method.getName());
+//				key.addAll(asList(args));
+//				
+//				return cache.computeIfAbsent(key, 
+//						Unchecked.function(k -> method.invoke(realStuff, args)));
+//			}
+//		};
+//		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
+//				new Class<?>[] {IExpensiveOps.class}, h);
 		
 		sacredBusinessLogic(); 
 		
 	}
 	
 //	@Cached
-//	@Autowired
+	@Autowired
 	private IExpensiveOps ops;
 
 
 	private void sacredBusinessLogic() {
+		
+		System.out.println("WHO ARE YOU?" + ops.getClass());
+		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
