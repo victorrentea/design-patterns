@@ -2,8 +2,9 @@ package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -51,12 +52,23 @@ class Drinker implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order to " + barman.getClass());
-		Future<Ale> futureAle = barman.getOneAle();
-		Future<Wiskey> futureWhiskey = barman.getOneWiskey();
+		CompletableFuture<Ale> futureAle = barman.getOneAle();
+		CompletableFuture<Wiskey> futureWhiskey = barman.getOneWiskey();
 		
-		Ale ale = futureAle.get();
-		Wiskey wiskey = futureWhiskey.get();
-		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+		
+		CompletableFuture.allOf(futureAle, futureWhiskey).thenRunAsync(() -> {
+			try {
+				System.out.println("HALOOO");
+				Ale ale = futureAle.get();
+				Wiskey wiskey = futureWhiskey.get();
+				log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+			} catch (ExecutionException | InterruptedException e) {
+				// shaorma!
+				System.out.println("SHAORMA");
+			}
+		});
+		
+		ThreadUtils.sleep(4000);
 	}
 }
 
@@ -64,17 +76,17 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
 	@Async
-	public Future<Ale> getOneAle() {
+	public CompletableFuture<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
 		 return CompletableFuture.completedFuture(new Ale());
 	 }
 	
 	@Async
-	 public Future<Wiskey> getOneWiskey() {
+	 public CompletableFuture<Wiskey> getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
 		 ThreadUtils.sleep(1000);
-		 if (true) throw new IllegalArgumentException();
+//		 if (true) throw new IllegalArgumentException();
 		 return CompletableFuture.completedFuture(new Wiskey());
 	 }
 }
