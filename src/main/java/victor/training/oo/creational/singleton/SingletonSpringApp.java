@@ -2,6 +2,8 @@ package victor.training.oo.creational.singleton;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 
@@ -35,14 +37,15 @@ public class SingletonSpringApp implements CommandLineRunner{
 	@Autowired 
 	private OrderExporter exporter;
 	
-	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
+	// [1] make singleton; test multi-thread: state is [E|V|I|L]
 	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
-		exporter.export(Locale.ENGLISH);
-		exporter.export(Locale.FRENCH);
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+		pool.submit(() -> exporter.export(Locale.ENGLISH));
+		pool.submit(() -> exporter.export(Locale.FRENCH));
 	}
 }
 
