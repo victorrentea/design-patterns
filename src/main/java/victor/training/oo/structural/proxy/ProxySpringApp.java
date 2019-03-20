@@ -3,8 +3,13 @@ package victor.training.oo.structural.proxy;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -33,11 +38,32 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	// TODO [7] AopContext.currentProxy();
 	public void run(String... args) throws Exception {
+		
+		ExpensiveOps realStuff = new ExpensiveOps();
+		
+		InvocationHandler h = new InvocationHandler() {
+			private Map<Object, Object> cache = new HashMap<>();
+			
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				System.out.println("Secret services here. You are calling " + method.getName());
+				
+				if (cache.containsKey(args[0])) {
+					return cache.get(args[0]);
+				}
+				Object result = method.invoke(realStuff, args);
+				cache.put(args[0], result);
+				return result;
+			}
+		};
+		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
+				new Class<?>[] {IExpensiveOps.class}, h);
+		
 		sacredBusinessLogic(); 
+		
 	}
 	
-	@Cached
-	@Autowired
+//	@Cached
+//	@Autowired
 	private IExpensiveOps ops;
 
 
