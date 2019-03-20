@@ -3,10 +3,14 @@ package victor.training.oo.creational.builder;
 import org.apache.commons.lang.StringUtils;
 
 public class CustomerValidator {
+	
+	public static class CustomerWithoutNameException extends IllegalArgumentException {
+		
+	}
 
 	public void validate(Customer customer) {
 		if (StringUtils.isBlank(customer.getName())) {
-			throw new IllegalArgumentException("Missing customer name");
+			throw new CustomerWithoutNameException();
 		}
 		validateAddress(customer.getAddress());
 		//etc
@@ -18,6 +22,7 @@ public class CustomerValidator {
 		}
 		if (StringUtils.isBlank(address.getCity())) {
 			throw new IllegalArgumentException("Missing address xcity");
+//			throw new MyOnlyOneException(ErrorCode.CUSTOMER_WITHOUT_CITY);
 		}
 	}
 }
