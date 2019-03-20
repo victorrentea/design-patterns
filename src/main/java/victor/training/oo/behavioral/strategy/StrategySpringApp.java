@@ -48,31 +48,37 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxCalculator computer = selectTaxCalculator(originCountry); 
+		return computer.computeTax(tobacoValue, regularValue);
+	}
+
+	private TaxCalculator selectTaxCalculator(String originCountry) {
 		switch (originCountry) { 
-		case "UK": 
-			return new UKTaxCalculator().computeTax(tobacoValue, regularValue); 
-		case "CN": 
-			return new CNTaxCalculator().computeTax(tobacoValue, regularValue);
+		case "UK": return new UKTaxCalculator();  
+		case "CN": return new CNTaxCalculator(); 
 		case "FR": 
 		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator().computeTax(tobacoValue, regularValue);
+		case "RO": return new EUTaxCalculator(); 
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		}
 	}
 
 }
 
-class UKTaxCalculator {
+interface TaxCalculator {
+	public double computeTax(double tobacoValue, double regularValue);
+}
+class UKTaxCalculator implements TaxCalculator {
 	public double computeTax(double tobacoValue, double regularValue) {
 		return tobacoValue/2 + regularValue/2;
 	}
 }
-class CNTaxCalculator {
+class CNTaxCalculator implements TaxCalculator{
 	public double computeTax(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
 	}
 }
-class EUTaxCalculator {
+class EUTaxCalculator implements TaxCalculator{
 	public double computeTax(double tobacoValue, double regularValue) {
 		return tobacoValue/3;
 	}
