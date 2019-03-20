@@ -38,6 +38,10 @@ public class ExpensiveOpsWithCache implements IExpensiveOps  {
 		return result;
 	}
 	
+	public void killTheCache() {
+		 // TODO
+	}
+	
 	
 	public String hashAllFiles(File folder) {
 		if (cache.containsKey(folder)) {

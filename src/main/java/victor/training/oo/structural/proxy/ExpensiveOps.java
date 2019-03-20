@@ -10,6 +10,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +25,7 @@ public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	/* (non-Javadoc)
-	 * @see victor.training.oo.structural.proxy.IExpensiveOps#isPrime(int)
-	 */
+	@Cacheable("a")
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -45,10 +45,12 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 	
+	@CacheEvict(cacheNames = "b", allEntries = true)
+	public void killTheCache() {
+		//empty
+	}
 
-	/* (non-Javadoc)
-	 * @see victor.training.oo.structural.proxy.IExpensiveOps#hashAllFiles(java.io.File)
-	 */
+	@Cacheable("b")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
