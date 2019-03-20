@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -47,12 +48,8 @@ public class ProxySpringApp implements CommandLineRunner {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				System.out.println("Secret services here. You are calling " + method.getName());
 				
-				if (cache.containsKey(args[0])) {
-					return cache.get(args[0]);
-				}
-				Object result = method.invoke(realStuff, args);
-				cache.put(args[0], result);
-				return result;
+				return cache.computeIfAbsent(args[0], key -> 
+					Unchecked.function(k -> method.invoke(realStuff, k)));
 			}
 		};
 		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
