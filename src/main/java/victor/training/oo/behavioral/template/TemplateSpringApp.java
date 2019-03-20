@@ -18,10 +18,12 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailSender service;
+	@Autowired
+	private Emails emails;
 	
 	public void run(String... args) throws Exception {
-		service.sendEmail("a@b.com" ,Emails::fillEmailReceived);
-		service.sendEmail("a@b.com", Emails::fillEmailShipped);
+		service.sendEmail("a@b.com" ,emails::fillEmailReceived);
+		service.sendEmail("a@b.com", emails::fillEmailShipped);
 	}
 }
 
@@ -47,12 +49,13 @@ interface EmailFiller {
 	abstract void fillEmail(Email email);
 }
 
+@Service
 class Emails {
-	public static void fillEmailReceived(Email email) {
+	public void fillEmailReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-	public static void fillEmailShipped(Email email) {
+	public void fillEmailShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Just sent you your order. ! Hope it gets to you (this time :p)");
 	}
