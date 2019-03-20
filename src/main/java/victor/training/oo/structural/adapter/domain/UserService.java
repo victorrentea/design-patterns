@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	@Autowired
-	private LdapServiceAdapter adapter;
+	private ILdapServiceAdapter adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.search(username);
