@@ -24,7 +24,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	
-	// TODO [1] implement decorator 
+	// [1] implement decorator 
 	// TODO [2] apply decorator via Spring
 	// TODO [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
@@ -32,8 +32,14 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	// TODO [7] AopContext.currentProxy();
 	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps(); 
+		IExpensiveOps ops = new ExpensiveOps(); 
 
+		ops = new ExpensiveOpsWithCache(ops);
+		sacredBusinessLogic(ops); 
+	}
+
+
+	private void sacredBusinessLogic(IExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
