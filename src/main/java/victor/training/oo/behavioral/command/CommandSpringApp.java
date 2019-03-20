@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -45,16 +47,12 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
-	@Autowired
-	private ThreadPoolTaskExecutor barmenExecutors;
-	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
-		Future<Ale> futureAle = barmenExecutors.submit(() -> barman.getOneAle());
-		Future<Wiskey> futureWhiskey = barmenExecutors.submit(() -> barman.getOneWiskey());
-		
+		log.debug("Submitting my order to " + barman.getClass());
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Wiskey> futureWhiskey = barman.getOneWiskey();
 		
 		Ale ale = futureAle.get();
 		Wiskey wiskey = futureWhiskey.get();
@@ -65,16 +63,19 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return CompletableFuture.completedFuture(new Ale());
 	 }
 	
-	 public Wiskey getOneWiskey() {
+	@Async
+	 public Future<Wiskey> getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 if (true) throw new IllegalArgumentException();
+		 return CompletableFuture.completedFuture(new Wiskey());
 	 }
 }
 
