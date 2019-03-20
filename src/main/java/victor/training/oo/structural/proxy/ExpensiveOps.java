@@ -27,6 +27,9 @@ public class ExpensiveOps implements IExpensiveOps {
 	
 	@Cacheable("a")
 	public Boolean isPrime(int n) { 
+		
+		new RuntimeException().printStackTrace();
+		
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
