@@ -20,28 +20,40 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private EmailService service;
 	
 	public void run(String... args) throws Exception {
-		service.sendOrderReceivedEmail("a@b.com");
+		service.sendOrderReceivedEmail("a@b.com", true);
+		service.sendOrderReceivedEmail("a@b.com", false);
+		
 	}
 }
 
 @Service
 class EmailService {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendOrderReceivedEmail(String emailAddress, boolean cr323) {
+		final int MAX_RETRIES = 3;
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			if (cr323) {
+				email.setSubject("Order Received");
+				email.setBody("Thank you for your order");
+			} else {
+				email.setSubject("Order Shipped");
+				email.setBody("Just sent you your order. ! Hope it gets to you (this time :p)");
+			}
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 }
+
+
+
+
+
 
 class EmailContext {
 	public boolean send(Email email) {
