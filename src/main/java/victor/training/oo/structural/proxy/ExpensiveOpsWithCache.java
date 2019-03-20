@@ -1,12 +1,23 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-@Primary
+
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+@interface Cached {
+	
+}
+
+@Cached
 @Service
 public class ExpensiveOpsWithCache implements IExpensiveOps  {
 	

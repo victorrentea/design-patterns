@@ -36,6 +36,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		sacredBusinessLogic(); 
 	}
 	
+	@Cached
 	@Autowired
 	private IExpensiveOps ops;
 
