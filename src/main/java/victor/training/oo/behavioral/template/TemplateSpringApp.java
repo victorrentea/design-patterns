@@ -20,16 +20,15 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private EmailService service;
 	
 	public void run(String... args) throws Exception {
-		service.sendOrderReceivedEmail("a@b.com", true);
-		service.sendOrderReceivedEmail("a@b.com", false);
-		
+		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new HackingTime().sendOrderReceivedEmail("a@b.com");
 	}
 }
 
 @Service
 class EmailService {
 
-	public void sendOrderReceivedEmail(String emailAddress, boolean cr323) {
+	public void sendOrderReceivedEmail(String emailAddress) {
 		final int MAX_RETRIES = 3;
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -37,16 +36,24 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			if (cr323) {
-				email.setSubject("Order Received");
-				email.setBody("Thank you for your order");
-			} else {
-				email.setSubject("Order Shipped");
-				email.setBody("Just sent you your order. ! Hope it gets to you (this time :p)");
-			}
+			fillEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected void fillEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+
+
+class HackingTime extends EmailService {
+	protected void fillEmail(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Just sent you your order. ! Hope it gets to you (this time :p)");
 	}
 }
 
