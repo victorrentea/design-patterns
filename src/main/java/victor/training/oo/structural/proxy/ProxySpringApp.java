@@ -33,7 +33,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	
 	// [1] implement decorator 
 	// [2] apply decorator via Spring
-	// TODO [3] generic java.lang.reflect.Proxy 
+	// [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
@@ -53,7 +53,7 @@ public class ProxySpringApp implements CommandLineRunner {
 				key.addAll(asList(args));
 				
 				return cache.computeIfAbsent(key, 
-						Unchecked.function(k -> method.invoke(realStuff, k)));
+						Unchecked.function(k -> method.invoke(realStuff, args)));
 			}
 		};
 		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
