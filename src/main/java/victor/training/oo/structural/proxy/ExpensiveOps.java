@@ -21,11 +21,11 @@ public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	private static Map<Integer, Boolean> cache = new HashMap<>();
+	private static Map<Object, Object> cache = new HashMap<>();
 	
 	public Boolean isPrime(int n) {
 		if (cache.containsKey(n)) {
-			return cache.get(n);
+			return (Boolean) cache.get(n);
 		}
 		Boolean result = isPrime_____(n);
 		cache.put(n, result);
@@ -49,9 +49,17 @@ public class ExpensiveOps {
 		}
 		return true;
 	}
+	public String hashAllFiles(File folder) {
+		if (cache.containsKey(folder)) {
+			return (String) cache.get(folder);
+		}
+		String result = hashAllFiles__(folder);
+		cache.put(folder, result);
+		return result;
+	}
 
 	@SneakyThrows
-	public String hashAllFiles(File folder) {
+	public String hashAllFiles__(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
