@@ -27,7 +27,7 @@ public class ObserverTransaction {
 	@TransactionalEventListener
 	public void runAfterTransaction(DeleteFilesEvent event) {
 		System.out.println("Cleaning files: " + event.fileNames);
-		new RuntimeException().printStackTrace();
+//		new RuntimeException().printStackTrace();
 	}
 }
 
