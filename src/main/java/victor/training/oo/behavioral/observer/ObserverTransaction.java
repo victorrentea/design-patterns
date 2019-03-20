@@ -20,12 +20,14 @@ public class ObserverTransaction {
 	@Transactional
 	public void runInTransaction() {
 		publisher.publishEvent(new DeleteFilesEvent(asList("data.txt")));
-		anotherClass.addFilesToBeDeleted();
+		System.out.println("Doing stuff");
+//		anotherClass.addFilesToBeDeleted();
 	}
 
 	@TransactionalEventListener
 	public void runAfterTransaction(DeleteFilesEvent event) {
 		System.out.println("Cleaning files: " + event.fileNames);
+		new RuntimeException().printStackTrace();
 	}
 }
 

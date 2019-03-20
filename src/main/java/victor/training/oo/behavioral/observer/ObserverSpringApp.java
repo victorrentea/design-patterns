@@ -41,7 +41,7 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [opt] Transaction-scoped events
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
-		//afterTransaction.runInTransaction();
+		afterTransaction.runInTransaction();
 	}
 }
 
@@ -73,6 +73,6 @@ class InvoiceService {
 	@EventListener
 	public void handle(OrderConfirmed event) {
 		log.info("Generating invoice for order " + event.orderId);
-//		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
+//		throw new RuntimeException("thrown from generate invoice");//.printStackTrace(System.out);
 	} 
 }
