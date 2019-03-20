@@ -43,13 +43,17 @@ public class ProxySpringApp implements CommandLineRunner {
 		ExpensiveOps realStuff = new ExpensiveOps();
 		
 		InvocationHandler h = new InvocationHandler() {
-			private Map<Object, Object> cache = new HashMap<>();
+			private Map<List<Object>, Object> cache = new HashMap<>();
 			
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				System.out.println("Secret services here. You are calling " + method.getName());
 				
-				return cache.computeIfAbsent(args[0], key -> 
-					Unchecked.function(k -> method.invoke(realStuff, k)));
+				List<Object> key = new ArrayList<>();
+				key.add(method.getName());
+				key.addAll(asList(args));
+				
+				return cache.computeIfAbsent(key, 
+						Unchecked.function(k -> method.invoke(realStuff, k)));
 			}
 		};
 		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
