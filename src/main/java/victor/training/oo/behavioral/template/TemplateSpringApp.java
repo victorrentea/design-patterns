@@ -25,7 +25,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 }
 
-//@Service
+@Service
 class EmailSender {
 	
 	private final EmailFiller filler;
