@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,21 +26,21 @@ public class ProxySpringApp implements CommandLineRunner {
 
 	
 	// [1] implement decorator 
-	// TODO [2] apply decorator via Spring
+	// [2] apply decorator via Spring
 	// TODO [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	// TODO [7] AopContext.currentProxy();
 	public void run(String... args) throws Exception {
-		IExpensiveOps ops = new ExpensiveOps(); 
-
-		ops = new ExpensiveOpsWithCache(ops);
-		sacredBusinessLogic(ops); 
+		sacredBusinessLogic(); 
 	}
+	
+	@Autowired
+	private IExpensiveOps ops;
 
 
-	private void sacredBusinessLogic(IExpensiveOps ops) {
+	private void sacredBusinessLogic() {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
