@@ -16,19 +16,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
+//	@Autowired
+//	private AbstractEmailSender service;
 	
 	public void run(String... args) throws Exception {
-		new EmailService().sendOrderReceivedEmail("a@b.com");
-		new HackingTime().sendOrderReceivedEmail("a@b.com");
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+//@Service
+abstract class AbstractEmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		final int MAX_RETRIES = 3;
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -42,15 +42,16 @@ class EmailService {
 		}
 	}
 
+	protected abstract void fillEmail(Email email);
+}
+class OrderReceivedEmailSender  extends AbstractEmailSender {
 	protected void fillEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-
-
-class HackingTime extends EmailService {
+class OrderShippedEmailSender extends AbstractEmailSender {
 	protected void fillEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Just sent you your order. ! Hope it gets to you (this time :p)");
