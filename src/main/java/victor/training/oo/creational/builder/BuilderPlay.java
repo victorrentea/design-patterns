@@ -13,8 +13,10 @@ public class BuilderPlay {
 			.withAddress(new AddressBuilder()
 				.withStreetName("Viorele")
 				.withStreetNumber(4)
-				.withCity("Bucharest"))
+				.withCity("Bucharest")
+				.build())
 			.build();
+		
 		
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
