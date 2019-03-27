@@ -1,6 +1,10 @@
 package victor.training.oo.behavioral.command;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,24 +13,29 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.pattern.color.WhiteCompositeConverter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
 @EnableAsync // SOLUTION
 @SpringBootApplication
-public class CommandSpringApp {
+public class CommandSpringApp implements AsyncConfigurer {
 	public static void main(String[] args) {
 		SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
 	}
 
-	@Bean
-	public ThreadPoolTaskExecutor executor(@Value("${barman.thread.count:2}") int workerCount) {
+	@Value("${barman.thread.count:2}")
+	private int workerCount;
+	
+	public Executor getAsyncExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(workerCount);
 		executor.setMaxPoolSize(workerCount);
@@ -45,38 +54,47 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
-	@Autowired
-	private ThreadPoolTaskExecutor executor;
-	
-	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
-	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
+	// [1] inject and use a ThreadPoolTaskExecutor.submit
+	// [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
+		Future<Void> futureSms = barman.sendSms("Ti-am dat bip! caci sunt voinic");
+
 		
-		Future<Ale> futureAle = executor.submit(() -> barman.getOneAle());
-		Future<Wiskey> futureWiskey = executor.submit(() -> barman.getOneWiskey());
-		
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Wiskey> futureWiskey = barman.getOneWiskey();
+		log.debug("A plecat cu comanda mea");
 		Ale ale = futureAle.get();
 		Wiskey wiskey = futureWiskey.get();
 		
+		futureSms.get(); // ce mai faci, bre contractorule?
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+		
 	}
 }
 
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
-		 log.debug("Pouring Ale...");
+	@Async
+	public Future<Ale> getOneAle() {
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 log.debug("Pouring Ale...");
+		 return completedFuture(new Ale());
 	 }
 	
-	 public Wiskey getOneWiskey() {
-		 log.debug("Pouring Wiskey...");
+	@Async
+	 public Future<Wiskey> getOneWiskey() {
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 log.debug("Pouring Wiskey...");
+		 return completedFuture(new Wiskey());
 	 }
+	@Async
+	public Future<Void> sendSms(String sms) {
+		if (true) throw new IllegalArgumentException();
+		log.debug("Trimis semeseu: {}", sms);
+		return completedFuture(null);
+	}
 }
 
 @Data
