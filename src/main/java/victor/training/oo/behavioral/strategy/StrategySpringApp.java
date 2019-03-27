@@ -3,6 +3,7 @@ package victor.training.oo.behavioral.strategy;
 import static java.util.Arrays.asList;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -39,6 +40,8 @@ public class StrategySpringApp implements CommandLineRunner {
 class CustomsService {
 	@Autowired
 	private List<TaxCalculator> toate;
+	@Autowired
+	private Optional<USTaxCalculator> e;
 	
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxCalculator ceva = determineCalculator(originCountry); 
