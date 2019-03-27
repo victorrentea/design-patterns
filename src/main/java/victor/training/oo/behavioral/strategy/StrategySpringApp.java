@@ -26,7 +26,7 @@ public class StrategySpringApp implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
-		System.out.println("Tax for (CH,100,100) = " + service.computeCustomsTax("CH", 100, 100));
+		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
 		
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
@@ -35,13 +35,47 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxCalculator ceva = determineCalculator(originCountry); 
+		return ceva.computeTax(tobacoValue, regularValue);
+	}
+
+	private TaxCalculator determineCalculator(String originCountry) {
 		switch (originCountry) { 
-		case "UK": return tobacoValue/2 + regularValue/2; 
-		case "CH": return tobacoValue + regularValue;
+		case "UK": return new UKTaxCalculator();
+		case "CN": return new ChinaTaxCalculator();
 		case "FR": 
 		case "ES": // other EU country codes...
-		case "RO": return tobacoValue/3;
+		case "RO": return new EUTaxCalculator();
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		}
+	}
+
+
+	
+}
+interface TaxCalculator {
+	double computeTax(double tobacoValue, double regularValue);
+}
+
+class ChinaTaxCalculator implements TaxCalculator{
+	public double computeTax(double tobacoValue, double regularValue) {
+		return tobacoValue + regularValue;
 	}
 }
+class UKTaxCalculator implements TaxCalculator{
+	public double computeTax(double tobacoValue, double regularValue) {
+		return tobacoValue/2 + regularValue/2;
+	}
+}
+class EUTaxCalculator implements TaxCalculator{
+	public double computeTax(double tobacoValue, double regularValue) {
+		return tobacoValue/3;
+	}
+}
+
+
+
+
+
+
+
