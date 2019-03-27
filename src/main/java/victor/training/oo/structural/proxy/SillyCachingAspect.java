@@ -1,6 +1,5 @@
 package victor.training.oo.structural.proxy;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,17 +9,16 @@ import java.util.Map;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.jooq.lambda.Unchecked;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+//@Aspect
 @Slf4j
 @Component
 public class SillyCachingAspect {
 	
-	@Around("execution(* ExpensiveOps.*(..))")
+	@Around("execution(* IExpensiveOps.*(..))")
 	public Object logAround(ProceedingJoinPoint point) throws Throwable {
 		log.debug("(intercepted)");
 		// TODO inspire from Decorator 

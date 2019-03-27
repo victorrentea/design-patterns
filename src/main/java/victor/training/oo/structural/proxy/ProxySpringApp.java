@@ -27,11 +27,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	
 	// [1] implement decorator 
 	// [2] apply decorator via Spring
-	// TODO [3] generic java.lang.reflect.Proxy 
+	// [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
+		System.out.println("oare ce clasa o avea ops? " + ops.getClass());
 		zen(ops);
 	}
 
