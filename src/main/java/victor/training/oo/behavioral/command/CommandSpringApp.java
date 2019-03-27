@@ -1,15 +1,14 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
-import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -27,10 +26,10 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor(@Value("${barman.thread.count:2}") int workerCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(workerCount);
+		executor.setMaxPoolSize(workerCount);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -46,13 +45,20 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
+	@Autowired
+	private ThreadPoolTaskExecutor executor;
 	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Wiskey wiskey = barman.getOneWiskey();
+		
+		Future<Ale> futureAle = executor.submit(() -> barman.getOneAle());
+		Future<Wiskey> futureWiskey = executor.submit(() -> barman.getOneWiskey());
+		
+		Ale ale = futureAle.get();
+		Wiskey wiskey = futureWiskey.get();
+		
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
 	}
 }
