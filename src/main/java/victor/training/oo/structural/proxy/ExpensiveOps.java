@@ -24,7 +24,10 @@ public class ExpensiveOps implements IExpensiveOps {
 	/* (non-Javadoc)
 	 * @see victor.training.oo.structural.proxy.IExpensiveOps#isPrime(int)
 	 */
-	public Boolean isPrime(int n) { 
+	public Boolean isPrime(int n) {
+		
+		new Exception().printStackTrace();
+		
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
