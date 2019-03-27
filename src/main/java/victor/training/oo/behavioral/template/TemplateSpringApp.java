@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
@@ -18,12 +19,16 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailService service;
+	@Autowired
+	private HackerTime shaorma;
 	
 	public void run(String... args) throws Exception {
 		service.sendOrderReceivedEmail("a@b.com");
+		shaorma.sendOrderReceivedEmail("a@b.com");
 	}
 }
 
+@Primary
 @Service
 class EmailService {
 
@@ -35,11 +40,22 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			p(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected void p(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+@Service
+class HackerTime extends EmailService {
+	protected void p(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimas. Speram s-ajunga (de dat aasta)");
 	}
 }
 
