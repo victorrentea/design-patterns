@@ -20,13 +20,14 @@ public class StrategySpringApp implements CommandLineRunner {
 
 	
 	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	private CustomsService service;
 	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) throws Exception {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -34,18 +35,16 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
-
+@Service
 class CustomsService {
+	@Autowired
+	private List<TaxCalculator> toate;
+	
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxCalculator ceva = determineCalculator(originCountry); 
 		return ceva.computeTax(tobacoValue, regularValue);
 	}
-
 	private TaxCalculator determineCalculator(String originCountry) {
-		List<TaxCalculator> toate = asList(
-				new UKTaxCalculator(),
-				new EUTaxCalculator(),
-				new ChinaTaxCalculator());
 		
 		return toate.stream()
 				.filter(c -> c.accept(originCountry))
@@ -61,6 +60,7 @@ interface TaxCalculator {
 	boolean accept(String originCountry);
 }
 
+@Service
 class ChinaTaxCalculator implements TaxCalculator{
 	public double computeTax(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
@@ -69,6 +69,7 @@ class ChinaTaxCalculator implements TaxCalculator{
 		return "CN".equals(originCountry);
 	}
 }
+@Service
 class UKTaxCalculator implements TaxCalculator{
 	public double computeTax(double tobacoValue, double regularValue) {
 		return tobacoValue/2 + regularValue/2;
@@ -77,12 +78,25 @@ class UKTaxCalculator implements TaxCalculator{
 		return "UK".equals(originCountry);
 	}
 }
+@Service
 class EUTaxCalculator implements TaxCalculator{
 	public double computeTax(double tobacoValue, double regularValue) {
 		return tobacoValue/3;
 	}
 	public boolean accept(String originCountry) {
 		return asList("RO","FR","ES").contains(originCountry);
+	}
+}
+
+
+
+@Service
+class USTaxCalculator implements TaxCalculator{
+	public double computeTax(double tobacoValue, double regularValue) {
+		return tobacoValue/3;
+	}
+	public boolean accept(String originCountry) {
+		return asList("US").contains(originCountry);
 	}
 }
 
