@@ -17,23 +17,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
+	@Autowired
+	private EmailService emailService;
+	
 	public void run(String... args) throws Exception {
 		// UC1: send email for order received
 		//gasesc in lista p'ala de received
-		new EmailService(new OrderReceivedEmailFiller()).sendOrderReceivedEmail("a@b.com");
+		emailService.sendOrderReceivedEmail("a@b.com", new OrderReceivedEmailFiller());
 		// UC2: send email for order shipped
-		new EmailService(new OrderShippedEmailFiller()).sendOrderReceivedEmail("a@b.com");
+		emailService.sendOrderReceivedEmail("a@b.com" ,new OrderShippedEmailFiller());
 	}
 }
 
+@Service
 class EmailService {
-	private final EmailFiller filler;
-	
-	public EmailService(EmailFiller filler) {
-		this.filler = filler;
-	}
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendOrderReceivedEmail(String emailAddress, EmailFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
