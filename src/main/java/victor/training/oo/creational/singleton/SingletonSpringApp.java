@@ -3,9 +3,7 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -64,7 +62,22 @@ class OrderExporter  {
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
 		invoiceExporter.exportInvoice();
 	}
+	private static final ThreadLocal<Locale> CURRENT_LOCALE = ThreadLocal.withInitial(() -> (Locale)null); 
+	
+	public void metoda(Locale locale, int alti20param) {
+		try {
+			CURRENT_LOCALE.set(locale);
+			simplerMethod(alti20param);
+		} finally {
+			CURRENT_LOCALE.remove();
+		}
+	}
+
+	private void simplerMethod(int alti20param) {
+		 // TODO
+	}
 }
+
 
 @Slf4j
 @Service 
