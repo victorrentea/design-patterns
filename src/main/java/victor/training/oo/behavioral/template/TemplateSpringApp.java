@@ -19,19 +19,25 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailService emailService;
+	@Autowired
+	private Emails emails;
 	
 	public void run(String... args) throws Exception {
 		// UC1: send email for order received
 		//gasesc in lista p'ala de received
-		emailService.sendOrderReceivedEmail("a@b.com", new OrderReceivedEmailFiller());
+		emailService.sendOrderReceivedEmail("a@b.com", emails::fillEmailReceived);
 		// UC2: send email for order shipped
-		emailService.sendOrderReceivedEmail("a@b.com" ,new OrderShippedEmailFiller());
+		emailService.sendOrderReceivedEmail("a@b.com" ,emails::fillEmailShipped);
 	}
 }
 
 @Service
 class EmailService {
 
+	@FunctionalInterface
+	public interface EmailFiller {
+		void fill(Email email);
+	}
 	public void sendOrderReceivedEmail(String emailAddress, EmailFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
@@ -46,20 +52,18 @@ class EmailService {
 		}
 	}
 }
-interface EmailFiller {
-	void fill(Email email);
-}
+
 @Service
-class OrderReceivedEmailFiller implements EmailFiller {
-	public void fill(Email email) {
+class Emails {
+//	@Autowired
+//	someRepo // va merge
+	// tot de instanta le fac daca vreau sa le mockuiesc pentru anumite teste !!! 
+	// adica dca au multa logica 
+	public void fillEmailReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-	
-}
-@Service
-class OrderShippedEmailFiller implements EmailFiller {
-	public void fill(Email email) {
+	public void fillEmailShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas. Speram s-ajunga (de dat aasta)");
 	}
