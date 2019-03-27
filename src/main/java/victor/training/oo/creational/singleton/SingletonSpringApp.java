@@ -1,5 +1,6 @@
 package victor.training.oo.creational.singleton;
 
+import java.applet.AppletContext;
 import java.util.Locale;
 import java.util.Map;
 
@@ -11,7 +12,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +39,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	private OrderExporter exporter;
 	
 	// [1] make singleton; test multi-thread: state is [E|V|I|L]
-	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
+	// [2] instantiate manually, set dependencies, pass around; no AOP
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
@@ -51,13 +54,15 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-//	@Autowired
-//	private LabelService labelService;
+	
 	@Autowired
-	private CountryRepo countryRepo;
+	private ApplicationContext spring;
+//	@Autowired
+//	private CountryRepo countryRepo;
 
 	public void export(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
+		LabelService labelService = spring.getBean(LabelService.class);
+//		LabelService labelService = new LabelService(countryRepo);
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
@@ -77,7 +82,8 @@ class InvoiceExporter {
 }
 
 @Slf4j
-//@Service
+@Service
+@Scope("prototype")
 class LabelService {
 	@Autowired
 	private CountryRepo countryRepo;
