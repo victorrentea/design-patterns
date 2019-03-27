@@ -10,10 +10,12 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+@Service
 @Slf4j
 public class ExpensiveOps implements IExpensiveOps {
 	
