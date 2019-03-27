@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-@Primary
+@CuCache
 @Service
 public class ExpensiveOpsWithCache implements IExpensiveOps {
 	private final IExpensiveOps ops;

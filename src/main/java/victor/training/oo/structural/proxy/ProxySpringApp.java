@@ -36,6 +36,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
+	@CuCache
 	private IExpensiveOps ops ;
 
 	private void zen(IExpensiveOps ops) {
