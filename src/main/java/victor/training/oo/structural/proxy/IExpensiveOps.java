@@ -10,4 +10,6 @@ public interface IExpensiveOps {
 
 	String hashAllFiles(File folder);
 
+	void killFolderCache();
+
 }

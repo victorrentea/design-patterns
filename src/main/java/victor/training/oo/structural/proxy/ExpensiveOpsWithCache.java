@@ -23,4 +23,7 @@ public class ExpensiveOpsWithCache implements IExpensiveOps {
 	public String hashAllFiles(File folder) {
 		return (String) cache.computeIfAbsent(folder, x-> ops.hashAllFiles((File) x));
 	}
+	public void killFolderCache() {
+		 // TODO
+	}
 }
