@@ -1,12 +1,12 @@
 package victor.training.oo.behavioral.template;
 
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
@@ -17,19 +17,21 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private Patratzel patratel;
-	@Autowired
-	private Triunghiuletz triunghiuletz;
-	
 	public void run(String... args) throws Exception {
-		patratel.sendOrderReceivedEmail("a@b.com");
-		triunghiuletz.sendOrderReceivedEmail("a@b.com");
+		// UC1: send email for order received
+		//gasesc in lista p'ala de received
+		new EmailService(new OrderReceivedEmailFiller()).sendOrderReceivedEmail("a@b.com");
+		// UC2: send email for order shipped
+		new EmailService(new OrderShippedEmailFiller()).sendOrderReceivedEmail("a@b.com");
 	}
 }
 
-@Primary
-abstract class EmailService {
+class EmailService {
+	private final EmailFiller filler;
+	
+	public EmailService(EmailFiller filler) {
+		this.filler = filler;
+	}
 
 	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -39,24 +41,26 @@ abstract class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			p(email);
+			filler.fill(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-	protected abstract void p(Email email);
+}
+interface EmailFiller {
+	void fill(Email email);
 }
 @Service
-class Patratzel extends EmailService {
-	protected void p(Email email) {
+class OrderReceivedEmailFiller implements EmailFiller {
+	public void fill(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 	
 }
 @Service
-class Triunghiuletz extends EmailService {
-	protected void p(Email email) {
+class OrderShippedEmailFiller implements EmailFiller {
+	public void fill(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas. Speram s-ajunga (de dat aasta)");
 	}
