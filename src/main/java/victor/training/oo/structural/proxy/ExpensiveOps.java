@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -17,18 +15,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ExpensiveOps {
+public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	private static final Map<Integer, Boolean> primes = new HashMap<>();
-	
-	
-	
-	public Boolean isPrime(int n) {
-		return primes.computeIfAbsent(n, this::doIsPrime);
-	}
-	private Boolean doIsPrime(int n) { 
+	/* (non-Javadoc)
+	 * @see victor.training.oo.structural.proxy.IExpensiveOps#isPrime(int)
+	 */
+	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -47,6 +41,9 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see victor.training.oo.structural.proxy.IExpensiveOps#hashAllFiles(java.io.File)
+	 */
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
