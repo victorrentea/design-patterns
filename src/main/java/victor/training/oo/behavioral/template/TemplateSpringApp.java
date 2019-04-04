@@ -8,9 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.Data;
-import victor.training.oo.behavioral.template.EmailService.EmailFiller;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -22,6 +22,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private EmailService emailService;
 	@Autowired
 	private Emails emails;
+	
 	public void run(String... args) throws Exception {
 		emailService.sendEmail("a@b.com", emails::fillOrderReceivedEmail);
 		emailService.sendEmail("a@b.com", emails::fillEmailShippedEmail);
@@ -61,6 +62,7 @@ class SomeRepo {
 class Emails {
 	@Autowired
 	private SomeRepo repo;
+	
 	public void fillOrderReceivedEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order" + repo.getStuff());
