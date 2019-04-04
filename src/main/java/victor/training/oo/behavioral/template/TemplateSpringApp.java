@@ -17,29 +17,47 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private EmailService service;
+	private OrderReceivedEmailSender received;
+	
+	@Autowired
+	private OrderShippedEmailSender shipped;
 	
 	public void run(String... args) throws Exception {
-		service.sendOrderReceivedEmail("a@b.com");
+		received.sendEmail("a@b.com");
+		shipped.sendEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+abstract class AbstractEmailService {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
+		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			fillEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected abstract void fillEmail(Email email);
+}
+@Service
+class OrderReceivedEmailSender extends AbstractEmailService{
+	protected void fillEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+@Service
+class OrderShippedEmailSender extends AbstractEmailService {
+	protected void fillEmail(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("He just sent you your order. Hope it gets to you (this time).");
 	}
 }
 
