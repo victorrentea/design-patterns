@@ -3,16 +3,23 @@ package victor.training.oo.structural.proxy;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +39,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
+	
+	@Autowired
+	@WithCache
+	private IExpensiveOps ops;
 	public void run(String... args) throws Exception {
-		IExpensiveOps ops = new ExpensiveOps();
-		holySacredBusinessLogic(new ExpensiveOpsWithCache(ops));
+		holySacredBusinessLogic(ops);
 	}
 
 	private void holySacredBusinessLogic(IExpensiveOps ops) {
@@ -61,7 +71,12 @@ public class ProxySpringApp implements CommandLineRunner {
 }
 
 
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@interface WithCache {}
 
+@WithCache
+@Service
 class ExpensiveOpsWithCache implements IExpensiveOps {
 	private final IExpensiveOps delegate;
 
