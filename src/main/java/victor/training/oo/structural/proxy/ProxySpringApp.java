@@ -40,9 +40,8 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	
-	@Autowired
-	@WithCache
-	private IExpensiveOps ops;
+//	@Autowired
+	private IExpensiveOps ops = InterfaceProxy.proxy(new ExpensiveOps());
 	public void run(String... args) throws Exception {
 		holySacredBusinessLogic(ops);
 	}
@@ -71,28 +70,3 @@ public class ProxySpringApp implements CommandLineRunner {
 }
 
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@interface WithCache {}
-
-@WithCache
-@Service
-class ExpensiveOpsWithCache implements IExpensiveOps {
-	private final IExpensiveOps delegate;
-
-	public ExpensiveOpsWithCache(IExpensiveOps delegate) {
-		this.delegate = delegate;
-	}
-
-	private static final Map<Integer, Boolean> primesCache = new HashMap<>();
-	private static final Map<File, String> foldersCache = new HashMap<>();
-
-	public Boolean isPrime(int n) {
-		return primesCache.computeIfAbsent(n, delegate::isPrime);
-	}
-
-	public String hashAllFiles(File folder) {
-		return foldersCache.computeIfAbsent(folder, delegate::hashAllFiles);
-	}
-
-}
