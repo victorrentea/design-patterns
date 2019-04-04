@@ -10,6 +10,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
@@ -17,10 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Facade
 public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
+	@Logged
+	@Cacheable("primes")
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -40,6 +44,7 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
