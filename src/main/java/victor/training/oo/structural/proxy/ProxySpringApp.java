@@ -59,6 +59,10 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+
+		// detect a change. i need to kill the cache here
+		ops.killCache(new File("."));
+
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
