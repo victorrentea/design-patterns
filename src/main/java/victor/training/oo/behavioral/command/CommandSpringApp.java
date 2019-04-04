@@ -2,6 +2,7 @@ package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class CommandSpringApp {
 	@Bean
 	public ThreadPoolTaskExecutor executor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(2);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -46,6 +47,8 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
+	@Autowired
+	private ThreadPoolTaskExecutor executor;
 	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
@@ -53,32 +56,36 @@ class Drinker implements CommandLineRunner {
 		
 		/// TODO InheritableThreadLocal try
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Wiskey wiskey = barman.getOneWiskey();
-		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+		
+		Future<Pivo> futurePivo = executor.submit(()->barman.getOnePivo());
+		Future<Vodka> futureVodka = executor.submit(()->barman.getOneVodka());
+		
+		Pivo pivo = futurePivo.get();
+		Vodka vodka = futureVodka.get();
+		log.debug("Got my order! Thank you lad! " + Arrays.asList(pivo, vodka));
 	}
 }
 
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
-		 log.debug("Pouring Ale...");
+	public Pivo getOnePivo() {
+		 log.debug("Pouring Pivo...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return new Pivo();
 	 }
 	
-	 public Wiskey getOneWiskey() {
-		 log.debug("Pouring Wiskey...");
+	 public Vodka getOneVodka() {
+		 log.debug("Pouring Vodka...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 return new Vodka();
 	 }
 }
 
 @Data
-class Ale {
+class Pivo {
 }
 
 @Data
-class Wiskey {
+class Vodka {
 }

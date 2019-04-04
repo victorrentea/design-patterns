@@ -1,5 +1,9 @@
 package victor.training.oo.behavioral.observer;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,12 +25,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -48,6 +52,14 @@ public class ObserverSpringApp implements CommandLineRunner {
 class OrderPlaced {
 	public final long orderId;
 }
+@Data
+class OrderStockChecked {
+	public final long orderId;
+}
+@Data
+class GDPRStuff {
+	public final long orderId;
+}
 
 @Slf4j
 @Service
@@ -55,10 +67,12 @@ class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
+//	@Transactional
 	@EventListener
-	public void handle(OrderPlaced event) { 
+	public List<Object> handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
+		return asList(new OrderStockChecked(event.orderId), new GDPRStuff(event.orderId));
 	}
 }
 
@@ -66,8 +80,13 @@ class StockManagementService {
 @Service
 class InvoiceService {
 	
-	public void handle(OrderPlaced event) {
+	@EventListener
+	public void handle(OrderStockChecked event) {
 		log.info("Generating invoice for order " + event.orderId);
-		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
+	} 
+	@EventListener
+	public void handle(GDPRStuff event) {
+		log.info("GDPRStuff invoice for order " + event.orderId);
+		new RuntimeException().printStackTrace();
 	} 
 }
