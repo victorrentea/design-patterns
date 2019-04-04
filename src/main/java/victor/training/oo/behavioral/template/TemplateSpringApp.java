@@ -17,20 +17,17 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedEmailSender received;
-	
-	@Autowired
-	private OrderShippedEmailSender shipped;
-	
+	private EmailService emailService;
 	public void run(String... args) throws Exception {
-		received.sendEmail("a@b.com");
-		shipped.sendEmail("a@b.com");
+		emailService.sendEmail("a@b.com", new OrderReceivedEmailFiller());
+		emailService.sendEmail("a@b.com", new OrderShippedEmailFiller());
 	}
 }
 
-abstract class AbstractEmailService {
+@Service
+class EmailService {
 
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailFiller emailFiller) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -38,24 +35,25 @@ abstract class AbstractEmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			fillEmail(email);
+			emailFiller.fillEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-
-	protected abstract void fillEmail(Email email);
 }
-@Service
-class OrderReceivedEmailSender extends AbstractEmailService{
-	protected void fillEmail(Email email) {
+
+interface EmailFiller {
+	void fillEmail(Email email);
+}
+
+class OrderReceivedEmailFiller implements EmailFiller{
+	public void fillEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-@Service
-class OrderShippedEmailSender extends AbstractEmailService {
-	protected void fillEmail(Email email) {
+class OrderShippedEmailFiller implements EmailFiller{
+	public void fillEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("He just sent you your order. Hope it gets to you (this time).");
 	}
