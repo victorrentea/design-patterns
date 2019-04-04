@@ -41,12 +41,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	
 //	@Autowired
-	private IExpensiveOps ops = InterfaceProxy.proxy(new ExpensiveOps());
+	private ExpensiveOps ops = ClassProxy.proxy(new ExpensiveOps());
 	public void run(String... args) throws Exception {
 		holySacredBusinessLogic(ops);
 	}
 
-	private void holySacredBusinessLogic(IExpensiveOps ops) {
+	private void holySacredBusinessLogic(ExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
