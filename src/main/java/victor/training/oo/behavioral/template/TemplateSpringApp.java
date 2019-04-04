@@ -19,14 +19,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 	@Autowired
 	private EmailService emailService;
 	public void run(String... args) throws Exception {
-		emailService.sendEmail("a@b.com", new OrderReceivedEmailFiller());
-		emailService.sendEmail("a@b.com", new OrderShippedEmailFiller());
+		emailService.sendEmail("a@b.com", Emails::fillOrderReceivedEmail);
+		emailService.sendEmail("a@b.com", Emails::fillEmailShippedEmail);
 	}
 }
 
 @Service
 class EmailService {
 
+	@FunctionalInterface
+	interface EmailFiller {
+		void fillEmail(Email email);
+	}
 	public void sendEmail(String emailAddress, EmailFiller emailFiller) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
@@ -42,18 +46,13 @@ class EmailService {
 	}
 }
 
-interface EmailFiller {
-	void fillEmail(Email email);
-}
 
-class OrderReceivedEmailFiller implements EmailFiller{
-	public void fillEmail(Email email) {
+class Emails {
+	public static void fillOrderReceivedEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-class OrderShippedEmailFiller implements EmailFiller{
-	public void fillEmail(Email email) {
+	public static void fillEmailShippedEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("He just sent you your order. Hope it gets to you (this time).");
 	}
