@@ -50,6 +50,8 @@ class Drinker implements CommandLineRunner {
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
+		
+		/// TODO InheritableThreadLocal try
 		log.debug("Submitting my order");
 		Ale ale = barman.getOneAle();
 		Wiskey wiskey = barman.getOneWiskey();
