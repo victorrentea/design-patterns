@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -47,19 +46,16 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 	
-	@Autowired
-	private ThreadPoolTaskExecutor executor;
-	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		
 		/// TODO InheritableThreadLocal try
-		log.debug("Submitting my order");
+		log.debug("Submitting my order to " + barman.getClass());
+		CompletableFuture<Pivo> futurePivo = barman.getOnePivo();
+		CompletableFuture<Vodka> futureVodka = barman.getOneVodka();
 		
-		Future<Pivo> futurePivo = executor.submit(()->barman.getOnePivo());
-		Future<Vodka> futureVodka = executor.submit(()->barman.getOneVodka());
-		
+		log.debug("The afsenta took my command");
 		Pivo pivo = futurePivo.get();
 		Vodka vodka = futureVodka.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(pivo, vodka));
@@ -69,16 +65,18 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Pivo getOnePivo() {
+	@Async
+	public CompletableFuture<Pivo> getOnePivo() {
 		 log.debug("Pouring Pivo...");
 		 ThreadUtils.sleep(1000);
-		 return new Pivo();
+		 return CompletableFuture.completedFuture(new Pivo());
 	 }
 	
-	 public Vodka getOneVodka() {
+	@Async
+	 public CompletableFuture<Vodka> getOneVodka() {
 		 log.debug("Pouring Vodka...");
 		 ThreadUtils.sleep(1000);
-		 return new Vodka();
+		 return CompletableFuture.completedFuture(new Vodka());
 	 }
 }
 
