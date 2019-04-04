@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
+import victor.training.oo.behavioral.template.EmailService.EmailFiller;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -18,9 +20,11 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailService emailService;
+	@Autowired
+	private Emails emails;
 	public void run(String... args) throws Exception {
-		emailService.sendEmail("a@b.com", Emails::fillOrderReceivedEmail);
-		emailService.sendEmail("a@b.com", Emails::fillEmailShippedEmail);
+		emailService.sendEmail("a@b.com", emails::fillOrderReceivedEmail);
+		emailService.sendEmail("a@b.com", emails::fillEmailShippedEmail);
 	}
 }
 
@@ -46,13 +50,22 @@ class EmailService {
 	}
 }
 
+@Repository
+class SomeRepo {
 
+	public String getStuff() {
+		return null; // TODO
+	}}
+
+@Service
 class Emails {
-	public static void fillOrderReceivedEmail(Email email) {
+	@Autowired
+	private SomeRepo repo;
+	public void fillOrderReceivedEmail(Email email) {
 		email.setSubject("Order Received");
-		email.setBody("Thank you for your order");
+		email.setBody("Thank you for your order" + repo.getStuff());
 	}
-	public static void fillEmailShippedEmail(Email email) {
+	public void fillEmailShippedEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("He just sent you your order. Hope it gets to you (this time).");
 	}
