@@ -51,6 +51,10 @@ public class ObserverSpringApp implements CommandLineRunner {
 class OrderPlaced {
 	public final long orderId;
 }
+@Data
+class OrderInStock {
+	public final long orderId;
+}
 
 @Slf4j
 @Service
@@ -58,20 +62,19 @@ class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
-	@Order(100)
 	@EventListener
-	public void handle(OrderPlaced event) { 
+	public OrderInStock handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
+		return new OrderInStock(event.orderId);
 	}
 }
 
 @Slf4j
 @Service
 class InvoiceService {
-	@Order(200)
 	@EventListener
-	public void handle(OrderPlaced event) {
+	public void handle(OrderInStock event) {
 		log.info("Generating invoice for order " + event.orderId);
 //		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
 	} 
