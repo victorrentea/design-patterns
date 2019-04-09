@@ -60,9 +60,9 @@ class Beutor implements CommandLineRunner {
 		log.debug("Cine oare imi ia comanda ???" + barman.getClass());
 		
 		Future<Ale> futureAle = barman.getOneAle();
+		Ale ale = futureAle.get();
 		Future<Wiskey> futureWhiskey = barman.getOneWiskey();
 		log.debug("Tipa a plecat cu comanda mea" );
-		Ale ale = futureAle.get();
 		Wiskey wiskey = futureWhiskey.get();
 		
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
