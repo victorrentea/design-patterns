@@ -37,10 +37,13 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	// TODO [7] AopContext.currentProxy();
 
-	@Autowired 
+//	@Autowired 
 //	@Qualifier("expensiveOpsWithCache")
-	@WithCache
-	private IExpensiveOps ops;
+//	@WithCache
+	
+	
+	
+	private IExpensiveOps ops = InterfaceProxy.proxy(new ExpensiveOps());
 	
 	// Holy Domain Logic. 
 	// Very precious things that I want to keep agnostic to technical details
@@ -52,37 +55,37 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10_000_169) + "\n");
 		
-//		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 }
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@interface WithCache {}
-
-//@Profile("withCache")
-//@Primary
-@WithCache
-@Service
-class ExpensiveOpsWithCache implements IExpensiveOps { 
-	private final IExpensiveOps delegate;
-	private Map<Integer, Boolean> cache = new HashMap<>();
-	
-	public ExpensiveOpsWithCache(IExpensiveOps delegate) {
-		this.delegate = delegate;
-	}
-
-	public Boolean isPrime(int n) {
-		return cache.computeIfAbsent(n, delegate::isPrime);
-	}
-
-	public String hashAllFiles(File folder) {
-		return delegate.hashAllFiles(folder);
-	}
-}
+//@Qualifier
+//@Retention(RetentionPolicy.RUNTIME)
+//@interface WithCache {}
+//
+////@Profile("withCache")
+////@Primary
+//@WithCache
+//@Service
+//class ExpensiveOpsWithCache implements IExpensiveOps { 
+//	private final IExpensiveOps delegate;
+//	private Map<Integer, Boolean> cache = new HashMap<>();
+//	
+//	public ExpensiveOpsWithCache(IExpensiveOps delegate) {
+//		this.delegate = delegate;
+//	}
+//
+//	public Boolean isPrime(int n) {
+//		return cache.computeIfAbsent(n, delegate::isPrime);
+//	}
+//
+//	public String hashAllFiles(File folder) {
+//		return delegate.hashAllFiles(folder);
+//	}
+//}
 
 
