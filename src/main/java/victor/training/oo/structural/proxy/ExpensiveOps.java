@@ -10,19 +10,27 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Facade
 public class ExpensiveOps /* implements IExpensiveOps */{
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
+	@Cacheable("primes")
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
+		
+		
+		new RuntimeException("cine oare e inaintea mea? Cum aflu de SRI ?").printStackTrace();
+		
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
 			return true;
@@ -40,9 +48,16 @@ public class ExpensiveOps /* implements IExpensiveOps */{
 		return true;
 	}
 
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
+		
+		
+		ExpensiveOps myselfProxied = (ExpensiveOps) AopContext.currentProxy();
+		log.debug("Got: " + myselfProxied.isPrime(10_000_169) + "\n");
+
+		
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
 			Files.walk(folder.toPath())
@@ -53,6 +68,11 @@ public class ExpensiveOps /* implements IExpensiveOps */{
 		}
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
+	}
+
+	@CacheEvict("folders")
+	public void invalidateCache(File file) {
+		 // Nothing here ! Let the magic happen....
 	}
 	
 }
