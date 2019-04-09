@@ -20,8 +20,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private EmailSender emailSender;
 	
 	public void run(String... args) throws Exception {
-		emailSender.sendOrder("a@b.com", new OrderReceivedEmailFiller());
-		emailSender.sendOrder("a@b.com", new OrderShippedEmailFiller());
+		emailSender.sendOrder("a@b.com", Emails::fillEmailReceived);
+		emailSender.sendOrder("a@b.com", Emails::fillEmailShipped);
 	}
 }
 
@@ -40,19 +40,16 @@ class EmailSender {
 			if (success) break;
 		}
 	}
-
 }
 interface EmailFiller {
 	void fill(Email email);
 }
-class OrderReceivedEmailFiller implements EmailFiller{
-	public void fill(Email email) {
+class Emails {
+	public static void fillEmailReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-class OrderShippedEmailFiller implements EmailFiller {
-	public void fill(Email email) {
+	public static void fillEmailShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis, speram s-ajunga! (de data asta)");
 	}
