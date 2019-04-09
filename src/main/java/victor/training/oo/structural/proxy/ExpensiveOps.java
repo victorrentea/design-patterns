@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ExpensiveOps implements IExpensiveOps {
+public class ExpensiveOps /* implements IExpensiveOps */{
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	

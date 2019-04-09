@@ -43,11 +43,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	
 	
 	
-	private IExpensiveOps ops = InterfaceProxy.proxy(new ExpensiveOps());
+	private ExpensiveOps ops = ClassProxy.proxy(new ExpensiveOps());
 	
 	// Holy Domain Logic. 
 	// Very precious things that I want to keep agnostic to technical details
 	public void run(String... args) throws Exception {
+		log.debug("Whoaare you !? " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
