@@ -3,13 +3,13 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
@@ -54,10 +54,10 @@ class OrderExporter  {
 	private InvoiceExporter invoiceExporter;
 	
 	@Autowired
-	private ApplicationContext totSpringuTata;
+	private ObjectFactory<LabelService> labelServiceFactory;
 
 	public void export(Locale locale) {
-		LabelService labelService = totSpringuTata.getBean(LabelService.class);
+		LabelService labelService = labelServiceFactory.getObject();
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
