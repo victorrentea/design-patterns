@@ -14,7 +14,7 @@ public class AdapterSpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(AdapterSpringApp.class, args);
 	}
-
+	
 	@Autowired
 	private UserService userService;
 	
