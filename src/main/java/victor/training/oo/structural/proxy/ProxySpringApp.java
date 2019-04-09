@@ -1,15 +1,20 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Retention;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +38,13 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [7] AopContext.currentProxy();
 
 	@Autowired 
+//	@Qualifier("expensiveOpsWithCache")
+	@WithCache
 	private IExpensiveOps ops;
 	
 	// Holy Domain Logic. 
 	// Very precious things that I want to keep agnostic to technical details
 	public void run(String... args) throws Exception {
-		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -54,7 +60,13 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 }
 
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@interface WithCache {}
 
+//@Profile("withCache")
+//@Primary
+@WithCache
 @Service
 class ExpensiveOpsWithCache implements IExpensiveOps { 
 	private final IExpensiveOps delegate;
