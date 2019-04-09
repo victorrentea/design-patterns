@@ -1,16 +1,16 @@
 package victor.training.oo.structural.proxy;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +31,14 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	// TODO [7] AopContext.currentProxy();
-	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps(); 
 
+	@Autowired 
+	private IExpensiveOps ops;
+	
+	// Holy Domain Logic. 
+	// Very precious things that I want to keep agnostic to technical details
+	public void run(String... args) throws Exception {
+		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -47,11 +52,25 @@ public class ProxySpringApp implements CommandLineRunner {
 //		log.debug("Folder MD5: ");
 //		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
+}
+
+
+@Service
+class ExpensiveOpsWithCache implements IExpensiveOps { 
+	private final IExpensiveOps delegate;
+	private Map<Integer, Boolean> cache = new HashMap<>();
 	
-	private static List<Object> getCacheKey(String methodName, Object... args) {
-		List<Object> list = new ArrayList<>();
-		list.add(methodName);
-		list.addAll(asList(args));
-		return list;
+	public ExpensiveOpsWithCache(IExpensiveOps delegate) {
+		this.delegate = delegate;
+	}
+
+	public Boolean isPrime(int n) {
+		return cache.computeIfAbsent(n, delegate::isPrime);
+	}
+
+	public String hashAllFiles(File folder) {
+		return delegate.hashAllFiles(folder);
 	}
 }
+
+
