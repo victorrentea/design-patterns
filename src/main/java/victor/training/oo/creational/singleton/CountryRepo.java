@@ -14,6 +14,7 @@ import victor.training.oo.stuff.ThreadUtils;
 @Repository
 public class CountryRepo {
 
+	
 	public Map<String, String> loadCountryNamesAsMap(Locale locale) {
 		// connect to database, get data. fake some latency
 		log.debug("Loading country names for language: {} ...", locale );

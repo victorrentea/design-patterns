@@ -86,11 +86,11 @@ class LabelService {
 	
 	private Map<String, String> countryNames;
 	
-	public void load(Locale locale) {
+	public synchronized void load(Locale locale) {
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 	
-	public String getCountryName(String iso2Code) {
+	public synchronized  String getCountryName(String iso2Code) {
 		log.debug("getCountryName() on instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
 	}
