@@ -20,7 +20,8 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	private ConfigProvider configProvider; 
 	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
