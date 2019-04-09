@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
@@ -51,13 +52,12 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
+	
 	@Autowired
-	private LabelService labelService;
-//	@Autowired
-//	private CountryRepo countryRepo;
+	private ApplicationContext totSpringuTata;
 
 	public void export(Locale locale) {
-//		LabelService labelService = new LabelService(countryRepo);
+		LabelService labelService = totSpringuTata.getBean(LabelService.class);
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
