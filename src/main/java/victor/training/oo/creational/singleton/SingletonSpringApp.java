@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -54,31 +55,31 @@ class OrderExporter  {
 	private InvoiceExporter invoiceExporter;
 	
 	@Autowired
-	private ObjectFactory<LabelService> labelServiceFactory;
+	private LabelService labelService;
 
 	public void export(Locale locale) {
-		LabelService labelService = labelServiceFactory.getObject();
+		System.out.println("Cine esti tu frate? !"  + labelService.getClass());
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-//	@Autowired
-//	private LabelService labelService;
+	@Autowired
+	private LabelService labelService;
 	
-	public void exportInvoice(LabelService labelService) {
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
 @Service
-@Scope("prototype")
+@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RequiredArgsConstructor
 class LabelService {
 	private final CountryRepo countryRepo;
