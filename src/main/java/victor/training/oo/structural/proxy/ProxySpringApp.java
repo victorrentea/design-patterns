@@ -33,7 +33,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	@AiaRapida
+//	@AiaRapida
 	private IExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
