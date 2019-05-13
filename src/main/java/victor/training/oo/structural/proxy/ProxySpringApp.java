@@ -5,8 +5,14 @@ import static java.util.Arrays.asList;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -14,6 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +50,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
+		log.debug("oare cine imi ruleaza mie logul acela ? SRIul: " + ops.getClass());
 		logicaDeDomeniu(ops);
 	}
 
@@ -69,4 +77,16 @@ public class ProxySpringApp implements CommandLineRunner {
 		list.addAll(asList(args));
 		return list;
 	}
+}
+@Slf4j
+@Aspect
+@Component
+class LoggingAspect {
+	
+	@Around("execution(* victor.training.oo.structural.proxy..*(..))")
+	public Object intercepteazo(ProceedingJoinPoint point) throws Throwable {
+		log.debug("Computing {}({})", point.getSignature().getName(), Arrays.toString(point.getArgs())); //
+		return point.proceed();
+	}
+	
 }
