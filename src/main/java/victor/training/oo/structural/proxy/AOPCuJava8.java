@@ -2,7 +2,6 @@ package victor.training.oo.structural.proxy;
 
 import java.util.concurrent.Callable;
 
-import victor.training.oo.structural.proxy.LoggingAspect.Utils;
 
 public class AOPCuJava8 {
 	{
