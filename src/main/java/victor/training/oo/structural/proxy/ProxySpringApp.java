@@ -27,11 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @interface AiaRapida {
-	
+}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {
 }
 
 @Slf4j
-@EnableAspectJAutoProxy 
+@EnableAspectJAutoProxy(exposeProxy = true)
 @EnableCaching 
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
@@ -83,7 +85,8 @@ public class ProxySpringApp implements CommandLineRunner {
 @Component
 class LoggingAspect {
 	
-	@Around("execution(* victor.training.oo.structural.proxy..*(..))")
+//	@Around("execution(* victor..*(..))")
+	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
 	public Object intercepteazo(ProceedingJoinPoint point) throws Throwable {
 		log.debug("Computing {}({})", point.getSignature().getName(), Arrays.toString(point.getArgs())); //
 		return point.proceed();

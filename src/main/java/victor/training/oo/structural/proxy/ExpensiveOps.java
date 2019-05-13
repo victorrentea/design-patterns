@@ -10,6 +10,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
@@ -17,13 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@LoggedClass
 public class ExpensiveOps implements IExpensiveOps {
 	private static final BigDecimal TWO = new BigDecimal("2");
+	
+	@Autowired
+	private ExpensiveOps myself; 
 	
 	public Boolean isPrime(int n) { 
 //		log.debug("Computing isPrime({})", n); //
 		
-		hashAllFiles(new File(".."));
+		hashAllFiles(new File("..")); // apelurile locale nu se intercepteaza!!!
+		((ExpensiveOps)AopContext.currentProxy()).hashAllFiles(new File("..")); // MERGE
+		myself.hashAllFiles(new File("..")); // MERGE
 		
 //		new RuntimeException("dummy").printStackTrace();
 		BigDecimal number = new BigDecimal(n);
