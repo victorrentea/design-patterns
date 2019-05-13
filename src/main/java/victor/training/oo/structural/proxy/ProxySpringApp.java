@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -89,6 +90,7 @@ public class ProxySpringApp implements CommandLineRunner {
 @Aspect
 @Component
 class LoggingAspect {
+	
 	
 //	@Around("execution(* victor..*(..))")
 	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
