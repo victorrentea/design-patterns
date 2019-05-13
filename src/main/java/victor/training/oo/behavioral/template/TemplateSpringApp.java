@@ -21,6 +21,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 	
 	public void run(String... args) throws Exception {
 		service.sendOrderReceivedEmail("a@b.com");
+		
+		new Hackareala().sendOrderReceivedEmail("a@b.com");
 	}
 }
 
@@ -35,11 +37,24 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			p(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected void p(Email email) {
+		// triunghiuletz
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+class Hackareala extends EmailService {
+	protected void p(Email email) {
+		//patratzel
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimas! Speram s-ajunga (de data asta)!");
 	}
 }
 
