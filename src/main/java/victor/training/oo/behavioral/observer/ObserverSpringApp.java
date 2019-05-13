@@ -9,7 +9,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
@@ -39,7 +43,11 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
 	public void run(String... args) throws Exception {
-		publisher.publishEvent(new OrderPlaced(13));
+		try {
+			publisher.publishEvent(new OrderPlaced(13));
+		} catch (Exception e) {
+			System.out.println("Am prinso!!! Shaorma. se inghite. Reorientare profesionala.");
+		}
 		//afterTransaction.runInTransaction();
 	}
 }
@@ -75,5 +83,6 @@ class InvoiceService {
 	public void handle(OrderInStock event) {
 		log.info("Generating invoice for order " + event.orderId);
 //		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
+		throw new RuntimeException("Intentionat ;P");
 	} 
 }
