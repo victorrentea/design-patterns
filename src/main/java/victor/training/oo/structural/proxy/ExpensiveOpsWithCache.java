@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
+@Service("otemporaomores")
 public class ExpensiveOpsWithCache implements IExpensiveOps {
 	private final IExpensiveOps delegate;
 	private Map<Integer, Boolean> cache = new HashMap<>(); 

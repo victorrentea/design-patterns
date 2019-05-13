@@ -2,10 +2,11 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,9 @@ public class ProxySpringApp implements CommandLineRunner {
 		SpringApplication.run(ProxySpringApp.class, args);
 	}
 
+	@Autowired
+	@Qualifier("otemporaomores")
+	private IExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
@@ -31,9 +35,6 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		IExpensiveOps ops = new ExpensiveOps();
-		ops = new ExpensiveOpsWithCache(ops); 
-
 		logicaDeDomeniu(ops);
 	}
 
