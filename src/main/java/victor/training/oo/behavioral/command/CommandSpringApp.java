@@ -62,7 +62,9 @@ class Drinker implements CommandLineRunner {
 		
 		Ale ale = futureAle.get();
 		Wiskey wiskey = futureWiskey.get();
+		Future<Void> viitorNimic = barman.trimiteiSms("te quiero");
 		
+		viitorNimic.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
 	}
 }
@@ -76,6 +78,11 @@ class Barman {
 		 ThreadUtils.sleep(1000);
 		 return completedFuture(new Ale());
 	 }
+	@Async
+	public Future<Void> trimiteiSms(String string) {
+//		 if (true) throw new RuntimeException("Te omor");
+		 return completedFuture(null);
+	}
 	@Async
 	 public Future<Wiskey> getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
