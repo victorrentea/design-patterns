@@ -72,6 +72,7 @@ class InvoiceExporter {
 //	private LabelService labelService;
 	
 	public void exportInvoice(LabelService labelService) {
+//		labelService.load(labelService);
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
