@@ -2,6 +2,8 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,12 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@interface AiaRapida {
+	
+}
+
 @Slf4j
 @EnableAspectJAutoProxy 
 @EnableCaching 
@@ -25,7 +33,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	@Qualifier("otemporaomores")
+	@AiaRapida
 	private IExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
