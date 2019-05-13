@@ -17,17 +17,17 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private EmailService service;
+	private Triunghiuletz triunghiuletz;
+	@Autowired
+	private Patratzel patratzel;
 	
 	public void run(String... args) throws Exception {
-		service.sendOrderReceivedEmail("a@b.com");
-		
-		new Hackareala().sendOrderReceivedEmail("a@b.com");
+		triunghiuletz.sendOrderReceivedEmail("a@b.com");
+		patratzel.sendOrderReceivedEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+abstract class EmailService {
 
 	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -42,17 +42,20 @@ class EmailService {
 			if (success) break;
 		}
 	}
+	protected abstract void p(Email email);
 
+}
+@Service
+class Triunghiuletz  extends EmailService{
 	protected void p(Email email) {
 		// triunghiuletz
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-
-class Hackareala extends EmailService {
+@Service
+class Patratzel extends EmailService {
 	protected void p(Email email) {
-		//patratzel
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas! Speram s-ajunga (de data asta)!");
 	}
