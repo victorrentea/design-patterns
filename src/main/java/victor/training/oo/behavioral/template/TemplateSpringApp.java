@@ -17,21 +17,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedEmailFiller orderReceivedEmailFiller;
-	@Autowired
-	private OrderShippedEmailFiller orderShippedEmailFiller;
+	private Emails email;
 	
 	@Autowired
 	private EmailService emailService;
 	
 	public void run(String... args) throws Exception {
-		emailService.sendEmail("a@b.com", orderReceivedEmailFiller);
-		emailService.sendEmail("a@b.com", orderShippedEmailFiller);
+		emailService.sendEmail("a@b.com", email::fillEmailReceived);
+		emailService.sendEmail("a@b.com", email::fillEmailShipped);
 	}
 }
 @Service
 class EmailService {
 
+	interface EmailFiller {
+		void fill(Email email);
+	}
 	public void sendEmail(String emailAddress, EmailFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
@@ -47,25 +48,17 @@ class EmailService {
 	}
 }
 
-interface EmailFiller {
-	void fill(Email email);
-}
 @Service
-class OrderReceivedEmailFiller implements EmailFiller{
-	public void fill(Email email) {
-		// triunghiuletz
+class Emails {
+	public void fillEmailShipped(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimas! Speram s-ajunga (de data asta)!");
+	}
+	public void fillEmailReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-@Service
-class OrderShippedEmailFiller implements EmailFiller {
-	public void fill(Email email) {
-		email.setSubject("Order Shipped");
-		email.setBody("Ti-am trimas! Speram s-ajunga (de data asta)!");
-	}
-}
-
 class EmailContext {
 	public boolean send(Email email) {
 		System.out.println("Trying to send " + email);
