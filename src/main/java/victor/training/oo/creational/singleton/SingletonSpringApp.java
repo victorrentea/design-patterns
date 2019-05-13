@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -35,7 +38,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	@Autowired 
 	private OrderExporter exporter;
 	
-	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
+	// TODO [1] make singleton; test multi-thread: state is [E|V|I|L]
 	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
@@ -51,40 +54,42 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
+//	@Autowired
+//	private LabelService labelService;
 	@Autowired
-	private LabelService labelService;
+	private CountryRepo countryRepo;
 
 	public void export(Locale locale) {
+		LabelService labelService  = new LabelService(countryRepo);
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-	@Autowired
-	private LabelService labelService;
+//	@Autowired
+//	private LabelService labelService;
 	
-	public void exportInvoice() {
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
-@Service
+//@Service
 class LabelService {
-	@Autowired
-	private CountryRepo countryRepo;
+	private final CountryRepo countryRepo;
+
+	private Map<String, String> countryNames;
 	
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
 
-	private Map<String, String> countryNames;
-	
 	public void load(Locale locale) {
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
