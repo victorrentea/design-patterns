@@ -12,6 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
@@ -26,12 +28,13 @@ public class ExpensiveOps implements IExpensiveOps {
 	@Autowired
 	private ExpensiveOps myself; 
 	
+	@Cacheable("primes")
 	public Boolean isPrime(int n) { 
 //		log.debug("Computing isPrime({})", n); //
 		
-		hashAllFiles(new File("..")); // apelurile locale nu se intercepteaza!!!
-		((ExpensiveOps)AopContext.currentProxy()).hashAllFiles(new File("..")); // MERGE
-		myself.hashAllFiles(new File("..")); // MERGE
+//		hashAllFiles(new File("..")); // apelurile locale nu se intercepteaza!!!
+//		((ExpensiveOps)AopContext.currentProxy()).hashAllFiles(new File("..")); // MERGE
+//		myself.hashAllFiles(new File("..")); // MERGE
 		
 //		new RuntimeException("dummy").printStackTrace();
 		BigDecimal number = new BigDecimal(n);
@@ -51,6 +54,7 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 //		log.debug("Computing hashAllFiles({})", folder); // 
@@ -64,6 +68,11 @@ public class ExpensiveOps implements IExpensiveOps {
 		}
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
+	}
+
+	@CacheEvict("folders")
+	public void invalidateCache(File file) {
+		 // Do not delete: let the magic happen
 	}
 	
 }

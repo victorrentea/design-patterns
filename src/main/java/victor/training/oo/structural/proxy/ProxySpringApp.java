@@ -2,6 +2,7 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -11,8 +12,6 @@ import java.util.List;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -43,7 +42,7 @@ public class ProxySpringApp implements CommandLineRunner {
 
 	@Autowired
 //	@AiaRapida
-	private IExpensiveOps ops;
+	private ExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
@@ -53,12 +52,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
 		log.debug("oare cine imi ruleaza mie logul acela ? SRIul: " + ops.getClass());
-		logicaDeDomeniu(ops);
+		logicaDeDomeniu();
 	}
 
 // Holy Domain Logic. 
 // Very precious things that I want to keep agnostic to technical details
-	private void logicaDeDomeniu(IExpensiveOps ops) {
+	private void logicaDeDomeniu() {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -66,11 +65,17 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 		
-//		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		
+		// Suppose I detect a change in a folder
+		log.debug("I must throw away the cache for folder .");
+		ops.invalidateCache(new File("."));
+		
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 	
 	private static List<Object> getCacheKey(String methodName, Object... args) {

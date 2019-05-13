@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-@Primary
-@Service
+//@Primary
+//@Service
 //@AiaRapida
 public class ExpensiveOpsWithCache implements IExpensiveOps {
 	private final IExpensiveOps delegate;
