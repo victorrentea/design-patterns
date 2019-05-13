@@ -31,8 +31,15 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps(); 
+		IExpensiveOps ops = new ExpensiveOps();
+		ops = new ExpensiveOpsWithCache(ops); 
 
+		logicaDeDomeniu(ops);
+	}
+
+// Holy Domain Logic. 
+// Very precious things that I want to keep agnostic to technical details
+	private void logicaDeDomeniu(IExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");

@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -17,22 +15,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ExpensiveOps {
-	
-	
+public class ExpensiveOps implements IExpensiveOps {
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	private Map<Integer, Boolean> cache = new HashMap<>(); 
 	public Boolean isPrime(int n) { 
-		if (cache.containsKey(n)) {
-			return cache.get(n);
-		}
-		Boolean result = isPrime__(n);
-		cache.put(n, result);
-		return result;
-	}
-	
-	public Boolean isPrime__(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
