@@ -3,6 +3,7 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -55,10 +56,10 @@ class OrderExporter  {
 //	private LabelService labelService;
 //	private CountryRepo countryRepo;
 	@Autowired
-	private ApplicationContext spring;
+	private ObjectFactory<LabelService> labelServiceFactory;
 
 	public void export(Locale locale) {
-		LabelService labelService = spring.getBean(LabelService.class);
+		LabelService labelService = labelServiceFactory.getObject();
 //		LabelService labelService = new LabelService(countryRepo);
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
@@ -82,7 +83,6 @@ class InvoiceExporter {
 @Service
 @Scope("prototype")
 class LabelService {
-//	@Autowired
 	private CountryRepo countryRepo;
 	
 	public LabelService(CountryRepo countryRepo) {
