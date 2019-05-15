@@ -2,10 +2,13 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,6 +37,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		holyDomainLogic();
 	}
 	@Autowired
+	@Cached
 	private IExpensiveOps ops;
 
 	private void holyDomainLogic() {
@@ -57,4 +61,10 @@ public class ProxySpringApp implements CommandLineRunner {
 		list.addAll(asList(args));
 		return list;
 	}
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+@interface Cached {
+
 }

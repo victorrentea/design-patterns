@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@Primary
+@Cached
 public class ExpesiveOpsWithCaching implements IExpensiveOps {
     private Map<Integer, Boolean> cache = new HashMap<>();
     private IExpensiveOps ops;
