@@ -37,7 +37,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		holyDomainLogic();
 	}
 	@Autowired
-	@Cached
+//	@Cached
 	private IExpensiveOps ops;
 
 	private void holyDomainLogic() {
@@ -63,8 +63,8 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 }
 
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-@interface Cached {
-
-}
+//@Retention(RetentionPolicy.RUNTIME)
+//@Qualifier
+//@interface Cached {
+//
+//}
