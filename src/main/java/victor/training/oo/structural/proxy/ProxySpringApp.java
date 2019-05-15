@@ -2,11 +2,15 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -16,10 +20,11 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @EnableAspectJAutoProxy 
-@EnableCaching 
+@EnableCaching
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -38,9 +43,10 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 	@Autowired
 //	@Cached
-	private IExpensiveOps ops;
+	private ExpensiveOps ops;
 
 	private void holyDomainLogic() {
+		log.debug("Who the heck are you ? " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -48,11 +54,15 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 
-//		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+
+		log.debug("Detect here a file changed");
+		ops.killCache(new File("."));
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 
 	private static List<Object> getCacheKey(String methodName, Object... args) {
@@ -68,3 +78,24 @@ public class ProxySpringApp implements CommandLineRunner {
 //@interface Cached {
 //
 //}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {
+}
+
+@Slf4j
+@Aspect
+@Component
+class LoggerAspect {
+//	@Around("execution(* victor..*(..))")
+//	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
+	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+	public Object interceptCallForLogging(ProceedingJoinPoint point) throws Throwable {
+		log.debug(">> Calling method {}", point.getSignature().getName());
+		return point.proceed();
+	}
+}

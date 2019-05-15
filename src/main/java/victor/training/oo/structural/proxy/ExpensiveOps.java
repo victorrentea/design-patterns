@@ -10,22 +10,32 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.sun.istack.internal.NotNull;
+import lombok.extern.java.Log;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Slf4j
 @Service
-public class ExpensiveOps implements IExpensiveOps {
+//@LoggedClass
+public class ExpensiveOps /*implements IExpensiveOps*/ {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	@Override
+	@LoggedMethod
+	@Cacheable("primesX")
+	@Nullable
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
+		new RuntimeException().printStackTrace();
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
 			return true;
@@ -42,10 +52,10 @@ public class ExpensiveOps implements IExpensiveOps {
 		}
 		return true;
 	}
-
-	@Override
+	@Cacheable("folders")
 	@SneakyThrows
-	public String hashAllFiles(File folder) {
+	@Validated
+	public String hashAllFiles(@NotNull  File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
@@ -58,5 +68,9 @@ public class ExpensiveOps implements IExpensiveOps {
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
-	
+
+	@CacheEvict("folders")
+	public void killCache(File file) {
+		// DO NOT TOUCH: Let the magic happen
+	}
 }
