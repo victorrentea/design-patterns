@@ -14,6 +14,7 @@ import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @SpringBootApplication
 public class ObserverSpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -39,6 +40,8 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [opt] Transaction-scoped events
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
+		log.info("DONE");
+
 		//afterTransaction.runInTransaction();
 	}
 }
