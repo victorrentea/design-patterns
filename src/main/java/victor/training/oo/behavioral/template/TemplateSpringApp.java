@@ -17,16 +17,14 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedEmailSender received;
-	@Autowired
-	private OrderShippedEmailSender shipped;
+	private Emails emails;
 	@Autowired
 	private EmailSender emailSender;
 
 	public void run(String... args) throws Exception {
-		emailSender.sendEmail("a@b.com", received);
-		emailSender.sendEmail("a@b.com", shipped);
-	}
+		emailSender.sendEmail("a@b.com", emails::fillReceivedEmailContent);
+		emailSender.sendEmail("a@b.com", emails::fillShippedEmailContent);
+}
 }
 @Service
 class EmailSender {
@@ -49,16 +47,12 @@ interface EmailContentFiller {
 	void fillEmailContent(Email email);
 }
 @Service
-class OrderReceivedEmailSender implements EmailContentFiller {
-	public void fillEmailContent(Email email) {
+class Emails {
+	public void fillReceivedEmailContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-@Service
-class OrderShippedEmailSender  implements EmailContentFiller {
-	@Override
-	public void fillEmailContent(Email email) {
+	public void fillShippedEmailContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've sent you the order. Hope it gets to you... (this time)");
 	}
