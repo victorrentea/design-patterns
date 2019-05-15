@@ -12,7 +12,7 @@ public class CumPotiSaPierziOValoareInSet {
 		System.out.println("Hash(emma):" + emma.hashCode());
 		
 		System.out.println(copiiiMei.contains(emma));
-		emma.setName("Emma-Simona");
+//		emma.setName("Emma-Simona");
 
 		System.out.println("Hash(emma):" + emma.hashCode());
 		System.out.println(copiiiMei.contains(emma));
@@ -20,7 +20,7 @@ public class CumPotiSaPierziOValoareInSet {
 	}
 }
 class Copil {
-	private String name;
+	private final String name;
 
 	public Copil(String name) {
 		this.name = name;
@@ -30,9 +30,6 @@ class Copil {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public int hashCode() {
 		final int prime = 31;
