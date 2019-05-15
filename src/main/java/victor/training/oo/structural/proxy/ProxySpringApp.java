@@ -49,6 +49,8 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Who the heck are you ? " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
+		log.debug("4 is prime ? ");
+		log.debug("Got: " + ops.isPrime(4) + "\n");
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 		log.debug("10000169 is prime ? ");
