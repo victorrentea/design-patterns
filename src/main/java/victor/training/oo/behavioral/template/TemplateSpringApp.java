@@ -17,17 +17,21 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private EmailService service;
-	
+	private OrderReceivedEmailSender received;
+	@Autowired
+	private OrderShippedEmailSender shipped;
+	@Autowired
+	private EmailSender emailSender;
+
 	public void run(String... args) throws Exception {
-		service.sendOrderReceivedEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", received);
+		emailSender.sendEmail("a@b.com", shipped);
 	}
 }
-
 @Service
-class EmailService {
+class EmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailContentFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -35,11 +39,28 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			filler.fillEmailContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+}
+interface EmailContentFiller {
+	void fillEmailContent(Email email);
+}
+@Service
+class OrderReceivedEmailSender implements EmailContentFiller {
+	public void fillEmailContent(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+@Service
+class OrderShippedEmailSender  implements EmailContentFiller {
+	@Override
+	public void fillEmailContent(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("We've sent you the order. Hope it gets to you... (this time)");
 	}
 }
 
