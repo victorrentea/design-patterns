@@ -3,8 +3,8 @@ package victor.training.oo.behavioral.command;
 import java.util.Arrays;
 import java.util.concurrent.*;
 
-import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +19,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 @EnableAsync // SOLUTION
 @SpringBootApplication
 public class CommandSpringApp {
@@ -27,10 +29,10 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor(@Value("${thread.pool.count:2}")int threadCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(threadCount);
+		executor.setMaxPoolSize(threadCount);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -45,17 +47,17 @@ public class CommandSpringApp {
 class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
-	
+	@Autowired
+	private ThreadPoolTaskExecutor pool;
 	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
+		log.debug("Submitting my order to " + barman.getClass());
 
-		ExecutorService pool = Executors.newFixedThreadPool(2);
-		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
-		Future<Wiskey> futureWhiskey = pool.submit(() -> barman.getOneWiskey());
-
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Wiskey> futureWhiskey = barman.getOneWiskey();
+		log.debug("The chick left with my order");
 		Ale ale = futureAle.get();
 		Wiskey wiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
@@ -65,17 +67,19 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
-		 log.debug("Pouring Ale...");
-		 ThreadUtils.sleep(1000);
-		 return new Ale();
+	@Async
+	 public Future<Wiskey> getOneWiskey() {
+		 log.debug("Pouring Whiskey...");
+//		 ThreadUtils.sleep(1000);
+		 return completedFuture(new Wiskey());
 	 }
-	
-	 public Wiskey getOneWiskey() {
-		 log.debug("Pouring Wiskey...");
-		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
-	 }
+
+	@Async
+	public Future<Ale> getOneAle() {
+		log.debug("Pouring Ale...");
+//		ThreadUtils.sleep(1000);
+		return completedFuture(new Ale());
+	}
 }
 
 @Data
