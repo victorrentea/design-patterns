@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
@@ -19,9 +21,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 	@Autowired
 	private Emails emails;
 	@Autowired
-	private EmailSender emailSender;
-
-
+	private EmailSender emailSender; // never be proxied
 
 	public void run(String... args) throws Exception {
 		emailSender.sendEmail("a@b.com", emails::fillReceivedEmailContent);
@@ -29,7 +29,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 }
 }
 @Service
-class EmailSender {
+//@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS) // this would fix it
+class EmailSender /*implements Something*/{
 
 	@FunctionalInterface
 	interface EmailContentFiller {
