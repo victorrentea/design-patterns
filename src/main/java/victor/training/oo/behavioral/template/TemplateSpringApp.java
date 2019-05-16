@@ -21,6 +21,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 	@Autowired
 	private EmailSender emailSender;
 
+
+
 	public void run(String... args) throws Exception {
 		emailSender.sendEmail("a@b.com", emails::fillReceivedEmailContent);
 		emailSender.sendEmail("a@b.com", emails::fillShippedEmailContent);
@@ -29,6 +31,10 @@ public class TemplateSpringApp implements CommandLineRunner {
 @Service
 class EmailSender {
 
+	@FunctionalInterface
+	interface EmailContentFiller {
+		void fillEmailContent(Email email);
+	}
 	public void sendEmail(String emailAddress, EmailContentFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
@@ -42,9 +48,6 @@ class EmailSender {
 			if (success) break;
 		}
 	}
-}
-interface EmailContentFiller {
-	void fillEmailContent(Email email);
 }
 @Service
 class Emails {
