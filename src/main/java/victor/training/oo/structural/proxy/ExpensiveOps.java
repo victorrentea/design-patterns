@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+//@LoggedClass
 public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
@@ -30,7 +31,7 @@ public class ExpensiveOps {
 	@Cacheable("primes")
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
-		new Exception().printStackTrace();
+//		new Exception().printStackTrace(); // uncomment this to see who runs in front of you.
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
 			return true;
@@ -50,6 +51,7 @@ public class ExpensiveOps {
 
 	@SneakyThrows
     @Cacheable("folders")
+	@LoggedMethod
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
