@@ -17,17 +17,14 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedEmailComposer received;
-	@Autowired
-	private OrderShippedEmailComposer shipped;
+	private Emails emails;
 
 	@Autowired
 	private EmailService emailService;
 
 	public void run(String... args) throws Exception {
-		emailService.sendEmail("a@b.com", received);
-		emailService.sendEmail("a@b.com", shipped);
-//		shipped.sendEmail("a@b.com");
+		emailService.sendEmail("a@b.com", emails::composeOrderReceived);
+		emailService.sendEmail("a@b.com", emails::composeOrderShipped);
 	}
 }
 @Service
@@ -49,18 +46,15 @@ class EmailService {
 }
 interface EmailComposer {
 	void compose(Email email);
-
 }
 @Service
-class OrderReceivedEmailComposer implements EmailComposer {
-	public void compose(Email email) {
+class Emails {
+//	@Autowired private altaDep
+	public void composeOrderReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-@Service
-class OrderShippedEmailComposer implements EmailComposer {
-	public void compose(Email email) {
+	public void composeOrderShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Tz-am trimas! Speram s-ajunga (de data asta)");
 	}
