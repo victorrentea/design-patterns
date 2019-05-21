@@ -2,6 +2,7 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private IExpensiveOps ops;
+	private ExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
@@ -41,20 +42,28 @@ public class ProxySpringApp implements CommandLineRunner {
 
 		zenDomainLogicThatIwantToKeepSafeFromAnyInfrastructuralConcerns(ops);
 
-//		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+
 	}
 
-	private void zenDomainLogicThatIwantToKeepSafeFromAnyInfrastructuralConcerns(IExpensiveOps ops) {
+	private void zenDomainLogicThatIwantToKeepSafeFromAnyInfrastructuralConcerns(ExpensiveOps ops) {
 		log.debug("\n");
+		log.debug("Who are you?! " + ops.getClass());
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
+
+		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+
+		System.out.println("Detect a file change. Should throw away the cache");
+		ops.killCache(new File("."));
+
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 
 	private static List<Object> getCacheKey(String methodName, Object... args) {
@@ -64,6 +73,17 @@ public class ProxySpringApp implements CommandLineRunner {
 		return list;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
 
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
