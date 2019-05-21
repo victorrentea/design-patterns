@@ -17,17 +17,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private OrderReceivedEmailService received;
+	private OrderReceivedEmailComposer received;
 	@Autowired
-	private OrderShippedEmailService shipped;
+	private OrderShippedEmailComposer shipped;
 
 	public void run(String... args) throws Exception {
-		received.sendEmail("a@b.com");
-		shipped.sendEmail("a@b.com");
+		new EmailService(received).sendEmail("a@b.com");
+		new EmailService(shipped).sendEmail("a@b.com");
+//		shipped.sendEmail("a@b.com");
 	}
 }
+class EmailService {
+	private final EmailComposer composer;
 
-abstract class EmailService {
+	EmailService(EmailComposer composer) {
+		this.composer = composer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -37,26 +42,26 @@ abstract class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composeEmail(email);
+			composer.compose(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
+}
+interface EmailComposer {
+	void compose(Email email);
 
-	protected abstract void composeEmail(Email email);
 }
 @Service
-class OrderReceivedEmailService extends EmailService {
-	@Override
-	protected void composeEmail(Email email) {
+class OrderReceivedEmailComposer implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 @Service
-class OrderShippedEmailService extends EmailService {
-	@Override
-	protected void composeEmail(Email email) {
+class OrderShippedEmailComposer implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Tz-am trimas! Speram s-ajunga (de data asta)");
 	}
