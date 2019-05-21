@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -37,30 +40,41 @@ class CustomsService {
 	}
 
 	private ITax getTax(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKTax();
-		case "CN": return new CNTax();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTax();
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		List<ITax> taxe = Arrays.asList(new UKTax(), new CNTax(), new EUTax());
+		for (ITax tax : taxe) {
+			if (tax.getIsoCodes().contains(originCountry)) {
+				return tax;
+			}
 		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 	}
 }
 interface ITax {
+	List<String> getIsoCodes();
 	double compute(double tobacoValue, double regularValue);
 }
 class UKTax implements ITax {
+	public List<String> getIsoCodes() {
+		return Arrays.asList("UK");
+	}
 	public double compute(double tobacoValue, double regularValue) {
-		return tobacoValue/2 + regularValue/2;
+		return tobacoValue /2 + regularValue/2;
 	}
 }
 class CNTax implements ITax {
+	public List<String> getIsoCodes() {
+		return Arrays.asList("CN");
+	}
+
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
 	}
 }
 class EUTax implements ITax {
+	public List<String> getIsoCodes() {
+		return Arrays.asList("RO", "ES", "FR");
+	}
+
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue /3;
 	}
