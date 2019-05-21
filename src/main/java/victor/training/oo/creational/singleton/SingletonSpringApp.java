@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -81,12 +82,9 @@ class InvoiceExporter {
 @Slf4j
 @Service
 @Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@AllArgsConstructor
 class LabelService {
 	private CountryRepo countryRepo;
-	
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
 
 	private Map<String, String> countryNames;
 	
