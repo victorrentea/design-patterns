@@ -27,7 +27,6 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	@WithCache
 	private IExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
