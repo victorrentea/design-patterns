@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 
 import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,10 +31,10 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor(@Value("${pool.thread.count:2}") int threadCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(threadCount);
+		executor.setMaxPoolSize(threadCount);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -48,14 +49,14 @@ public class CommandSpringApp {
 class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
-	
-	
+	@Autowired
+	private ThreadPoolTaskExecutor pool;
+
+
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-
-		ExecutorService pool = Executors.newFixedThreadPool(2);
 
 		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
 		Future<Wiskey> futureWiskey = pool.submit(() -> barman.getOneWiskey());
