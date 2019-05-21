@@ -17,51 +17,31 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private EmailSender service;
-	@Autowired
-	private Emails emails;
+	private EmailService service;
 	
 	public void run(String... args) throws Exception {
-		service.sendEmail("a@b.com" ,emails::fillEmailReceived);
-		service.sendEmail("a@b.com", emails::fillEmailShipped);
+		service.sendOrderReceivedEmail("a@b.com");
 	}
 }
 
 @Service
-class EmailSender {
+class EmailService {
 
-	public void sendEmail(String emailAddress, EmailFiller filler) {
-		final int MAX_RETRIES = 3;
+	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
+		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			filler.fillEmail(email);
+			email.setSubject("Order Received");
+			email.setBody("Thank you for your order");
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 }
-
-interface EmailFiller {
-	abstract void fillEmail(Email email);
-}
-
-@Service
-class Emails {
-	public void fillEmailReceived(Email email) {
-		email.setSubject("Order Received");
-		email.setBody("Thank you for your order");
-	}
-	public void fillEmailShipped(Email email) {
-		email.setSubject("Order Shipped");
-		email.setBody("Just sent you your order. ! Hope it gets to you (this time :p)");
-	}
-}
-
-
 
 class EmailContext {
 	public boolean send(Email email) {

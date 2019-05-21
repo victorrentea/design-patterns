@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +21,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-	@Bean
-    public ApplicationEventMulticaster applicationEventMulticaster() {
-        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        return eventMulticaster;
-    }
+//	@Bean
+//    public ApplicationEventMulticaster applicationEventMulticaster() {
+//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+//        return eventMulticaster;
+//    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -41,16 +40,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [opt] Transaction-scoped events
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
-		afterTransaction.runInTransaction();
+		//afterTransaction.runInTransaction();
 	}
 }
 
 @Data
 class OrderPlaced {
-	public final long orderId;
-}
-@Data
-class OrderConfirmed {
 	public final long orderId;
 }
 
@@ -59,20 +54,20 @@ class OrderConfirmed {
 class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
+
 	@EventListener
-	public OrderConfirmed handle(OrderPlaced event) { 
+	public void handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
-		return new OrderConfirmed(event.getOrderId());
 	}
 }
 
 @Slf4j
 @Service
 class InvoiceService {
-	@EventListener
-	public void handle(OrderConfirmed event) {
+	
+	public void handle(OrderPlaced event) {
 		log.info("Generating invoice for order " + event.orderId);
-//		throw new RuntimeException("thrown from generate invoice");//.printStackTrace(System.out);
+		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
 	} 
 }

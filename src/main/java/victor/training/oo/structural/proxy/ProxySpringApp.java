@@ -3,16 +3,9 @@ package victor.training.oo.structural.proxy;
 import static java.util.Arrays.asList;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.jooq.lambda.Unchecked;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,47 +24,15 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	
-	// [1] implement decorator 
-	// [2] apply decorator via Spring
-	// [3] generic java.lang.reflect.Proxy 
-	// [4] Spring aspect 
+	// TODO [1] implement decorator 
+	// TODO [2] apply decorator via Spring
+	// TODO [3] generic java.lang.reflect.Proxy 
+	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
-	// TODO [7] AopContext.currentProxy();
 	public void run(String... args) throws Exception {
-		
-//		ExpensiveOps realStuff = new ExpensiveOps();
-//		
-//		InvocationHandler h = new InvocationHandler() {
-//			private Map<List<Object>, Object> cache = new HashMap<>();
-//			
-//			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//				System.out.println("Secret services here. You are calling " + method.getName());
-//				
-//				List<Object> key = new ArrayList<>();
-//				key.add(method.getName());
-//				key.addAll(asList(args));
-//				
-//				return cache.computeIfAbsent(key, 
-//						Unchecked.function(k -> method.invoke(realStuff, args)));
-//			}
-//		};
-//		ops = (IExpensiveOps) Proxy.newProxyInstance(ProxySpringApp.class.getClassLoader(), 
-//				new Class<?>[] {IExpensiveOps.class}, h);
-		
-		sacredBusinessLogic(); 
-		
-	}
-	
-//	@Cached
-	@Autowired
-	private IExpensiveOps ops;
+		ExpensiveOps ops = new ExpensiveOps(); 
 
-
-	private void sacredBusinessLogic() {
-		
-		System.out.println("WHO ARE YOU?" + ops.getClass());
-		
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -82,13 +43,6 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-		
-		
-		log.debug("I got a phonecall: a file has just changed in the folder: look int Java NIO for a proofy way of wathing a folder");
-		ops.killTheCache();
-		
-		
-		
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}

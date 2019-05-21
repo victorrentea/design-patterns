@@ -3,7 +3,6 @@ package victor.training.oo.behavioral.strategy;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +12,6 @@ public interface ConfigProvider {
 	Properties getProperties();
 }
 
-@Profile("localProps")
-@Component
 class ConfigFileProvider implements ConfigProvider {
 	
 	@SneakyThrows
@@ -27,8 +24,6 @@ class ConfigFileProvider implements ConfigProvider {
 	}
 }
 
-@Profile("!localProps")
-@Component
 class ConfigDatabaseProvider implements ConfigProvider {
 
 	public Properties getProperties() {

@@ -19,6 +19,9 @@ public class CustomerBuilder {
 		return this;
 	}
 	
+	public CustomerBuilder withAddress(AddressBuilder addressBuilder) { 
+		return withAddress(addressBuilder.build());
+	}
 	// SOLUTION)
 
 	public Customer build() {
