@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -52,30 +53,31 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-	private CountryRepo countryRepo;
-//	private LabelService labelService;
+	private LabelService labelService;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = new LabelService(countryRepo);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice(locale);
 	}
 }
 
 @Slf4j
-@Service 
+@Service
 class InvoiceExporter {
-//	@Autowired
-//	private LabelService labelService;
-	
-	public void exportInvoice(LabelService labelService) {
+	@Autowired
+	private LabelService labelService;
+
+	public void exportInvoice(Locale locale) {
+		labelService.load(locale);
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
+@Service
+@Scope("prototype")
 class LabelService {
 	private CountryRepo countryRepo;
 	
