@@ -37,13 +37,14 @@ public class StrategySpringApp implements CommandLineRunner {
 
 @Service
 class CustomsService {
+	@Autowired
+	private List<ITax> taxe;
+
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 		ITax tax = getTax(originCountry);
 		return tax.compute(tobacoValue, regularValue);
 
 	}
-	@Autowired
-	List<ITax> taxe;
 	private ITax getTax(String originCountry) {
 		return taxe.stream()
 				.filter(tax -> tax.canHandle(originCountry))
