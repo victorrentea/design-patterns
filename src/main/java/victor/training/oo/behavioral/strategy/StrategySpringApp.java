@@ -26,7 +26,7 @@ public class StrategySpringApp implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
-		System.out.println("Tax for (CH,100,100) = " + service.computeCustomsTax("CH", 100, 100));
+		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CH", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
 		
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
@@ -37,7 +37,7 @@ class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) { 
 		case "UK": return tobacoValue/2 + regularValue/2; 
-		case "CH": return tobacoValue + regularValue;
+		case "CN": return tobacoValue + regularValue;
 		case "FR": 
 		case "ES": // other EU country codes...
 		case "RO": return tobacoValue/3;
