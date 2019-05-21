@@ -21,20 +21,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 	@Autowired
 	private OrderShippedEmailComposer shipped;
 
+	@Autowired
+	private EmailService emailService;
+
 	public void run(String... args) throws Exception {
-		new EmailService(received).sendEmail("a@b.com");
-		new EmailService(shipped).sendEmail("a@b.com");
+		emailService.sendEmail("a@b.com", received);
+		emailService.sendEmail("a@b.com", shipped);
 //		shipped.sendEmail("a@b.com");
 	}
 }
+@Service
 class EmailService {
-	private final EmailComposer composer;
 
-	EmailService(EmailComposer composer) {
-		this.composer = composer;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailComposer composer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
