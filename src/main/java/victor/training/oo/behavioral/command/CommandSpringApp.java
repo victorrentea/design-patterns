@@ -58,12 +58,12 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
 
-		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
-		Future<Wiskey> futureWiskey = pool.submit(() -> barman.getOneWiskey());
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Wiskey> futureWiskey = barman.getOneWiskey();
+		log.debug("Gagica a plecat cu comanda mea");
 		Ale ale = futureAle.get();
 		Wiskey wiskey = futureWiskey.get();
-//		Ale ale = barman.getOneAle();
-//		Wiskey wiskey = barman.getOneWiskey();
+//		barman.sendSms("Esti la fel de prost ca maica-ta").get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
 	}
 }
@@ -71,17 +71,25 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return CompletableFuture.completedFuture(new Ale());
 	 }
-	
-	 public Wiskey getOneWiskey() {
+
+	 @Async
+	 public Future<Wiskey> getOneWiskey() {
 		 log.debug("Pouring Wiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 return CompletableFuture.completedFuture(new Wiskey());
 	 }
+
+	 @Async
+	public Future<Void> sendSms(String s) {
+		log.debug("Care a zis mah asta !?!!");
+		throw new RuntimeException("Rosu in fata ochilor");
+	}
 }
 
 @Data
