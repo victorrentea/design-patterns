@@ -2,6 +2,8 @@ package victor.training.oo.structural.proxy;
 
 import static java.util.Arrays.asList;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	@Qualifier("expensiveOpsWithCache")
+	@WithCache
 	private IExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
@@ -62,4 +64,10 @@ public class ProxySpringApp implements CommandLineRunner {
 		list.addAll(asList(args));
 		return list;
 	}
+}
+
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@interface WithCache {
+
 }
