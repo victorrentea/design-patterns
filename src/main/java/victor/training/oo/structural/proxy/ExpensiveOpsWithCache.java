@@ -21,12 +21,14 @@ public class ExpensiveOpsWithCache implements IExpensiveOps {
     }
 
     public Boolean isPrime(int n) {
-        if (cache.containsKey(n)) {
-            return cache.get(n);
-        }
-        Boolean result = ops.isPrime(n);
-        cache.put(n, result);
-        return result;
+//        if (cache.containsKey(n)) {
+//            return cache.get(n);
+//        }
+//        Boolean result = ops.isPrime(n);
+//        cache.put(n, result);
+//        return result;
+
+        return cache.computeIfAbsent(n, nn -> ops.isPrime(n));
     }
 
     @Override
