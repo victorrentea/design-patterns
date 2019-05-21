@@ -2,6 +2,9 @@ package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +54,15 @@ class Drinker implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Wiskey wiskey = barman.getOneWiskey();
+
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+
+		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
+		Future<Wiskey> futureWiskey = pool.submit(() -> barman.getOneWiskey());
+		Ale ale = futureAle.get();
+		Wiskey wiskey = futureWiskey.get();
+//		Ale ale = barman.getOneAle();
+//		Wiskey wiskey = barman.getOneWiskey();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
 	}
 }
