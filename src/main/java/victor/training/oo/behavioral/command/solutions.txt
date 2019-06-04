@@ -50,8 +50,8 @@ class Drinker implements CommandLineRunner {
 //	public void run(String... args) throws Exception {
 //		log.debug("Submitting my order");
 //		Ale ale = barman.getOneAle();
-//		Wiskey wiskey = barman.getOneWiskey();
-//		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+//		Wiskey whiskey = barman.getOneWiskey();
+//		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 //	}
 	// INITIAL )
 
@@ -67,8 +67,8 @@ class Drinker implements CommandLineRunner {
 //		log.debug("Waiting for my order");
 //
 //		Ale ale = aleOrder.get();
-//		Wiskey wiskey = wiskeyOrder.get();
-//		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+//		Wiskey whiskey = wiskeyOrder.get();
+//		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 //	}
 	
 	

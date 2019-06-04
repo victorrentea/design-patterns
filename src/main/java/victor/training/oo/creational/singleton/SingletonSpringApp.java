@@ -86,11 +86,12 @@ class LabelService {
 	
 	@PostConstruct
 	public void load() {
+		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
 	}
 	
 	public String getCountryName(String iso2Code) {
-		log.debug("getCountryName() on instance: " + this.hashCode());
+		log.debug("getCountryName() in instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
 	}
 }

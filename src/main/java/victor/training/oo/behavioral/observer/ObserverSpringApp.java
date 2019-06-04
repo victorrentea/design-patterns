@@ -68,6 +68,7 @@ class InvoiceService {
 	
 	public void handle(OrderPlaced event) {
 		log.info("Generating invoice for order " + event.orderId);
-		new RuntimeException("thrown from generate invoice").printStackTrace(System.out);
+		// TODO what if...
+		// throw new RuntimeException("thrown from generate invoice");
 	} 
 }

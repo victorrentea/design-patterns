@@ -1,15 +1,12 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 
-import org.jooq.lambda.Unchecked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -19,7 +16,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
-@EnableAsync // SOLUTION
+@EnableAsync
 @SpringBootApplication
 public class CommandSpringApp {
 	public static void main(String[] args) {
@@ -52,8 +49,8 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
 		Ale ale = barman.getOneAle();
-		Wiskey wiskey = barman.getOneWiskey();
-		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, wiskey));
+		Whiskey whiskey = barman.getOneWhiskey();
+		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 	}
 }
 
@@ -66,10 +63,10 @@ class Barman {
 		 return new Ale();
 	 }
 	
-	 public Wiskey getOneWiskey() {
-		 log.debug("Pouring Wiskey...");
+	 public Whiskey getOneWhiskey() {
+		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Wiskey();
+		 return new Whiskey();
 	 }
 }
 
@@ -78,5 +75,5 @@ class Ale {
 }
 
 @Data
-class Wiskey {
+class Whiskey {
 }

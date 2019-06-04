@@ -19,7 +19,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 	@Autowired
 	private EmailService service;
 	
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		service.sendOrderReceivedEmail("a@b.com");
 	}
 }
