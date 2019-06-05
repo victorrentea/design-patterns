@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,8 @@ public class ProxySpringApp implements CommandLineRunner {
 		SpringApplication.run(ProxySpringApp.class, args);
 	}
 
+	@Autowired
+	private ExpensiveOps ops;
 	
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
@@ -31,7 +34,9 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps();
+//		ExpensiveOps ops = new ExpensiveOps();
+
+		log.debug("What the heck happens her ?" + ops.getClass());
 
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
@@ -40,11 +45,11 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 		
-		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-		log.debug("Folder MD5: ");
-		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-		log.debug("Folder MD5: ");
-		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+//		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
+//		log.debug("Folder MD5: ");
+//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+//		log.debug("Folder MD5: ");
+//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 	
 	private static List<Object> getCacheKey(String methodName, Object... args) {
@@ -54,3 +59,4 @@ public class ProxySpringApp implements CommandLineRunner {
 		return list;
 	}
 }
+
