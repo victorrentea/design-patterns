@@ -16,20 +16,28 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private AbstractEmailService service;
+//	@Autowired
+//	private EmailSender service;
 	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
-		service.sendOrderReceivedEmail("a@b.com");
+		//UC 321
+		new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
+
+		// UC 323
+		new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
 	}
 }
 
-@Service
-abstract
-class AbstractEmailService {
+class EmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	private final EmailFiller filler;
+
+	EmailSender(EmailFiller filler) {
+		this.filler = filler;
+	}
+
+
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -37,26 +45,26 @@ class AbstractEmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			fillContent(email);
+			filler.fillContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
-	protected abstract void fillContent(Email email);
 }
-class OrderReceivedEmailSender extends AbstractEmailService {
-	@Override
-	protected void fillContent(Email email) {
+interface EmailFiller {
+	void fillContent(Email email);
+}
+@Service
+class OrderReceivedEmailFiller implements EmailFiller {
+	public void fillContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-
-
-class OrderShippedEmailService extends AbstractEmailService {
-	@Override
-	protected void fillContent(Email email) {
+@Service
+class OrderShippedEmailFiller implements EmailFiller {
+	public void fillContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time).");
 	}
