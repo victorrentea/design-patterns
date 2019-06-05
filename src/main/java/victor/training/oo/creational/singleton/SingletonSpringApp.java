@@ -50,8 +50,26 @@ public class SingletonSpringApp implements CommandLineRunner{
 		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
 		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 	}
-}
 
+	public static ThreadLocal<String> TL = new ThreadLocal<String>() {
+		@Override
+		protected String initialValue() {
+			return "S";
+		}
+	};
+
+	static {
+		try {
+			TL.set("a");
+			callSometingElse();
+		} finally {
+			TL.remove();
+		}
+	}
+	private static void callSometingElse() {
+		OrderExporter.callSometingElse2();
+	}
+}
 @Slf4j
 @Service
 class OrderExporter  {
@@ -60,6 +78,11 @@ class OrderExporter  {
 
 	@Autowired
 	private LabelService labelService;
+
+	public static void callSometingElse2() {
+		String s = SingletonSpringApp.TL.get();
+
+	}
 
 	public void export(Locale locale) {
 		log.debug("Who are you? Magic is all around us: " + labelService.getClass());
@@ -98,5 +121,42 @@ class LabelService {
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
+	}
+}
+
+
+class X {
+	{
+		new X()
+			.setA(1)
+			.setB(2);
+	}
+	int a,b,c;
+
+	public int getA() {
+		return a;
+	}
+
+	public X setA(int a) {
+		this.a = a;
+		return this;
+	}
+
+	public int getB() {
+		return b;
+	}
+
+	public X setB(int b) {
+		this.b = b;
+		return this;
+	}
+
+	public int getC() {
+		return c;
+	}
+
+	public X setC(int c) {
+		this.c = c;
+		return this;
 	}
 }
