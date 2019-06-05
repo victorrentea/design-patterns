@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@EnableAspectJAutoProxy 
+//@EnableAspectJAutoProxy
 @EnableCaching 
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
@@ -84,6 +84,7 @@ class MethodParamInterceptor {
 //	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedParams)")
 	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedParams)")
 	public Object printParams(ProceedingJoinPoint point) throws Throwable {
+
 		System.out.println("Cambridge Analytica: you " +
 				"are trying to call: " +
 				point.getSignature().getName() +

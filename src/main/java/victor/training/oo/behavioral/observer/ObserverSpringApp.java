@@ -1,19 +1,18 @@
 package victor.training.oo.behavioral.observer;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Objects;
 
 @SpringBootApplication
 public class ObserverSpringApp implements CommandLineRunner {
@@ -55,6 +54,7 @@ class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
+	@Order(10)
 	@EventListener
 	public void handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
@@ -65,7 +65,9 @@ class StockManagementService {
 @Slf4j
 @Service
 class InvoiceService {
-	
+
+	@Order(20)
+	@EventListener
 	public void handle(OrderPlaced event) {
 		log.info("Generating invoice for order " + event.orderId);
 		// TODO what if...
