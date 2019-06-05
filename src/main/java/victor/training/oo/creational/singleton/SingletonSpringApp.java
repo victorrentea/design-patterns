@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -57,11 +58,11 @@ class OrderExporter  {
 	private InvoiceExporter invoiceExporter;
 
 	@Autowired
-	private ApplicationContext spring;
+	private ObjectFactory<LabelService> labelServiceFactory;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = spring.getBean(LabelService.class);
+		LabelService labelService = labelServiceFactory.getObject();
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 		invoiceExporter.exportInvoice(labelService);
