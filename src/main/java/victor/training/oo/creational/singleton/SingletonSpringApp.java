@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +17,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -54,37 +54,36 @@ public class SingletonSpringApp implements CommandLineRunner{
 
 @Slf4j
 @Service
-abstract
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 
-
-	@Lookup
-	public abstract LabelService createLabelService();
-
+	@Autowired
+	private LabelService labelService;
 
 	public void export(Locale locale) {
+		log.debug("Who are you? Magic is all around us: " + labelService.getClass());
 		log.debug("Running export in " + locale);
-		LabelService labelService = createLabelService();
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
+	@Autowired
+	private LabelService labelService;
 
-	public void exportInvoice(LabelService labelService) {
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
 @Service
-@Scope("prototype")
+@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RequiredArgsConstructor
 class LabelService {
 	private final CountryRepo countryRepo;
