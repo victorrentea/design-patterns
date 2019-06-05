@@ -5,13 +5,17 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -51,16 +55,15 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-//	@Autowired
-//	private LabelService labelService;
+
 	@Autowired
-	private CountryRepo countryRepo; // "I am injecting HIS dependencies"
+	private ApplicationContext spring;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = new LabelService(countryRepo);
+		LabelService labelService = spring.getBean(LabelService.class);
 		labelService.load(locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
+		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 		invoiceExporter.exportInvoice(labelService);
 	}
 }
@@ -68,23 +71,18 @@ class OrderExporter  {
 @Slf4j
 @Service 
 class InvoiceExporter {
-//	@Autowired
-//	private LabelService labelService;
-	
+
 	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
-//@Service
+@Service
+@Scope("prototype")
+@RequiredArgsConstructor
 class LabelService {
-//	@Autowired
-	private CountryRepo countryRepo;
-	
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
+	private final CountryRepo countryRepo;
 
 	private Map<String, String> countryNames;
 	
