@@ -3,9 +3,15 @@ package victor.training.oo.structural.proxy;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +20,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @EnableAspectJAutoProxy 
@@ -66,3 +73,21 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 }
 
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedParams {
+}
+
+@Aspect
+@Component
+class MethodParamInterceptor {
+//	@Around("execution(* victor..*.*(..))")
+//	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedParams)")
+	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedParams)")
+	public Object printParams(ProceedingJoinPoint point) throws Throwable {
+		System.out.println("Cambridge Analytica: you " +
+				"are trying to call: " +
+				point.getSignature().getName() +
+				" with args "+ Arrays.toString(point.getArgs()));
+		return point.proceed();
+	}
+}

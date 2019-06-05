@@ -21,10 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+//@LoggedParams
 public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
+	@LoggedParams
 	@Cacheable("primes")
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
