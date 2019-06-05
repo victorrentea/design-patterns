@@ -15,8 +15,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@EnableAspectJAutoProxy 
-@EnableCaching 
+@EnableCaching
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -47,10 +46,4 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 	
-	private static List<Object> getCacheKey(String methodName, Object... args) {
-		List<Object> list = new ArrayList<>();
-		list.add(methodName);
-		list.addAll(asList(args));
-		return list;
-	}
 }

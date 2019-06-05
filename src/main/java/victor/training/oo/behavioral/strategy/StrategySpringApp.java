@@ -23,7 +23,7 @@ public class StrategySpringApp implements CommandLineRunner {
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
@@ -34,13 +34,13 @@ public class StrategySpringApp implements CommandLineRunner {
 }
 
 class CustomsService {
-	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
+	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) { 
-		case "UK": return tobacoValue/2 + regularValue/2; 
-		case "CN": return tobacoValue + regularValue;
+		case "UK": return tobaccoValue/2 + regularValue/2;
+		case "CN": return tobaccoValue + regularValue;
 		case "FR": 
 		case "ES": // other EU country codes...
-		case "RO": return tobacoValue/3;
+		case "RO": return tobaccoValue/3;
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		} 
 	}
