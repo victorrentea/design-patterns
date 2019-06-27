@@ -52,7 +52,7 @@ class Drinker implements CommandLineRunner {
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
+		log.debug("Submitting my order to: " + barman.getClass());
 		Future<Ale> futureAle = barman.getOneAle();
 		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
 		log.debug("A plecat fata cu comanda");
@@ -60,6 +60,10 @@ class Drinker implements CommandLineRunner {
 
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+
+		barman.injura_l("^#%!^%#^@!#^%#^@%#^@#%");
+		log.debug("Plec linistit acasa");
+
 	}
 }
 
@@ -77,6 +81,11 @@ class Barman {
 		 ThreadUtils.sleep(1000);
 		 log.debug("Pouring Whiskey...");
 		 return CompletableFuture.completedFuture(new Whiskey());
+	 }
+
+	 @Async
+	public void injura_l(String argou) {
+		throw new RuntimeException("Te casez!");
 	 }
 }
 
