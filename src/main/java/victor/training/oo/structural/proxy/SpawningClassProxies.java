@@ -1,29 +1,32 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-public class SpawningInterfaceInstances {
+public class SpawningClassProxies {
 
 
 
     public static void main(String[] args) {
 
-        MateImpl reala = new MateImpl();
+        Mate reala = new Mate();
 
-        InvocationHandler h = new InvocationHandler() {
+        Callback callback = new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                System.out.println("Invoca fraeru metoda " + method.getName()
+            public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+                System.out.println("SRI: Invoca fraeru metoda " + method.getName()
                     + " cu parametrii " + Arrays.toString(args));
                 return method.invoke(reala, args);
             }
         };
-        Mate mate = (Mate) Proxy.newProxyInstance(SpawningInterfaceInstances.class.getClassLoader(),
-                new Class<?>[]{Mate.class},
-                h);
+        Mate mate = (Mate) Enhancer.create(Mate.class, callback);
 
         biznislogic(mate);
     }
@@ -35,12 +38,8 @@ public class SpawningInterfaceInstances {
 
 }
 
-interface Mate {
-    Integer suma(int a, int b);
-}
 
-class MateImpl implements  Mate {
-    @Override
+class Mate {
     public Integer suma(int a, int b) {
         return a+b;
     }
