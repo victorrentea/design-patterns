@@ -2,9 +2,13 @@ package victor.training.oo.creational.singleton;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.omg.PortableInterceptor.ACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -92,5 +96,18 @@ class LabelService {
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
+	}
+}
+
+@Data
+class EntitateExpusa {
+	enum Status {ACTIVE, INACTIVE, DRAFT}
+	private Long id;
+	private String name;
+	private Status status = Status.DRAFT;
+
+	public void activate() {
+		if (status != Status.DRAFT) throw new IllegalStateException("nu merge");
+		status = Status.ACTIVE;
 	}
 }
