@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -30,7 +31,7 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor(@Value("${barman.thread.pool.size:2}") int poolSize) {
+	public ThreadPoolTaskExecutor barmanExecutor(@Value("${barman.thread.pool.size:2}") int poolSize) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(poolSize);
 		executor.setMaxPoolSize(poolSize);
@@ -61,8 +62,9 @@ class Drinker implements CommandLineRunner {
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 
-		barman.injura_l("^#%!^%#^@!#^%#^@%#^@#%");
-		log.debug("Plec linistit acasa");
+        Future<Void> voidFuture = barman.injura_l("^#%!^%#^@!#^%#^@%#^@#%");
+        voidFuture.get();
+        log.debug("Plec linistit acasa");
 
 	}
 }
@@ -70,7 +72,7 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	@Async
+	@Async("barmanExecutor")
 	public Future<Ale> getOneAle() {
 		 ThreadUtils.sleep(1000);
 		 log.debug("Pouring Ale...");
@@ -84,8 +86,11 @@ class Barman {
 	 }
 
 	 @Async
-	public void injura_l(String argou) {
-		throw new RuntimeException("Te casez!");
+	public Future<Void> injura_l(String argou) {
+		if (StringUtils.isNotEmpty(argou)) {
+		    throw new RuntimeException("Te casez!");
+        }
+		return null;
 	 }
 }
 
