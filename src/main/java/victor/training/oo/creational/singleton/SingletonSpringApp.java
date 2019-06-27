@@ -101,6 +101,16 @@ class LabelService {
 
 @Data
 class EntitateExpusa {
+	private EntitateExpusa(Builder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.status = builder.status;
+	}
+
+	public static Builder newEntitateExpusa() {
+		return new Builder();
+	}
+
 	enum Status {ACTIVE, INACTIVE, DRAFT}
 	private Long id;
 	private String name;
@@ -109,5 +119,33 @@ class EntitateExpusa {
 	public void activate() {
 		if (status != Status.DRAFT) throw new IllegalStateException("nu merge");
 		status = Status.ACTIVE;
+	}
+
+	public static final class Builder {
+		private Long id;
+		private String name;
+		private Status status;
+
+		private Builder() {
+		}
+
+		public EntitateExpusa build() {
+			return new EntitateExpusa(this);
+		}
+
+		public Builder id(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder name(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder status(Status status) {
+			this.status = status;
+			return this;
+		}
 	}
 }
