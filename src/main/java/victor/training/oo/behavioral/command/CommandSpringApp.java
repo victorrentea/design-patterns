@@ -1,6 +1,9 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -42,14 +45,19 @@ public class CommandSpringApp {
 class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
-	
+
+	@Autowired
+	private ThreadPoolTaskExecutor pool;
 	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
+		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
+		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
+		Ale ale = futureAle.get();
+
+		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 	}
 }
