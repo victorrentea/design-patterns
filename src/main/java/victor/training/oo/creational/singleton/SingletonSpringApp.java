@@ -3,16 +3,17 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.ObjectFactory;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -53,38 +54,36 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-    private ObjectFactory<LabelService> labelServiceFactory;
+    private LabelService labelService;
 
     public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-        LabelService labelService = labelServiceFactory.getObject();
         labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-	public void exportInvoice(LabelService labelService) {
+	@Autowired
+	private LabelService labelService;
+
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
+@RequiredArgsConstructor
 @Slf4j
 @Service
-@Scope(scopeName = "prototype")
+@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LabelService {
-	@Autowired
-	private CountryRepo countryRepo;
-	
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
+	private final CountryRepo countryRepo;
 
 	private Map<String, String> countryNames;
-	
+
 	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
