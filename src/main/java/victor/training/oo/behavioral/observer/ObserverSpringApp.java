@@ -23,12 +23,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -63,8 +63,8 @@ class StockManagementService {
 		log.info("Checking stock for products in order " + event.orderId);
 		ThreadUtils.sleep(1000);
 		log.info("If something goes wrong - throw an exception");
-//		throw new IllegalStateException();
-		return new OrderConfirmed(event.getOrderId());
+		throw new IllegalStateException();
+//		return new OrderConfirmed(event.getOrderId());
 	}
 }
 
@@ -79,7 +79,7 @@ class OrderConfirmed {
 class InvoiceService {
 	@EventListener
 	@Order(10)
-	public void handle(OrderConfirmed event) {
+	public void handle(OrderPlaced event) {
 		log.info("Generating invoice for order " + event.orderId);
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
