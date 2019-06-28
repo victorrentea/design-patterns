@@ -1,12 +1,8 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -35,13 +31,56 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue/2;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
+		CustomsTax tax = selectTaxCalculator(originCountry);
+		return tax.compute(tobaccoValue, regularValue);
+	}
+
+	private CustomsTax selectTaxCalculator(String originCountry) {
+//		return switch (originCountry) {
+//			case "UK" -> new UKCustomsTax();
+//			case "CN" -> new CNCustomsTax();
+//			case "FR","ES","RO" -> new EUCustomsTax();
+//			default -> throw new IllegalArgumentException("Hai siktir: " + originCountry);
+//		};
+
+		switch (originCountry) {
+		case "UK": return new UKCustomsTax();
+		case "CN": return new CNCustomsTax();
+		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		case "RO": return new EUCustomsTax();
+		default: throw new IllegalArgumentException("Hai siktir: " + originCountry);
+		}
+	}
+}
+interface CustomsTax {
+	double compute(double tobaccoValue, double regularValue);
+}
+class UKCustomsTax implements CustomsTax {
+	@Override
+	public double compute(double tobaccoValue, double regularValue) {
+		// un pic mai mult cod
+		// un pic mai mult cod
+		// un pic mai mult cod
+		// un pic mai mult cod
+		// un pic mai mult cod
+		// un pic mai mult cod
+		return tobaccoValue/2 + regularValue/2;
+	}
+}
+
+class CNCustomsTax implements CustomsTax {
+	public double compute(double tobaccoValue, double regularValue) {
+		// uite frate pun si io aicea inca putin cod
+		// uite frate pun si io aicea inca putin cod
+		// uite frate pun si io aicea inca putin cod
+		// uite frate pun si io aicea inca putin cod
+		// uite frate pun si io aicea inca putin cod
+		return tobaccoValue + regularValue;
+	}
+}
+class EUCustomsTax implements CustomsTax {
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue/3;
 	}
 }
