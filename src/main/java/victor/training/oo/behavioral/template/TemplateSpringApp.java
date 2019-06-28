@@ -17,20 +17,27 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private Tringhiuletz t;
-	@Autowired
-	private Patratzel p;
+	private Emails emails;
+@Autowired
+	private EmailService emailService;
 
 	public void run(String... args) {
-		t.sendEmail("a@b.com");
-		p.sendEmail("a@b.com");
+		// UC de plasare de order
+		emailService.sendEmail("a@b.com", emails::fillOrderReceived);
+
+		// UC de ship order
+		emailService.sendEmail("a@b.com", emails::fillOrderShipped);
 	}
 }
 
+@Service
+class EmailService {
 
-abstract class EmailService {
-
-	public void sendEmail(String emailAddress) {
+	@FunctionalInterface
+	interface EmailFiller {
+		void fill(Email email);
+	}
+	public void sendEmail(String emailAddress, EmailFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -38,25 +45,20 @@ abstract class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			p(email);
+			filler.fill(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-
-	protected abstract void p(Email email);
 }
+
 @Service
-class Tringhiuletz extends EmailService{
-	protected void p(Email email) {
+class Emails {
+	public void fillOrderReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-@Service
-class Patratzel extends EmailService {
-	@Override
-	protected void p(Email email) {
+	public void fillOrderShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimes coletul. Speram s-ajunga (de data asta)");
 	}
