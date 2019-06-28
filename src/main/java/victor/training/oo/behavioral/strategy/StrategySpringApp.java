@@ -1,8 +1,15 @@
 package victor.training.oo.behavioral.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -14,13 +21,15 @@ public class StrategySpringApp implements CommandLineRunner {
 
 	
 	private ConfigProvider configProvider = new ConfigFileProvider(); 
-	
+
+	@Autowired
+	private CustomsService service;
+
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -29,13 +38,7 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 }
 
-class CustomsService {
-	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		CustomsTax tax = selectTaxCalculator(originCountry);
-		return tax.compute(tobaccoValue, regularValue);
-	}
 
-	private CustomsTax selectTaxCalculator(String originCountry) {
 //		return switch (originCountry) {
 //			case "UK" -> new UKCustomsTax();
 //			case "CN" -> new CNCustomsTax();
@@ -43,44 +46,54 @@ class CustomsService {
 //			default -> throw new IllegalArgumentException("Hai siktir: " + originCountry);
 //		};
 
-		switch (originCountry) {
-		case "UK": return new UKCustomsTax();
-		case "CN": return new CNCustomsTax();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUCustomsTax();
-		default: throw new IllegalArgumentException("Hai siktir: " + originCountry);
-		}
+@Service
+class CustomsService {
+	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		CustomsTax tax = selectTaxCalculator(originCountry);
+		return tax.compute(tobaccoValue, regularValue);
+	}
+
+	@Autowired
+	private List<CustomsTax> taxes;
+	private CustomsTax selectTaxCalculator(String originCountry) {
+        for (CustomsTax tax : taxes) {
+            if (tax.accepts(originCountry)) {
+                return tax;
+            }
+        }
+		throw new IllegalArgumentException("Hai siktir: " + originCountry);
 	}
 }
 interface CustomsTax {
 	double compute(double tobaccoValue, double regularValue);
+	boolean accepts(String countryCode);
 }
+
+@Component
 class UKCustomsTax implements CustomsTax {
-	@Override
 	public double compute(double tobaccoValue, double regularValue) {
-		// un pic mai mult cod
-		// un pic mai mult cod
-		// un pic mai mult cod
-		// un pic mai mult cod
-		// un pic mai mult cod
-		// un pic mai mult cod
 		return tobaccoValue/2 + regularValue/2;
+	}
+	public boolean accepts(String countryCode) {
+		return "UK".equals(countryCode);
 	}
 }
 
+@Component
 class CNCustomsTax implements CustomsTax {
 	public double compute(double tobaccoValue, double regularValue) {
-		// uite frate pun si io aicea inca putin cod
-		// uite frate pun si io aicea inca putin cod
-		// uite frate pun si io aicea inca putin cod
-		// uite frate pun si io aicea inca putin cod
-		// uite frate pun si io aicea inca putin cod
 		return tobaccoValue + regularValue;
 	}
+	public boolean accepts(String countryCode) {
+		return "CN".equals(countryCode);
+	}
 }
+@Component
 class EUCustomsTax implements CustomsTax {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/3;
+	}
+	public boolean accepts(String countryCode) {
+		return asList("RO","ES","FR").contains(countryCode);
 	}
 }
