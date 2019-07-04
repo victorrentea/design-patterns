@@ -1,6 +1,7 @@
 package victor.training.oo.structural.proxy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +26,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 
 	@Autowired
+	@Qualifier("expensiveOpsCached")
 	IExpensiveOps ops;
 
 	public void run(String... args) throws Exception {

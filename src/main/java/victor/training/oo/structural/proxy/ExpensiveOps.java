@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
-@Primary
+//@Primary
 class ExpensiveOpsCached implements IExpensiveOps{
 	private final IExpensiveOps ops;
 
