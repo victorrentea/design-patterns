@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -52,32 +53,31 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-//	@Autowired
-//	private LabelService labelService;
 	@Autowired
-	private ObjectFactory<LabelService> labelServiceObjectFactory;
+	private LabelService labelService;
 
 	public void export(Locale locale) {
-		LabelService labelService = labelServiceObjectFactory.getObject();
+	    log.debug("Oare cu cine vorbesc ? " + labelService.getClass());
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-
-	public void exportInvoice(LabelService labelService) {
+    @Autowired
+    private LabelService labelService;
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
 @Service
-@Scope("prototype")
+@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LabelService {
 	private CountryRepo countryRepo;
 	
@@ -96,4 +96,50 @@ class LabelService {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
 	}
+}
+
+class A {
+    String a,b,c,d;
+
+    public String getA() {
+        return a;
+    }
+
+    static {
+        new A()
+                .setA("a")
+                .setB("b");
+    }
+
+    public A setA(String a) {
+        this.a = a;
+        return this;
+    }
+
+    public String getB() {
+        return b;
+    }
+
+    public A setB(String b) {
+        this.b = b;
+        return this;
+    }
+
+    public String getC() {
+        return c;
+    }
+
+    public A setC(String c) {
+        this.c = c;
+        return this;
+    }
+
+    public String getD() {
+        return d;
+    }
+
+    public A setD(String d) {
+        this.d = d;
+        return this;
+    }
 }
