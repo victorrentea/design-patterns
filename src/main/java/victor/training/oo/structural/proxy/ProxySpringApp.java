@@ -31,10 +31,11 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 
-	@Autowired
 
 //	@CuCache
 //	@Qualifier("expensiveOpsCached")
+
+	@Autowired
 	ExpensiveOps ops;
 
 	public void run(String... args) throws Exception {

@@ -17,6 +17,7 @@ import org.jooq.lambda.Unchecked;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -93,9 +94,16 @@ public class ExpensiveOps /*implements IExpensiveOps */{
 		return true;
 	}
 
+	@Autowired
+	private ExpensiveOps myselfProxied;
+
 	@Cacheable("foldere")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
+		log.debug("10000169 is prime ? ");
+		log.debug("Got: " + myselfProxied.isPrime(10000169) + "\n");
+
+
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
