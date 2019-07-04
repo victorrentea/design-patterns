@@ -1,12 +1,10 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,10 +26,10 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor(@Value("${barman.thread.pool.size:2}")int threadCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(threadCount);
+		executor.setMaxPoolSize(threadCount);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -46,21 +44,20 @@ public class CommandSpringApp {
 class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
-	
+
+	@Autowired
+	ThreadPoolTaskExecutor pool;
 	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		ExecutorService pool = Executors.newFixedThreadPool(2);
 		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
 		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
 		Ale ale = futureAle.get();
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " +
 				Arrays.asList(ale, whiskey));
-		pool.shutdown();
-		pool.awaitTermination(1, TimeUnit.MINUTES);
 	}
 }
 
