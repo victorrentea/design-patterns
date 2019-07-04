@@ -53,7 +53,7 @@ class Drinker implements CommandLineRunner {
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
+		log.debug("Submitting my order to " + barman.getClass());
 		Future<Ale> futureAle = barman.getOneAle();
 		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
 		Ale ale = futureAle.get();

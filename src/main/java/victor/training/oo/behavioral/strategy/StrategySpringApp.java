@@ -1,12 +1,8 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -35,13 +31,46 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue/2;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
+		TaxCalculator pece = chooseTaxCalculator(originCountry);
+		return pece.calculate(tobaccoValue, regularValue);
+	}
+
+	private TaxCalculator chooseTaxCalculator(String originCountry) {
+		switch (originCountry) {
+		case "UK": return new UKTaxCalculator();
+		case "CN": return new ChinaTaxCalculator();
+		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
+		case "RO": return new EUTaxCalculator();
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		}
+	}
+}
+
+interface TaxCalculator {
+	double calculate(double tobaccoValue, double regularValue);
+}
+
+class UKTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		// 2016-02-10 Gigel: pun si io aicea iful ala de-mi trebuie mie
+		// 2016-06-10 Marcel: pun si io aicea iful ala de-mi trebuie mie
+		// si inca putin cod
+		// si inca putin cod
+		return tobaccoValue/2 + regularValue/2;
+	}
+}
+class ChinaTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		// doar un pic cod
+		// doar un pic cod
+		// doar un pic cod
+		return tobaccoValue + regularValue;
+	}
+}
+
+class EUTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		return tobaccoValue/3;
 	}
 }
