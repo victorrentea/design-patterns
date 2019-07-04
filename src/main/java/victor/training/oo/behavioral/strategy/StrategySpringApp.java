@@ -36,14 +36,13 @@ class CustomsService {
 	}
 
 	private TaxCalculator chooseTaxCalculator(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKTaxCalculator();
-		case "CN": return new ChinaTaxCalculator();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator();
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
+        return switch (originCountry) {
+            case "UK" -> new UKTaxCalculator();
+            case "CN" -> new ChinaTaxCalculator();
+// other EU country codes...
+            case "FR", "ES", "RO" -> new EUTaxCalculator();
+            default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+        };
 	}
 }
 
