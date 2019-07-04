@@ -1,6 +1,8 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,11 +17,17 @@ import org.jooq.lambda.Unchecked;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@interface CuCache {}
+
 @Service
 //@Primary
+@CuCache
 class ExpensiveOpsCached implements IExpensiveOps{
 	private final IExpensiveOps ops;
 

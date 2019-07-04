@@ -26,7 +26,8 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 
 	@Autowired
-	@Qualifier("expensiveOpsCached")
+	@CuCache
+//	@Qualifier("expensiveOpsCached")
 	IExpensiveOps ops;
 
 	public void run(String... args) throws Exception {
