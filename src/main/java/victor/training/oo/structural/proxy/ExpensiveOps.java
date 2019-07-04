@@ -18,6 +18,8 @@ import org.jooq.lambda.Unchecked;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -25,46 +27,54 @@ import org.springframework.stereotype.Service;
 //@Qualifier
 //@Retention(RetentionPolicy.RUNTIME)
 //@interface CuCache {}
-
-@Service
+//
+//@Service
+////@Primary
+////@CuCache
+//@Profile("!local")
 //@Primary
-//@CuCache
-@Profile("!local")
-@Primary
-class ExpensiveOpsCached implements IExpensiveOps{
-	private final IExpensiveOps ops;
+//class ExpensiveOpsCached implements IExpensiveOps{
+//	private final IExpensiveOps ops;
+//
+//	public ExpensiveOpsCached(IExpensiveOps ops) {
+//		this.ops = ops;
+//	}
+//
+//	private Map<Integer, Boolean> cache = new HashMap<>();
+//
+//	@Override
+//	public Boolean isPrime(int n) {
+//		if (cache.containsKey(n)) {
+//			return cache.get(n);
+//		}
+//		Boolean result = ops.isPrime(n);
+//		cache.put(n, result);
+//		return result;
+//	}
+//
+//	@Override
+//	public String hashAllFiles(File folder) {
+//		return ops.hashAllFiles(folder);
+//	}
+//}
 
-	public ExpensiveOpsCached(IExpensiveOps ops) {
-		this.ops = ops;
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {}
 
-	private Map<Integer, Boolean> cache = new HashMap<>();
-
-	@Override
-	public Boolean isPrime(int n) {
-		if (cache.containsKey(n)) {
-			return cache.get(n);
-		}
-		Boolean result = ops.isPrime(n);
-		cache.put(n, result);
-		return result;
-	}
-
-	@Override
-	public String hashAllFiles(File folder) {
-		return ops.hashAllFiles(folder);
-	}
-}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {}
 
 @Slf4j
 @Service
-public class ExpensiveOps implements IExpensiveOps {
+//@LoggedClass
+public class ExpensiveOps /*implements IExpensiveOps */{
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	@Override
+	@LoggedMethod
+	@Cacheable("NUMEREPRIME")
 	public Boolean isPrime(int n) {
-
+//		new RuntimeException().printStackTrace();
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -83,7 +93,7 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 
-	@Override
+	@Cacheable("foldere")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
@@ -98,5 +108,9 @@ public class ExpensiveOps implements IExpensiveOps {
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
-	
+
+	@CacheEvict("foldere")
+	public void aruncaCacheul(File file) {
+		// EMPTY METHOD. do not touch. Let the magic happen
+	}
 }
