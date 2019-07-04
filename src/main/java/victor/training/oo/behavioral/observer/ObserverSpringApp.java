@@ -5,12 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
@@ -49,18 +44,20 @@ public class ObserverSpringApp implements CommandLineRunner {
 class OrderPlaced {
 	public final long orderId;
 }
+@Data
+class OrderConfirmed {
+	public final long orderId;
+}
 
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
 
-	@Order(10)
 	@EventListener
-	public void handleX(OrderPlaced event) {
+	public OrderConfirmed handleX(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
+		return new OrderConfirmed(event.getOrderId());
 	}
 }
 
@@ -68,8 +65,7 @@ class StockManagementService {
 @Service
 class InvoiceService {
 	@EventListener
-	@Order(20)
-	public void handle(OrderPlaced event) {
+	public void handle(OrderConfirmed event) {
 		log.info("Generating invoice for order " + event.orderId);
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
