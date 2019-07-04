@@ -36,7 +36,7 @@ public class StrategySpringApp implements CommandLineRunner {
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue/2;
+		case "UK": return tobaccoValue/2 + regularValue;
 		case "CN": return tobaccoValue + regularValue;
 		case "FR": 
 		case "ES": // other EU country codes...
