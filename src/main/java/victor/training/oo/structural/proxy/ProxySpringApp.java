@@ -1,11 +1,14 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
 
 @Slf4j
 @EnableCaching
@@ -22,13 +25,14 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
+	@Autowired
+	ExpensiveOps ops;
+
 	public void run(String... args) throws Exception {
-		IExpensiveOps ops = new ExpensiveOps();
-		ops = new ExpensiveOpsWithCache(ops);
-		biznissLogicPretios(ops);
+		biznissLogicPretios();
 	}
 
-	private void biznissLogicPretios(IExpensiveOps ops) {
+	private void biznissLogicPretios() {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -36,11 +40,15 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 
-//		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-//		log.debug("Folder MD5: ");
-//		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+
+		log.debug("Am descoperit cumva ca un fisier pe disc s-a modificat");
+		ops.aruncaCache(new File("."));
+		log.debug("Folder MD5: ");
+		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 
 }

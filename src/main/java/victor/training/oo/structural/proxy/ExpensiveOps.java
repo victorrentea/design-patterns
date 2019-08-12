@@ -15,13 +15,17 @@ import org.jooq.lambda.Unchecked;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-public class ExpensiveOps implements IExpensiveOps {
+@Service
+public class ExpensiveOps /*implements IExpensiveOps*/ {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	@Override
+	@Cacheable("primes")
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -41,7 +45,7 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 
-	@Override
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
@@ -56,5 +60,9 @@ public class ExpensiveOps implements IExpensiveOps {
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
-	
+
+	@CacheEvict("folders")
+	public void aruncaCache(File folder) {
+		// nimic. Empty. Don't touch. Let the magic happen.
+	}
 }
