@@ -59,22 +59,14 @@ class OrderExporter  {
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(locale);
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-	@Autowired
-	private CountryRepo countryRepo;
-
-
-
-	public void exportInvoice(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
-		labelService.load(locale);
-
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
