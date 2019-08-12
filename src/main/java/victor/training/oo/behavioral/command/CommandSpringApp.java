@@ -1,9 +1,6 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -20,6 +18,8 @@ import org.springframework.stereotype.Service;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @EnableAsync
 @SpringBootApplication
@@ -49,17 +49,14 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 
-	@Autowired
-	private ThreadPoolTaskExecutor pool;
-	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
+		log.debug("Submitting my order to : " + barman.getClass());
 
-		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
-		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
-
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
+		log.debug("A plecat fata cu comanda");
 		Ale ale = futureAle.get();
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " +
@@ -70,16 +67,17 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return completedFuture(new Ale());
 	 }
-	
-	 public Whiskey getOneWhiskey() {
+	@Async
+	 public Future<Whiskey> getOneWhiskey() {
 		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Whiskey();
+		 return completedFuture(new Whiskey());
 	 }
 }
 
