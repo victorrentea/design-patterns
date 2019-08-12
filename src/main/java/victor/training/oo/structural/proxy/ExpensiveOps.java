@@ -15,18 +15,24 @@ import org.jooq.lambda.Unchecked;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@LoggedClass
 public class ExpensiveOps /*implements IExpensiveOps*/ {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
+	@Autowired
+	private ExpensiveOps myself; // Loco
+
 	@Cacheable("primes")
 	public Boolean isPrime(int n) {
+//		new RuntimeException().printStackTrace();
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {

@@ -1,5 +1,9 @@
 package victor.training.oo.structural.proxy;
 
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -7,8 +11,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 @Slf4j
 @EnableCaching
@@ -49,6 +57,24 @@ public class ProxySpringApp implements CommandLineRunner {
 		ops.aruncaCache(new File("."));
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+	}
+
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface  LoggedClass {}
+
+@Slf4j
+@Component
+@Aspect
+class LoggingInterceptor {
+//	@Before("execution(* ExpensiveOps.*(..))")
+//	@Before("execution(* victor.training.oo.structural.proxy.*.*(..))")
+	@Before("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
+	public void logheazaParametrii(JoinPoint point) {
+		log.debug("Calls {} with params {}",
+			point.getSignature().getName(),
+			Arrays.toString(point.getArgs()));
 	}
 
 }
