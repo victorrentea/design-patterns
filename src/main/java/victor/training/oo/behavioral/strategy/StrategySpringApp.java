@@ -3,6 +3,12 @@ package victor.training.oo.behavioral.strategy;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -36,32 +42,55 @@ class CustomsService {
 	}
 
 	private TaxComputer selectTaxComputer(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKTaxComputer();
-		case "CN": return new ChinaTaxComputer();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxComputer();
-		default: throw new IllegalArgumentException("JDD Not a valid country ISO2 code: " + originCountry);
+
+		List<TaxComputer> toate = asList(
+			new UKTaxComputer(),
+			new ChinaTaxComputer(),
+			new EUTaxComputer());
+		for (TaxComputer taxComputer : toate) {
+			if (taxComputer.shouldCompute(originCountry)) {
+				return taxComputer;
+			}
 		}
+		throw new IllegalArgumentException(originCountry);
 	}
 
 }
 
 interface TaxComputer {
+	boolean shouldCompute(String originCountry);
 	double compute(double tobaccoValue, double regularValue);
 }
+
+
+@Service
 class EUTaxComputer implements TaxComputer {
+	@Override
+	public boolean shouldCompute(String originCountry) {
+		return asList("ES","FR","RO").contains(originCountry);
+	}
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/3;
 	}
 }
+@Service
 class ChinaTaxComputer implements TaxComputer {
+	@Override
+	public boolean shouldCompute(String originCountry) {
+		return "CN".equals(originCountry);
+	}
+
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
 }
+@Service
 class UKTaxComputer implements TaxComputer {
+	@Override
+	public boolean shouldCompute(String originCountry) {
+		return "UK".equals(originCountry);
+	}
+
 	public double compute(double tobaccoValue, double regularValue) {
 		// mai e inca un pic de cod
 		// pun si eu asta aici
