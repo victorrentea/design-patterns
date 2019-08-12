@@ -1,12 +1,10 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,30 +12,17 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ExpensiveOps {
+public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	private Map<Integer, Boolean> cache = new HashMap<>();
-
-
-
+	@Override
 	public Boolean isPrime(int n) {
-		if (cache.containsKey(n)) {
-			return cache.get(n);
-		}
-		Boolean result = isPrime__(n);
-		cache.put(n, result);
-		return result;
-	}
-	private Boolean isPrime__(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -56,6 +41,7 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
