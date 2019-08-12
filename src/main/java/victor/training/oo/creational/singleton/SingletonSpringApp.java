@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
@@ -30,10 +31,10 @@ public class SingletonSpringApp implements CommandLineRunner{
 	public static void main(String[] args) {
 		SpringApplication.run(SingletonSpringApp.class);
 	}
-	
-	@Autowired 
+
+	@Autowired
 	private OrderExporter exporter;
-	
+
 	// TODO [1] make singleton; test multi-thread: state is [E|V|I|L]
 	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
@@ -52,31 +53,32 @@ class OrderExporter  {
 	private InvoiceExporter invoiceExporter;
 
 	@Autowired
-	private LabelService labelService;
+	private ApplicationContext spring;
 
 	public void export(Locale locale) {
+		LabelCache labelCache = spring.getBean(LabelCache.class);
 		log.debug("Running export in " + locale);
-		labelService.load(locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(labelService);
+		labelCache.load(locale);
+		log.debug("Origin Country: " + labelCache.getCountryName("rO"));
+		invoiceExporter.exportInvoice(labelCache);
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
-	public void exportInvoice(LabelService labelService) {
-		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
+	public void exportInvoice(LabelCache labelCache) {
+		log.debug("Invoice Country: " + labelCache.getCountryName("ES"));
 	}
 }
 
 @Slf4j
 @Service
 @Scope("prototype")
-class LabelService {
+class LabelCache {
 	private CountryRepo countryRepo;
 	
-	public LabelService(CountryRepo countryRepo) {
+	public LabelCache(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
 
