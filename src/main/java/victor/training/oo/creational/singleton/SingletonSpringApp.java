@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Slf4j // if this doesn't compile:
+// IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
+// Eclipse: navigate to m2 repo/org/projectlombok/lombok/<latest> => run the .jar as java application (double click) -> "Lombok your Eclipse installation"
+
 @EnableCaching
 @SpringBootApplication
 public class SingletonSpringApp implements CommandLineRunner{
