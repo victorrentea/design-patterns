@@ -1,5 +1,6 @@
 package victor.training.oo.behavioral.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -25,8 +26,9 @@ public class StrategySpringApp implements CommandLineRunner {
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
+	@Autowired
+	CustomsService service;
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -35,18 +37,17 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 }
 
+@Service
 class CustomsService {
+	@Autowired
+	List<TaxComputer> toate;
+
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxComputer taxComputer = selectTaxComputer(originCountry);
 		return taxComputer.compute(tobaccoValue, regularValue);
 	}
-
 	private TaxComputer selectTaxComputer(String originCountry) {
 
-		List<TaxComputer> toate = asList(
-			new UKTaxComputer(),
-			new ChinaTaxComputer(),
-			new EUTaxComputer());
 		for (TaxComputer taxComputer : toate) {
 			if (taxComputer.shouldCompute(originCountry)) {
 				return taxComputer;
