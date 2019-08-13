@@ -52,10 +52,10 @@ class EmailContext {
 
 @Data
 class Email {
-	private final long id = new Random(System.nanoTime()).nextLong();
-	private String sender;
 	private String subject;
 	private String body;
+	private final long id = new Random(System.nanoTime()).nextLong();
+	private String sender;
 	private String replyTo;
 	private String to;
 }
