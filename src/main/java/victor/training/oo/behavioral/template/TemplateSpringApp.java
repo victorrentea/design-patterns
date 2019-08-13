@@ -31,6 +31,9 @@ public class TemplateSpringApp implements CommandLineRunner {
 @Service
 class EmailSenderService {
 
+    public interface EmailContentWriter {
+        void write(Email email);
+    }
     public void sendEmail(String emailAddress, EmailContentWriter emailWriter) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
@@ -47,9 +50,6 @@ class EmailSenderService {
 
 }
 
-interface EmailContentWriter {
-    void write(Email email);
-}
 
 @Service
 class EmailTemplates {
