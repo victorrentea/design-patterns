@@ -2,11 +2,13 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -14,25 +16,19 @@ public class TemplateSpringApp implements CommandLineRunner {
         SpringApplication.run(TemplateSpringApp.class, args);
     }
 
-//    @Autowired
-//    private EmailSender service;
+    @Autowired
+    private EmailSenderService service;
 
     public void run(String... args) {
-        new EmailSender(new OrderReceivedEmailWriter()).sendEmail("a@b.com");
-        new EmailSender(new OrderShippedEmailWriter()).sendEmail("a@b.com");
+        service.sendEmail("a@b.com", new OrderReceivedEmailWriter());
+        service.sendEmail("a@b.com", new OrderShippedEmailWriter());
     }
 }
 
-//@Service
-class EmailSender {
+@Service
+class EmailSenderService {
 
-    private final EmailContentWriter emailWriter;
-
-    public EmailSender(EmailContentWriter emailWriter) {
-        this.emailWriter = emailWriter;
-    }
-
-    public void sendEmail(String emailAddress) {
+    public void sendEmail(String emailAddress, EmailContentWriter emailWriter) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
         for (int i = 0; i < MAX_RETRIES; i++) {
@@ -47,6 +43,7 @@ class EmailSender {
     }
 
 }
+
 interface EmailContentWriter {
     void write(Email email);
 }
