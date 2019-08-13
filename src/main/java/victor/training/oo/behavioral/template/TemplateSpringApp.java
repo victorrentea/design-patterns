@@ -15,16 +15,22 @@ public class TemplateSpringApp implements CommandLineRunner {
     }
 
 //    @Autowired
-//    private AbstractEmailSender service;
+//    private EmailSender service;
 
     public void run(String... args) {
-        new OrderReceivedEmailSender().sendEmail("a@b.com");
-        new OrderShippedEmailSender().sendEmail("a@b.com");
+        new EmailSender(new OrderReceivedEmailWriter()).sendEmail("a@b.com");
+        new EmailSender(new OrderShippedEmailWriter()).sendEmail("a@b.com");
     }
 }
 
 //@Service
-abstract class AbstractEmailSender {
+class EmailSender {
+
+    private final EmailContentWriter emailWriter;
+
+    public EmailSender(EmailContentWriter emailWriter) {
+        this.emailWriter = emailWriter;
+    }
 
     public void sendEmail(String emailAddress) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -34,26 +40,26 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            p(email);
+            emailWriter.write(email);
             boolean success = context.send(email);
             if (success) break;
         }
     }
 
-    protected abstract void p(Email email);
+}
+interface EmailContentWriter {
+    void write(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
-    @Override
-    protected void p(Email email) {
+class OrderReceivedEmailWriter implements EmailContentWriter {
+    public void write(Email email) {
         email.setSubject("Order Received");
         email.setBody("Thank you for your order");
     }
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-    @Override
-    protected void p(Email email) {
+class OrderShippedEmailWriter implements EmailContentWriter {
+    public void write(Email email) {
         email.setSubject("Order Shipped");
         email.setBody("Ti-am trimas! Speram s-ajunga (de data asta)!");
     }
