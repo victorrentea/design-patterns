@@ -28,6 +28,8 @@ class BizLogic {
 
 interface IMathematics {
     Integer sum(int a, int b);
+
+    int product(int a, int b);
 }
 
 class MathematicsWithLogging implements IMathematics{
@@ -43,10 +45,20 @@ class MathematicsWithLogging implements IMathematics{
         log.debug("Sum("+a+","+b+")");
         return delegate.sum(a,b);
     }
+
+    @Override
+    public int product(int a, int b) {
+        return delegate.product(a,b);
+    }
 }
 
 class Mathematics implements IMathematics{
     public Integer sum(int a, int b) {
         return a + b;
+    }
+
+    @Override
+    public int product(int a, int b) {
+        return a * b;
     }
 }
