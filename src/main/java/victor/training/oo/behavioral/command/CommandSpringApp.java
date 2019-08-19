@@ -1,11 +1,12 @@
 package victor.training.oo.behavioral.command;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -18,6 +19,7 @@ import victor.training.oo.stuff.ThreadUtils;
 
 @EnableAsync
 @SpringBootApplication
+@EnableBinding({Sink.class, Source.class})
 public class CommandSpringApp {
 	public static void main(String[] args) {
 		SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
@@ -42,15 +44,19 @@ public class CommandSpringApp {
 class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
-	
+
+	@Autowired
+	private ServiceActivatorPattern serviceActivator;
 	
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
-		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+		serviceActivator.askInParallel();
+		Thread.sleep(3000);
+//		log.debug("Submitting my order");
+//		Ale ale = barman.getOneAle();
+//		Whiskey whiskey = barman.getOneWhiskey();
+//		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 	}
 }
 
