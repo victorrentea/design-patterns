@@ -7,15 +7,14 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
-import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +46,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
 		exporter.export(Locale.ENGLISH);
-//		exporter.export(Locale.FRENCH);
+		exporter.export(Locale.FRENCH);
 	}
 }
 
@@ -61,39 +60,32 @@ class OrderExporter  {
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
+		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
 		invoiceExporter.exportInvoice();
 	}
 }
-
 @Slf4j
 @Named
 class InvoiceExporter {
 	@Inject
 	private LabelService labelService;
-	
 	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
-
 @Slf4j
 @Named
+@Scope("prototype")
 class LabelService {
 	@Inject
 	private CountryRepo countryRepo;
 
-//	@Inject
-//	public LabelService(CountryRepo countryRepo) {
-//		this.countryRepo = countryRepo;
-//	}
-
 	private Map<String, String> countryNames;
 	
-	@PostConstruct
-	public void load() {
+	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
-		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
+		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 	
 	public String getCountryName(String iso2Code) {
