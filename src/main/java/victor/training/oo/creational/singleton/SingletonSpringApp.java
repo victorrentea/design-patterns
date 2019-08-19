@@ -4,6 +4,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -35,7 +37,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 		SpringApplication.run(SingletonSpringApp.class);
 	}
 	
-	@Autowired 
+	@Inject
 	private OrderExporter exporter;
 	
 	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
@@ -50,11 +52,11 @@ public class SingletonSpringApp implements CommandLineRunner{
 }
 
 @Slf4j
-@Service
+@Named
 class OrderExporter  {
-	@Autowired
+	@Inject
 	private InvoiceExporter invoiceExporter;
-	@Autowired
+	@Inject
 	private LabelService labelService;
 
 	public void export(Locale locale) {
@@ -65,9 +67,9 @@ class OrderExporter  {
 }
 
 @Slf4j
-@Service 
+@Named
 class InvoiceExporter {
-	@Autowired
+	@Inject
 	private LabelService labelService;
 	
 	public void exportInvoice() {
@@ -76,14 +78,15 @@ class InvoiceExporter {
 }
 
 @Slf4j
-@Service
+@Named
 class LabelService {
-	@Autowired
+	@Inject
 	private CountryRepo countryRepo;
-	
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
+
+//	@Inject
+//	public LabelService(CountryRepo countryRepo) {
+//		this.countryRepo = countryRepo;
+//	}
 
 	private Map<String, String> countryNames;
 	

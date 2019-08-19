@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
+import javax.inject.Named;
+
 @Slf4j
-@Repository
+@Named
 public class CountryRepo {
 
 	public Map<String, String> loadCountryNamesAsMap(Locale locale) {
