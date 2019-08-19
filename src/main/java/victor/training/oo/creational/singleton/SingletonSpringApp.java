@@ -3,7 +3,6 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -13,7 +12,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +43,8 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
-		exporter.export(Locale.ENGLISH);
-		exporter.export(Locale.FRENCH);
+		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
+		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 	}
 }
 
@@ -56,33 +54,36 @@ class OrderExporter  {
 	@Inject
 	private InvoiceExporter invoiceExporter;
 	@Inject
-	private LabelService labelService;
+	private CountryRepo countryRepo;
+
+
 
 	public void export(Locale locale) {
+		LabelService labelService = new LabelService(countryRepo);
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 @Slf4j
 @Named
 class InvoiceExporter {
-	@Inject
-	private LabelService labelService;
-	public void exportInvoice() {
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 @Slf4j
-@Named
 //@Scope("prototype") // wiping this out ~= adding @Singleton
 class LabelService {
-	@Inject
-	private CountryRepo countryRepo;
+	private final CountryRepo countryRepo;
 
 	private Map<String, String> countryNames;
-	
+
+	LabelService(CountryRepo countryRepo) {
+		this.countryRepo = countryRepo;
+	}
+
 	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
