@@ -1,5 +1,10 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -10,21 +15,18 @@ public class Abracadabra {
 
         Mathematics realStuff = new Mathematics();
 
-        InvocationHandler h = new InvocationHandler() {
+        MethodInterceptor callback = new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
                 System.out.println("MI5 here: the lad calling "+
                         method.getName()+" with params " +
                         Arrays.toString(args));
                 return method.invoke(realStuff, args);
             }
         };
-        IMathematics golem = (IMathematics) Proxy.newProxyInstance(
-                Abracadabra.class.getClassLoader(),
-                new Class<?>[] {IMathematics.class},
-                h
-        );
+        Mathematics golem = (Mathematics) Enhancer.create(Mathematics.class, callback);
 
+        System.out.println("Ma', who are you ?!" + golem.getClass());
         System.out.println(golem.sum(1,1));
         System.out.println(golem.sum(0,2));
         System.out.println(golem.sum(1,2));

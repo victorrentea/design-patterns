@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class DecoratorPlay {
     public static void main(String[] args) {
-        IMathematics math = new Mathematics();
-        math = new MathematicsWithLogging(math);
+        Mathematics math = new Mathematics();
         BizLogic logic = new BizLogic(math);
         logic.m();
     }
@@ -15,9 +14,9 @@ public class DecoratorPlay {
 // Dear user: please don;t forget to set the math field.
 // Hope anyone ever reads this.
 class BizLogic {
-    private final IMathematics math;
+    private final Mathematics math;
 
-    BizLogic(IMathematics math) {
+    BizLogic(Mathematics math) {
         this.math = math;
     }
 
@@ -26,38 +25,11 @@ class BizLogic {
     }
 }
 
-interface IMathematics {
-    Integer sum(int a, int b);
 
-    int product(int a, int b);
-}
-
-class MathematicsWithLogging implements IMathematics{
-    private static final Logger log = LoggerFactory.getLogger(MathematicsWithLogging.class);
-    private final IMathematics delegate;
-
-    public MathematicsWithLogging(IMathematics delegate) {
-        this.delegate = delegate;
-    }
-
-    @Override
-    public Integer sum(int a, int b) {
-        log.debug("Sum("+a+","+b+")");
-        return delegate.sum(a,b);
-    }
-
-    @Override
-    public int product(int a, int b) {
-        return delegate.product(a,b);
-    }
-}
-
-class Mathematics implements IMathematics{
+class Mathematics {
     public Integer sum(int a, int b) {
         return a + b;
     }
-
-    @Override
     public int product(int a, int b) {
         return a * b;
     }
