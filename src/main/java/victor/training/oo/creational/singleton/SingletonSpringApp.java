@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,12 +56,10 @@ class OrderExporter  {
 	@Inject
 	private InvoiceExporter invoiceExporter;
 	@Inject
-	private CountryRepo countryRepo;
-
-
+	private Provider<LabelService> labelServiceProvider;
 
 	public void export(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
+		LabelService labelService = labelServiceProvider.get(); // this forces the container to GET you a fresh instance each time
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
@@ -74,15 +74,14 @@ class InvoiceExporter {
 	}
 }
 @Slf4j
-//@Scope("prototype") // wiping this out ~= adding @Singleton
+// these two, because I'm faking JavaEE in SPring
+@Named
+@Scope("prototype") // wiping this out ~= adding @Singleton
 class LabelService {
-	private final CountryRepo countryRepo;
+	@Inject
+	private CountryRepo countryRepo;
 
 	private Map<String, String> countryNames;
-
-	LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
 
 	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
