@@ -76,7 +76,7 @@ class InvoiceExporter {
 }
 @Slf4j
 @Named
-@Scope("prototype")
+//@Scope("prototype") // wiping this out ~= adding @Singleton
 class LabelService {
 	@Inject
 	private CountryRepo countryRepo;
