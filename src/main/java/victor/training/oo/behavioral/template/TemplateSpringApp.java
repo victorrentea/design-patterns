@@ -16,12 +16,17 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 
     public void run(String... args) {
-        new OrderReceivedEmailSender().sendEmail("a@b.com");
-        new OrderShippedEmailSender().sendEmail("a@b.com");
+        new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
+        new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
     }
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+    private final EmailContentFiller filler;
+
+    public EmailSender(EmailContentFiller filler) {
+        this.filler = filler;
+    }
 
     public void sendEmail(String emailAddress) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -31,27 +36,28 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            fillContent(email);
+            filler.fillContent(email);
             boolean success = context.send(email);
             if (success) break;
         }
     }
 
-    protected abstract void fillContent(Email email);
+}
+interface EmailContentFiller {
+    void fillContent(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
+class OrderReceivedEmailFiller implements EmailContentFiller {
     @Override
-    protected void fillContent(Email email) {
+    public void fillContent(Email email) {
         email.setSubject("Order Received");
         email.setBody("Thank you for your order");
     }
 }
 
-
-class OrderShippedEmailSender extends AbstractEmailSender {
+class OrderShippedEmailFiller implements EmailContentFiller {
     @Override
-    protected void fillContent(Email email) {
+    public void fillContent(Email email) {
         email.setSubject("Order Shipped");
         email.setBody("Shipped it to you. Hope it gets to you *this time*.:)");
     }
