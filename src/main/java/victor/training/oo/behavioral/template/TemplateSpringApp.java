@@ -20,16 +20,21 @@ public class TemplateSpringApp implements CommandLineRunner {
 
     @Inject
     private EmailSender emailSender;
+    @Inject
+    private AllEmails allEmails;
 
     public void run(String... args) {
-        emailSender.sendEmail("a@b.com", new OrderReceivedEmailFiller());
-        emailSender.sendEmail("a@b.com", new OrderShippedEmailFiller());
+        emailSender.sendEmail("a@b.com", allEmails::fillOrderReceivedEmail);
+        emailSender.sendEmail("a@b.com", allEmails::fillOrderShippedEmail);
     }
 }
 
 @Service
 class EmailSender {
 
+    interface EmailContentFiller {
+        void fillContent(Email email);
+    }
     public void sendEmail(String emailAddress, EmailContentFiller filler) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
@@ -45,21 +50,15 @@ class EmailSender {
     }
 
 }
-interface EmailContentFiller {
-    void fillContent(Email email);
-}
 
-class OrderReceivedEmailFiller implements EmailContentFiller {
-    @Override
-    public void fillContent(Email email) {
+@Service
+class AllEmails {
+    public void fillOrderReceivedEmail(Email email) {
         email.setSubject("Order Received");
         email.setBody("Thank you for your order");
     }
-}
 
-class OrderShippedEmailFiller implements EmailContentFiller {
-    @Override
-    public void fillContent(Email email) {
+    public void fillOrderShippedEmail(Email email) {
         email.setSubject("Order Shipped");
         email.setBody("Shipped it to you. Hope it gets to you *this time*.:)");
     }
