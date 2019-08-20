@@ -3,10 +3,6 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +13,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 
 @Slf4j // if this doesn't compile:
 // IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
