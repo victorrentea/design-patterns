@@ -7,7 +7,6 @@ import victor.training.oo.structural.adapter.domain.User;
 import victor.training.oo.structural.adapter.external.LdapUser;
 import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
 
-import javax.enterprise.inject.Decorated;
 import java.util.List;
 import java.util.stream.Collectors;
 

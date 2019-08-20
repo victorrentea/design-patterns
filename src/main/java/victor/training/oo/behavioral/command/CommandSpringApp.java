@@ -1,14 +1,16 @@
 package victor.training.oo.behavioral.command;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -19,8 +21,12 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
+import static java.util.concurrent.CompletableFuture.allOf;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+
 @EnableAsync
 @SpringBootApplication
+@EnableBinding({Sink.class, Source.class})
 public class CommandSpringApp {
 	public static void main(String[] args) {
 		SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
@@ -54,20 +60,35 @@ class Drinker implements CommandLineRunner {
 
 		String countStr = System.getProperty("barman.thread.count", "2");
 		int count = Integer.parseInt(countStr);
-		ExecutorService pool = Executors.newFixedThreadPool(count);
 
-		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
-		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
+//        Runnable r = () -> barman.getOneAle();
+//        Callable<Ale> c = () -> barman.getOneAle();
+
+
+        CompletableFuture<Ale> futureAle = supplyAsync(() -> barman.getOneAle());
+        CompletableFuture<Whiskey> futureWhiskey = supplyAsync(() -> barman.getOneWhiskey());
+
+        futureAle.thenRun(() -> log.debug("Ale ready"));
+
+
+
+//        allOf(futureAle, futureWhiskey).thenRun(() -> log.debug("Both drinks ready"));
+
+		CompletableFuture<Cocktail> futureCocktail = futureAle.thenCombine(futureWhiskey,
+				(ale, whiskey) -> {
+					log.debug("Making a cocktail with {} and {} ", ale, whiskey);
+					return new Cocktail(ale, whiskey);
+				});
+		futureCocktail.thenAccept(cocktail -> log.debug("Enjoying my {}", cocktail));
+//		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+
 
 		log.debug("The waitress left with my order");
-		Ale ale = futureAle.get();
-		Whiskey whiskey = futureWhiskey.get();
-		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+		ThreadUtils.sleep( 2000); // keep main alive. CPR
+//		Ale ale = futureAle.get();
+//		Whiskey whiskey = futureWhiskey.get();
 	}
 }
-
-
-
 
 
 
@@ -86,6 +107,12 @@ class Barman {
 		 ThreadUtils.sleep(1000);
 		 return new Whiskey();
 	 }
+}
+
+@Data
+class Cocktail {
+	private final Ale ale;
+	private final Whiskey whiskey;
 }
 
 @Data
