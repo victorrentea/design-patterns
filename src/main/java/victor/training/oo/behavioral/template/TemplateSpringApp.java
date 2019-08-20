@@ -7,6 +7,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import lombok.Data;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import javax.xml.ws.ServiceMode;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -14,21 +18,19 @@ public class TemplateSpringApp implements CommandLineRunner {
         SpringApplication.run(TemplateSpringApp.class, args);
     }
 
+    @Inject
+    private EmailSender emailSender;
 
     public void run(String... args) {
-        new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
-        new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
+        emailSender.sendEmail("a@b.com", new OrderReceivedEmailFiller());
+        emailSender.sendEmail("a@b.com", new OrderShippedEmailFiller());
     }
 }
 
+@Service
 class EmailSender {
-    private final EmailContentFiller filler;
 
-    public EmailSender(EmailContentFiller filler) {
-        this.filler = filler;
-    }
-
-    public void sendEmail(String emailAddress) {
+    public void sendEmail(String emailAddress, EmailContentFiller filler) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
         for (int i = 0; i < MAX_RETRIES; i++) {
