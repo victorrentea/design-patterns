@@ -51,7 +51,6 @@ class Drinker implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws Exception {
-		Thread.sleep(3000);
 		log.debug("Submitting my order");
 		Ale ale = barman.getOneAle();
 		Whiskey whiskey = barman.getOneWhiskey();
