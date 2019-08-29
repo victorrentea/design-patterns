@@ -1,12 +1,8 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -25,19 +21,19 @@ public class StrategySpringApp implements CommandLineRunner {
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) {
 		CustomsService service = new CustomsService();
-		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
-		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
-		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
+		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
+		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
+		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
 		
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
 class CustomsService {
-	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) { 
 		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
+		case "CN": return tobaccoValue + regularValue*2;
 		case "FR": 
 		case "ES": // other EU country codes...
 		case "RO": return tobaccoValue/3;
