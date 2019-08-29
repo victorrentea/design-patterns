@@ -5,7 +5,6 @@ import java.util.Random;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import lombok.Data;
 
@@ -19,15 +18,17 @@ public class TemplateSpringApp implements CommandLineRunner {
 //    private EmailService service;
 
     public void run(String... args) {
-        new OrderReceivedEmailSender().sendEmail("a@b.com");
+        new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
         // order shipped
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+        new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
     }
 }
 
-@Service
-abstract
-class AbstractEmailSender {
+class EmailSender {
+    private final EmailFiller emailFiller;
+    public EmailSender(EmailFiller emailFiller) {
+        this.emailFiller = emailFiller;
+    }
 
     public void sendEmail(String emailAddress) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -37,24 +38,28 @@ class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            setEmailContent(email);
+            emailFiller.setEmailContent(email);
             boolean success = context.send(email);
             if (success) break;
         }
     }
-
-    protected abstract void setEmailContent(Email2 email);
 }
-class OrderReceivedEmailSender extends AbstractEmailSender {
-	protected void setEmailContent(Email2 email) {
+
+interface EmailFiller {
+    void setEmailContent(Email2 email);
+}
+
+class OrderReceivedEmailFiller implements EmailFiller {
+    @Override
+    public void setEmailContent(Email2 email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
+class OrderShippedEmailFiller implements EmailFiller {
     @Override
-    protected void setEmailContent(Email2 email) {
+    public void setEmailContent(Email2 email) {
         email.setSubject("Order Shipped");
         email.setBody("Ti-am trimas. Speram s-ajunga. de data asta.");
     }
