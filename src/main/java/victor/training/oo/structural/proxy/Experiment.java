@@ -7,7 +7,7 @@ public class Experiment {
         holyBizLogic(new MateLogat(mate));
     }
 
-    private static void holyBizLogic(Mate mate) {
+    public static void holyBizLogic(Mate mate) {
         System.out.println(mate.sum(1, 1));
     }
 }
