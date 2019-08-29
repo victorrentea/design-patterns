@@ -38,15 +38,14 @@ public class StrategySpringApp implements CommandLineRunner {
 
 @Service
 class CustomsService {
+	@Autowired
+	private List<TaxComputer> taxComputers;
+
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxComputer peceva = determineTaxComputer(originCountry);
 		return peceva.compute(tobaccoValue, regularValue);
 	}
-
-	@Autowired
-	List<TaxComputer> taxComputers;
 	private TaxComputer determineTaxComputer(String originCountry) {
-
 		for (TaxComputer computer : taxComputers) {
 			if (computer.areYouTheOne(originCountry)) {
 				return computer;
