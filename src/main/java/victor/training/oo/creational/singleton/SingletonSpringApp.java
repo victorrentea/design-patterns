@@ -46,6 +46,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		exporter.export(Locale.ENGLISH);
 //		exporter.export(Locale.FRENCH);
+
 	}
 }
 
