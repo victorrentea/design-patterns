@@ -6,8 +6,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +24,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -54,6 +58,7 @@ class StockManagementService {
 	public void handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
+		//decrease stock --
 		publisher.publishEvent(new StockConfirmedEvent(event.orderId));
 	}
 }
@@ -68,6 +73,6 @@ class InvoiceService {
 	public void handle(StockConfirmedEvent event) {
 		log.info("Generating invoice for order " + event.getOrderId());
 		// TODO what if...
-		// throw new RuntimeException("thrown from generate invoice");
+		 throw new RuntimeException("thrown from generate invoice");
 	} 
 }
