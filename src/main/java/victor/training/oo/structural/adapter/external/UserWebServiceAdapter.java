@@ -1,7 +1,9 @@
-package victor.training.oo.structural.adapter.domain;
+package victor.training.oo.structural.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import victor.training.oo.structural.adapter.domain.IUserWebServiceAdapter;
+import victor.training.oo.structural.adapter.domain.User;
 import victor.training.oo.structural.adapter.external.LdapUser;
 import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
 
@@ -14,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 // Infra Infra Infra Infra Infra Infra Infra Infra Infra Infra Infra Infra Infra
 @Service
 @RequiredArgsConstructor
-public class UserWebServiceAdapter {
+public class UserWebServiceAdapter implements IUserWebServiceAdapter {
     private final LdapUserWebserviceClient wsClient;
 
     private User createUser(LdapUser ldapUser) {
@@ -22,6 +24,7 @@ public class UserWebServiceAdapter {
         return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
     }
 
+    @Override
     public List<User> searchUsers(String username) {
         return wsClient.search(username.toUpperCase(), null, null)
                 .stream().map(this::createUser).collect(toList());
