@@ -9,6 +9,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @EnableAsync
@@ -58,14 +60,11 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		Thread.sleep(3000);
 		log.debug("Submitting my order");
-//		ExecutorService pool = Executors.newFixedThreadPool(2);
-		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
-		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
+		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
+		Future<Ale> futureAle = barman.getOneAle();
 		log.debug("A plecat fata cu comanda");
 		Whiskey whiskey = futureWhiskey.get();
 		Ale ale = futureAle.get();
-//		Whiskey whiskey = barman.getOneWhiskey();
-//		Ale ale = barman.getOneAle();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
 	}
 }
@@ -73,16 +72,17 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return CompletableFuture.completedFuture(new Ale());
 	 }
-	
-	 public Whiskey getOneWhiskey() {
+	@Async
+	 public Future<Whiskey> getOneWhiskey() {
 		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Whiskey();
+		 return CompletableFuture.completedFuture(new Whiskey());
 	 }
 }
 
