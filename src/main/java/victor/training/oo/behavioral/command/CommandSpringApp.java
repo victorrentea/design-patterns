@@ -60,9 +60,14 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		Thread.sleep(3000);
 		log.debug("Submitting my order");
-		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
-		Future<Ale> futureAle = barman.getOneAle();
+		CompletableFuture<Whiskey> futureWhiskey = barman.getOneWhiskey();
+		CompletableFuture<Ale> futureAle = barman.getOneAle();
 		log.debug("A plecat fata cu comanda");
+
+		CompletableFuture.allOf(futureAle, futureWhiskey)
+				.thenRun(()->{});
+
+
 		Whiskey whiskey = futureWhiskey.get();
 		Ale ale = futureAle.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
@@ -73,13 +78,13 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
 	@Async
-	public Future<Ale> getOneAle() {
+	public CompletableFuture<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
 		 return CompletableFuture.completedFuture(new Ale());
 	 }
 	@Async
-	 public Future<Whiskey> getOneWhiskey() {
+	 public CompletableFuture<Whiskey> getOneWhiskey() {
 		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
 		 return CompletableFuture.completedFuture(new Whiskey());
