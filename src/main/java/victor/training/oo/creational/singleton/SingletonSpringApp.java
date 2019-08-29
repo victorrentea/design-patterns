@@ -1,5 +1,6 @@
 package victor.training.oo.creational.singleton;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -50,7 +51,13 @@ public class SingletonSpringApp implements CommandLineRunner{
 		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
 		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 
+		for (AbstractExporter exporter : csv) {
+			exporter.export();
+		}
 	}
+
+	@Autowired
+	List<AbstractExporter> csv;
 }
 
 @Slf4j
