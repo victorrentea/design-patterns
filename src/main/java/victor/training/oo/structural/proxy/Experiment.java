@@ -4,8 +4,7 @@ public class Experiment {
     public static void main(String[] args) {
 
         Mate mate = new MateReal();
-        mate = new MateLogat(mate);
-        holyBizLogic(mate);
+        holyBizLogic(new MateLogat(mate));
     }
 
     private static void holyBizLogic(Mate mate) {
