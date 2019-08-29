@@ -19,15 +19,22 @@ public class TemplateSpringApp implements CommandLineRunner {
     @Autowired
     private EmailSender sender;
 
+    @Autowired
+    private EmailFillers fillers;
+
     public void run(String... args) {
-        sender.sendEmail("a@b.com",new OrderReceivedEmailFiller());
+        sender.sendEmail("a@b.com", fillers::fillEmailReceived);
         // order shipped
-        sender.sendEmail("a@b.com",new OrderShippedEmailFiller());
+        sender.sendEmail("a@b.com", fillers::fillEmailShipped);
     }
 }
 @Service
 class EmailSender {
 
+    @FunctionalInterface
+    interface EmailFiller {
+        void setEmailContent(Email2 email);
+    }
     public void sendEmail(String emailAddress, EmailFiller emailFiller) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
@@ -42,22 +49,13 @@ class EmailSender {
         }
     }
 }
-
-interface EmailFiller {
-    void setEmailContent(Email2 email);
-}
 @Service
-class OrderReceivedEmailFiller implements EmailFiller {
-    @Override
-    public void setEmailContent(Email2 email) {
+class EmailFillers {
+    public void fillEmailReceived(Email2 email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-@Service
-class OrderShippedEmailFiller implements EmailFiller {
-    @Override
-    public void setEmailContent(Email2 email) {
+    public void fillEmailShipped(Email2 email) {
         email.setSubject("Order Shipped");
         email.setBody("Ti-am trimas. Speram s-ajunga. de data asta.");
     }
