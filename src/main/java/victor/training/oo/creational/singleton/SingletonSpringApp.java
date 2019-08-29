@@ -43,9 +43,9 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
-	public void run(String... args) throws Exception {
-		exporter.export(Locale.ENGLISH);
-		exporter.export(Locale.FRENCH);
+	public void run(String... args) {
+		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
+		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 
 	}
 }
