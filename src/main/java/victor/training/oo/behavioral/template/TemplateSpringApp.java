@@ -2,11 +2,13 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -14,23 +16,19 @@ public class TemplateSpringApp implements CommandLineRunner {
         SpringApplication.run(TemplateSpringApp.class, args);
     }
 
-//    @Autowired
-//    private EmailService service;
+    @Autowired
+    private EmailSender sender;
 
     public void run(String... args) {
-        new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
+        sender.sendEmail("a@b.com",new OrderReceivedEmailFiller());
         // order shipped
-        new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
+        sender.sendEmail("a@b.com",new OrderShippedEmailFiller());
     }
 }
-
+@Service
 class EmailSender {
-    private final EmailFiller emailFiller;
-    public EmailSender(EmailFiller emailFiller) {
-        this.emailFiller = emailFiller;
-    }
 
-    public void sendEmail(String emailAddress) {
+    public void sendEmail(String emailAddress, EmailFiller emailFiller) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
         for (int i = 0; i < MAX_RETRIES; i++) {
@@ -48,7 +46,7 @@ class EmailSender {
 interface EmailFiller {
     void setEmailContent(Email2 email);
 }
-
+@Service
 class OrderReceivedEmailFiller implements EmailFiller {
     @Override
     public void setEmailContent(Email2 email) {
@@ -56,7 +54,7 @@ class OrderReceivedEmailFiller implements EmailFiller {
 		email.setBody("Thank you for your order");
 	}
 }
-
+@Service
 class OrderShippedEmailFiller implements EmailFiller {
     @Override
     public void setEmailContent(Email2 email) {
