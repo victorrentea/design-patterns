@@ -69,6 +69,8 @@ class Drinker implements CommandLineRunner {
 		Ale ale = futureAle.get();
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+		barman.injura("!@^$#@!^#&&!@&@!^#&!");
+		log.debug("Am ajuns acasa!");
 	}
 }
 
@@ -79,7 +81,13 @@ class Barman {
 	public Future<Ale> getOneAle() {
 		log.debug("Pouring Ale...");
 		ThreadUtils.sleep(1000);
+		if (true) throw new IllegalStateException("Nu mai e bere");
 		return completedFuture(new Ale());
+	}
+
+	@Async
+	public void injura(String string) {
+		 throw new IllegalArgumentException("Iti fac buzunar!");
 	}
 
 	@Async
