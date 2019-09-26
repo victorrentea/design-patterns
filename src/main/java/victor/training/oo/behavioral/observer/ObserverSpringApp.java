@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [2] control the order
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
+	
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
 		//afterTransaction.runInTransaction();
@@ -55,6 +57,7 @@ class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
+	@Order(10)
 	@EventListener
 	public void handle(OrderPlaced event) { 
 		log.info("Checking stock for products in order " + event.orderId);
@@ -66,6 +69,8 @@ class StockManagementService {
 @Service
 class InvoiceService {
 	
+	@Order(20)
+	@EventListener
 	public void handle(OrderPlaced event) {
 		log.info("Generating invoice for order " + event.orderId);
 		// TODO what if...

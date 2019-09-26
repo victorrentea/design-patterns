@@ -1,31 +1,31 @@
 package victor.training.oo.structural.proxy;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+@Service
 @Slf4j
-public class ExpensiveOps implements IExpensiveOps {
+public class ExpensiveOps  {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	
 	
+	@Cacheable("primesX")
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -44,9 +44,18 @@ public class ExpensiveOps implements IExpensiveOps {
 		}
 		return true;
 	}
-
+	
+	@Autowired
+	ExpensiveOps myself;
+	
+	@Cacheable("filesX")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
+		log.debug("Nu stiu de ce fac asta, dar am o nevoie mare de un nr prim: 10000169 is prime ? ");
+		log.debug("Got: " + myself.isPrime(10000169) + "\n");
+		
+		
+		
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
@@ -58,6 +67,10 @@ public class ExpensiveOps implements IExpensiveOps {
 		}
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
+	}
+	@CacheEvict("filesX")
+	public void evictFolderHash(File file) {
+		 // EMPTY METHOD. DO NOT TOUCH.  LET THE MAGIC HAPPEN
 	}
 	
 }
