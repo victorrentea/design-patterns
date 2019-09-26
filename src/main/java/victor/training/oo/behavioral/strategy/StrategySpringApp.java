@@ -4,9 +4,11 @@ import static java.util.Arrays.asList;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -19,12 +21,13 @@ public class StrategySpringApp implements CommandLineRunner {
 	
 	private ConfigProvider configProvider = new ConfigFileProvider(); 
 	
+	@Autowired
+	CustomsService service;
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
@@ -32,17 +35,16 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
-
+@Service
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxCalculator calculator = selectTaxCalculator(originCountry); 
 		return calculator.calculate(tobaccoValue, regularValue);
 	}
+	@Autowired
+	List<TaxCalculator> toate; 
 
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-		
-		List<TaxCalculator> toate = asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator()); 
-
 		for (TaxCalculator calculator : toate) {
 			if (calculator.accepts(originCountry)) {
 				return calculator;
@@ -56,6 +58,7 @@ interface TaxCalculator {
 	double calculate(double tobaccoValue, double regularValue);
 	boolean accepts(String isoCode);
 }
+@Service
 class EUTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		// mult cod aici
@@ -65,6 +68,7 @@ class EUTaxCalculator implements TaxCalculator {
 		return asList("RO","ES","FR").contains(isoCode); // TODO
 	}
 }
+@Service
 class ChinaTaxCalculator implements TaxCalculator {
 	public final static String ISO_CODE="CN";
 	public double calculate(double tobaccoValue, double regularValue) {
@@ -75,7 +79,7 @@ class ChinaTaxCalculator implements TaxCalculator {
 		return "CN".equals(isoCode); 
 	}
 }
-
+@Service
 class UKTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		// mult cod aici
