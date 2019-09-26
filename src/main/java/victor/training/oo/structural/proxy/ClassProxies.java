@@ -24,6 +24,11 @@ public class ClassProxies {
 		};
 		MatematicaImpl mate = (MatematicaImpl) Enhancer.create(MatematicaImpl.class, callback );
 		
+		m(mate);
+	}
+
+	private static void m(MatematicaImpl mate) {
+		System.out.println("Oare cu cine vorbesc ? " + mate.getClass());
 		System.out.println(mate.suma(1,1));
 		System.out.println(mate.suma(2,0));
 		System.out.println(mate.suma(3,-1));
