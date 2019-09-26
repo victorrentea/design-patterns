@@ -1,5 +1,9 @@
 package victor.training.oo.behavioral.strategy;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -31,42 +35,55 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		TaxCaculator calculator = selectTaxCalculator(originCountry); 
+		TaxCalculator calculator = selectTaxCalculator(originCountry); 
 		return calculator.calculate(tobaccoValue, regularValue);
 	}
 
-	private TaxCaculator selectTaxCalculator(String originCountry) {
-		switch (originCountry) { 
-		case "UK": return new UKTaxCalculator(); 
-		case "CN": return new ChinaTaxCalculator(); 
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator();
-		default: throw new IllegalArgumentException("JDD Not a valid country ISO2 code: " + originCountry);
+	private TaxCalculator selectTaxCalculator(String originCountry) {
+		
+		List<TaxCalculator> toate = asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator()); 
+
+		for (TaxCalculator calculator : toate) {
+			if (calculator.accepts(originCountry)) {
+				return calculator;
+			}
 		}
+		throw new IllegalArgumentException("JDD Not a valid country ISO2 code: " + originCountry);
 	}
 }
 
-interface TaxCaculator {
+interface TaxCalculator {
 	double calculate(double tobaccoValue, double regularValue);
+	boolean accepts(String isoCode);
 }
-class EUTaxCalculator implements TaxCaculator {
+class EUTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		// mult cod aici
 		return tobaccoValue/3;
 	}
+	public boolean accepts(String isoCode) {
+		return asList("RO","ES","FR").contains(isoCode); // TODO
+	}
 }
-class ChinaTaxCalculator implements TaxCaculator {
+class ChinaTaxCalculator implements TaxCalculator {
+	public final static String ISO_CODE="CN";
 	public double calculate(double tobaccoValue, double regularValue) {
 		// mult cod aici
 		return tobaccoValue + regularValue*2;
 	}
+	public boolean accepts(String isoCode) {
+		return "CN".equals(isoCode); 
+	}
 }
 
-class UKTaxCalculator implements TaxCaculator {
+class UKTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		// mult cod aici
 		return tobaccoValue/2 + regularValue;
+	}
+
+	public boolean accepts(String isoCode) {
+		return "UK".equals(isoCode); 
 	}
 }
 
