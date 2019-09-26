@@ -5,22 +5,24 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-public class InterfaceProxies {
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
+public class ClassProxies {
 	
 	public static void main(String[] args) {
 		
 		MatematicaImpl peBune = new MatematicaImpl();
 		
-		InvocationHandler h = new InvocationHandler() {
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		Callback callback = new MethodInterceptor() {
+			public Object intercept(Object arg0, Method method, Object[] args, MethodProxy arg3) throws Throwable {
 				System.out.println("SRI: chemi cumva metoda " + method.getName() + " cu param " + Arrays.toString(args));
-			
-				return method.invoke(peBune, args); 
+				return method.invoke(peBune, args);
 			}
 		};
-		
-		Matematica mate = (Matematica) Proxy.newProxyInstance(InterfaceProxies.class.getClassLoader(), 
-				new Class<?>[] {Matematica.class}, h );
+		MatematicaImpl mate = (MatematicaImpl) Enhancer.create(MatematicaImpl.class, callback );
 		
 		System.out.println(mate.suma(1,1));
 		System.out.println(mate.suma(2,0));
@@ -30,10 +32,7 @@ public class InterfaceProxies {
 
 }
 
-interface Matematica {
-	Integer suma(int a, int b);
-}
-class MatematicaImpl implements Matematica{
+class MatematicaImpl {
 
 	public Integer suma(int a, int b) {
 		return a + b; // TODO
