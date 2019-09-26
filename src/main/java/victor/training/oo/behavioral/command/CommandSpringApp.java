@@ -18,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @EnableAsync
 @SpringBootApplication
@@ -52,9 +55,16 @@ class Drinker implements CommandLineRunner {
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+		
+		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
+		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
+		
+		
+		Ale ale = futureAle.get();
+		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+		pool.shutdown();
 	}
 }
 
