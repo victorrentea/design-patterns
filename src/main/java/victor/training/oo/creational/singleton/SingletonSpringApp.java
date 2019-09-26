@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -59,10 +60,10 @@ class OrderExporter  {
 	private InvoiceExporter invoiceExporter;
 
 	@Autowired
-	private ApplicationContext tatSpringu;
+	private ObjectFactory<LabelService> labelServiceProvider;
 
 	public void export(Locale locale) {
-		LabelService labelService = tatSpringu.getBean(LabelService.class);
+		LabelService labelService = labelServiceProvider.getObject();
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
