@@ -11,7 +11,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -55,12 +57,12 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
+
 	@Autowired
-	private CountryRepo countryRepo;
+	private ApplicationContext tatSpringu;
 
 	public void export(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
-		
+		LabelService labelService = tatSpringu.getBean(LabelService.class);
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
@@ -71,13 +73,15 @@ class OrderExporter  {
 @Slf4j
 @Service 
 class InvoiceExporter {
-	
+
 	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
+@Service
+@Scope("prototype")
 class LabelService {
 	private CountryRepo countryRepo;
 	
