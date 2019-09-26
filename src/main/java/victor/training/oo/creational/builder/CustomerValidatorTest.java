@@ -8,47 +8,32 @@ public class CustomerValidatorTest {
 
 	private CustomerValidator validator = new CustomerValidator();
 	
+	private CustomerValidator customerValidator = new CustomerValidator();
 	@Test
 	public void validCustomer_ok() {
-//		validator.validate(new CustomerBuilder()
-//			.withName("John Doe")
-//			.withAddress(new AddressBuilder()
-//					.withCity("Bucharest")
-//					.build())
-//			.build());
-		validator.validate(aValidCustomer().build()); // SOLUTION
+		customerValidator.validate(aValidCustomer().build());
+		
 	}
-	
-	
-	@Test(expected = IllegalArgumentException.class) // SOLUTION
-	public void customerWithoutName_fails() {
-		validator.validate(aValidCustomer().withName(null).build()); // SOLUTION
-	}
-	
-	@Test(expected = IllegalArgumentException.class) // SOLUTION
-	public void customerWithoutAddress_fails() {
-		validator.validate(aValidCustomer().withAddress((Address)null).build()); // SOLUTION
-	}
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
-	
-	@Test // SOLUTION
-	public void customerWithoutAddressCity_fails() {
-		expectedException.expectMessage("address city");
-		validator.validate(aValidCustomer().withAddress(aValidAddress().withCity("")).build()); // SOLUTION
-	}
-
-	// SOLUTION(
 	private CustomerBuilder aValidCustomer() {
 		return new CustomerBuilder()
 				.withName("John Doe")
-				.withAddress(aValidAddress());
+				.withAddress(new AddressBuilder()
+						.withCity("Bucale")
+						.build());
 	}
-
-	private AddressBuilder aValidAddress() {
-		return new AddressBuilder()
-				.withStreetName("Viorele")
-				.withCity("Bucharest");
-	} 	// SOLUTION)
+	@Test(expected = IllegalArgumentException.class)
+	public void throwsForCustomerWithNoName() {
+		customerValidator.validate(aValidCustomer().withName(null).build());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void throwsForCustomerWithNoCity() {
+		Customer customer = new CustomerBuilder()
+				.withName("John Doe")
+				.withAddress(new AddressBuilder()
+						.build())
+				.build();
+		
+		new CustomerValidator().validate(customer);
+	}
 }

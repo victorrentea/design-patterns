@@ -8,12 +8,6 @@ public class AddressBuilder {
 		return this;
 	}
 	
-	// SOLUTION(
-	public AddressBuilder withStreetNumber(int streetNumber) {
-		address.setStreetNumber(streetNumber);
-		return this;
-	}
-	// SOLUTION)
 	public AddressBuilder withCity(String city) {
 		address.setCity(city);
 		return this;
