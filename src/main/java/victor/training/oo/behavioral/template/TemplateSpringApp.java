@@ -16,18 +16,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
-	
+//	@Autowired
+//	private EmailSender service;
+//	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+//@Service
+abstract class EmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -35,11 +36,26 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			fillEmailContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected abstract void fillEmailContent(Email email);
+}
+
+class OrderReceivedEmailSender extends EmailSender {
+	protected void fillEmailContent(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+class OrderShippedEmailSender extends EmailSender {
+	protected void fillEmailContent(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimis. Speram s-ajunga de data asta.");
 	}
 }
 
