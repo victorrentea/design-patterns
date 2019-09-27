@@ -20,13 +20,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 //	private EmailSender service;
 //	
 	public void run(String... args) {
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
 	}
 }
 
 //@Service
-abstract class EmailSender {
+class EmailSender {
+	private final EmailFiller filler;
+
+	public EmailSender(EmailFiller filler) {
+		this.filler = filler;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -36,24 +41,27 @@ abstract class EmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			fillEmailContent(email);
+			filler.fill(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
-	protected abstract void fillEmailContent(Email email);
+}
+interface EmailFiller {
+	void fill(Email email);
+	
 }
 
-class OrderReceivedEmailSender extends EmailSender {
-	protected void fillEmailContent(Email email) {
+class OrderReceivedEmailFiller implements EmailFiller {
+	public void fill(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends EmailSender {
-	protected void fillEmailContent(Email email) {
+class OrderShippedEmailFiller implements EmailFiller {
+	public void fill(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram s-ajunga de data asta.");
 	}
