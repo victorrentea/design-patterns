@@ -16,24 +16,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-//	@Autowired
-//	private EmailSender service;
+	@Autowired
+	private EmailSender emailSender;
 //	
 	public void run(String... args) {
-		new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
-		new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", new OrderReceivedEmailFiller());
+		emailSender.sendEmail("a@b.com", new OrderShippedEmailFiller());
 	}
 }
 
-//@Service
+@Service
 class EmailSender {
-	private final EmailFiller filler;
 
-	public EmailSender(EmailFiller filler) {
-		this.filler = filler;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -50,7 +45,6 @@ class EmailSender {
 }
 interface EmailFiller {
 	void fill(Email email);
-	
 }
 
 class OrderReceivedEmailFiller implements EmailFiller {
