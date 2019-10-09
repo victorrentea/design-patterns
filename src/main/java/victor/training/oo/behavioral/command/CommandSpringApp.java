@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.Arrays;
+import java.util.concurrent.Future;
 
 @EnableAsync
 @SpringBootApplication
@@ -28,10 +30,10 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor(@Value("${barman.thread.count:2}")int barmanCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(barmanCount);
+		executor.setMaxPoolSize(barmanCount);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
@@ -43,18 +45,27 @@ public class CommandSpringApp {
 
 @Slf4j
 @Component
-class Drinker implements CommandLineRunner {
+class Beutor implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
+
+	@Autowired
+	private ThreadPoolTaskExecutor pool;
 
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws Exception {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
+		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
+		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
+		log.debug("A plecat fata cu comanda");
+
+		Ale ale = futureAle.get();
+		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+
+
 	}
 }
 
