@@ -66,8 +66,8 @@ class StockManagementService {
 @Service
 class InvoiceService {
 	
-	public void handle(OrderPlaced event) {
-		log.info("Generating invoice for order " + event.orderId);
+	public void generateInvoice() {
+		log.info("Generating invoice for order id: "); // TODO get orderId
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
