@@ -56,7 +56,7 @@ class Beutor implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws Exception {
-		log.debug("Submitting my order");
+		log.debug("Submitting my order to : " + barman.getClass());
 		Future<Ale> futureAle = barman.getOneAle();
 		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
 		log.debug("2: A plecat fata cu comanda");
