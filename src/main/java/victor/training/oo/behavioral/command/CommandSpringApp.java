@@ -19,6 +19,8 @@ import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
+
 @EnableAsync
 @SpringBootApplication
 @EnableBinding({Sink.class, Source.class})
@@ -50,11 +52,11 @@ class Drinker implements CommandLineRunner {
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		log.debug("Submitting my order");
 		Ale ale = barman.getOneAle();
 		Whiskey whiskey = barman.getOneWhiskey();
-		log.debug("Got my order! Thank you lad! " + Arrays.asList(ale, whiskey));
+		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
 	}
 }
 
