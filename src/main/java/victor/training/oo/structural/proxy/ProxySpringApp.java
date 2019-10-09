@@ -1,19 +1,21 @@
 package victor.training.oo.structural.proxy;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @EnableCaching
@@ -51,5 +53,27 @@ log.debug("Oare cu cine vorbesc aici {}", ops.getClass());
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
-	
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {
+}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {
+}
+
+
+@Component
+@Aspect
+@Slf4j
+class LoggingAspect {
+//	@Around("execution(* victor..ExpensiveOps.*(..))")
+//	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
+	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+	public Object interceptAndLog(ProceedingJoinPoint point) throws Throwable {
+		log.debug("Se cheama metoda {} cu argumentele {}",
+				point.getSignature().getName(),
+				Arrays.toString(point.getArgs()));
+		return point.proceed();
+	}
 }
