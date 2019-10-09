@@ -12,6 +12,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
@@ -58,5 +60,9 @@ public class ExpensiveOps {
 		byte[] digest = md.digest();
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
-	
+
+	@CacheEvict("folders")
+	public void aruncaCashu(File folder) {
+		// NOSONAR: EMPTY METHOD. DO NOTE DELETE. LET THE MAGIC HAPPEN :P
+	}
 }
