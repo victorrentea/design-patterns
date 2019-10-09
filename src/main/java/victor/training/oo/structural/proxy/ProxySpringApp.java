@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.EnableCaching;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @EnableCaching
@@ -59,7 +60,11 @@ log.debug("Oare cu cine vorbesc aici {}", ops.getClass());
 @interface LoggedClass {
 }
 @Retention(RetentionPolicy.RUNTIME)
-@interface LoggedMethod {
+@interface LoggedMethod {}
+
+@Retention(RetentionPolicy.RUNTIME)
+@Service
+@interface Facade {
 }
 
 
@@ -69,7 +74,8 @@ log.debug("Oare cu cine vorbesc aici {}", ops.getClass());
 class LoggingAspect {
 //	@Around("execution(* victor..ExpensiveOps.*(..))")
 //	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
-	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+//	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.Facade)")
 	public Object interceptAndLog(ProceedingJoinPoint point) throws Throwable {
 		log.debug("Se cheama metoda {} cu argumentele {}",
 				point.getSignature().getName(),
