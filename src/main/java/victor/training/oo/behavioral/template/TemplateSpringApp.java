@@ -2,6 +2,7 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,19 +16,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-//	@Autowired
-//	private EmailService service;
+	@Autowired
+	private EmailSender service;
 	
 	public void run(String... args) {
-		new OrderReceivedEmailSender().sendOrderReceivedEmail("a@b.com");
-		new OrderShippedEmailSender().sendOrderReceivedEmail("a@b.com");
+		service.sendEmail("a@b.com", new OrderReceivedEmailWriter());
+
+		service.sendEmail("a@b.com", new OrderShippedEmailWriter());
 	}
 }
 
 @Service
-abstract class BaseEmailSender {
-
-	public void sendOrderReceivedEmail(String emailAddress) {
+class EmailSender {
+	public void sendEmail(String emailAddress, EmailWriter writer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -35,23 +36,26 @@ abstract class BaseEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			writeEmail(email);
+			writer.writeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-	protected abstract void writeEmail(Email email);
 }
-class OrderReceivedEmailSender extends BaseEmailSender {
+interface EmailWriter {
+	void writeEmail(Email email);
+}
+@Service
+class OrderReceivedEmailWriter implements EmailWriter {
 	public void writeEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 
 }
-class OrderShippedEmailSender extends BaseEmailSender {
-	@Override
-	protected void writeEmail(Email email) {
+@Service
+class OrderShippedEmailWriter implements EmailWriter {
+	public void writeEmail(Email email) {
 			email.setSubject("Order Shipped");
 			email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
 	}
