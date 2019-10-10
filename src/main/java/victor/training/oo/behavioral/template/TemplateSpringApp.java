@@ -2,7 +2,6 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,16 +15,17 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
+//	@Autowired
+//	private EmailService service;
 	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new OrderReceivedEmailSender().sendOrderReceivedEmail("a@b.com");
+		new OrderShippedEmailSender().sendOrderReceivedEmail("a@b.com");
 	}
 }
 
 @Service
-class EmailService {
+abstract class BaseEmailSender {
 
 	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -35,11 +35,25 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			writeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+	protected abstract void writeEmail(Email email);
+}
+class OrderReceivedEmailSender extends BaseEmailSender {
+	public void writeEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+
+}
+class OrderShippedEmailSender extends BaseEmailSender {
+	@Override
+	protected void writeEmail(Email email) {
+			email.setSubject("Order Shipped");
+			email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
 	}
 }
 
