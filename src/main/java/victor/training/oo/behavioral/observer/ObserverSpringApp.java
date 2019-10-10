@@ -56,7 +56,7 @@ class StockManagementService {
 	private ApplicationEventPublisher publisher;
 
 	@EventListener
-	public void handle(OrderPlaced event) { 
+	public void handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
 	}
