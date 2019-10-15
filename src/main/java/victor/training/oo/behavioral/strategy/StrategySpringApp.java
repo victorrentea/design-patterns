@@ -48,7 +48,7 @@ class CustomsService {
 		List<TaxCalculator> calculators = asList(new UKTaxComputer(), new EUTaxComputer(), new CHTaxComputer());
 		
 		for (TaxCalculator calculator : calculators) {
-			if (calculator.getCountryCodes().contains(originCountry)) {
+			if (calculator.isApplicable(originCountry)) {
 				return calculator;
 			}
 		}
@@ -57,31 +57,34 @@ class CustomsService {
 }
 interface TaxCalculator {
 	double compute(double tobacoValue, double regularValue);
-	List<String> getCountryCodes();
+	boolean isApplicable(String originCountry);
 	
 }
 class UKTaxComputer implements TaxCalculator {
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue/2 + regularValue/2;
 	}
-	public List<String> getCountryCodes() {
-		return asList("UK");
+	public boolean isApplicable(String originCountry) {
+		// TODO Auto-generated method stub
+		return "UK".equals(originCountry);
 	}
 }
 class EUTaxComputer implements TaxCalculator {
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue/3;
+	
 	}
-	public List<String> getCountryCodes() {
-		return asList("RO","ES","FR");
+	@Override
+	public boolean isApplicable(String originCountry) {
+		return asList("RO","ES","FR").contains(originCountry);
 	}
 }
 class CHTaxComputer implements TaxCalculator {
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
 	}
-	public List<String> getCountryCodes() {
-		return asList("CH");
+	public boolean isApplicable(String originCountry) {
+		return "CH".equals(originCountry);
 	}
 }
 
