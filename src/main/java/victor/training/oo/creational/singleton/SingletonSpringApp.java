@@ -78,9 +78,7 @@ class InvoiceExporter {
 @Slf4j
 @Service
 class LabelService {
-	@Autowired
 	private CountryRepo countryRepo;
-	
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
