@@ -2,16 +2,11 @@ package victor.training.oo.behavioral.strategy;
 
 import static java.util.Arrays.asList;
 
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -43,7 +38,9 @@ class CustomsService {
 		TaxCalculator taxCalculator = selectCalculator(originCountry);
 		return taxCalculator.compute(tobacoValue, regularValue);
 	}
-
+	//@Autowired @Inject
+	//List<TaxCalcuto>
+	
 	private TaxCalculator selectCalculator(String originCountry) {
 		List<TaxCalculator> calculators = asList(new UKTaxComputer(), new EUTaxComputer(), new CHTaxComputer());
 		
@@ -79,6 +76,7 @@ class EUTaxComputer implements TaxCalculator {
 		return asList("RO","ES","FR").contains(originCountry);
 	}
 }
+//@Stateless
 class CHTaxComputer implements TaxCalculator {
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
