@@ -22,7 +22,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private Emails emails;
 	public void run(String... args) {
 		emailSender.sendEmail("a@b.com", emails::writeOrderReceivedEmail);
-		emailSender.sendEmail("a@b.com", emails::writeOrderShippedEmail);
+		emailSender.sendEmail("a@b.com", email -> emails.writeOrderShippedEmail(email));
 	}
 }
 
