@@ -18,6 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static java.util.Arrays.asList;
 
@@ -52,10 +57,22 @@ class Drinker implements CommandLineRunner {
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) {
+	public void run(String... args) throws InterruptedException, ExecutionException {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
+//		Ale ale = barman.getOneAle();
+//		Whiskey whiskey = barman.getOneWhiskey();
+		
+		
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+		
+		Callable<Ale> comandaDeBere = barman::getOneAle;
+		Future<Ale> futureAle = pool.submit(comandaDeBere);
+		Future<Whiskey> futureWhiskey = pool.submit(barman::getOneWhiskey);
+
+		log.debug("A plecat fata cu comanda"); // cade curentul aici
+		Ale ale = futureAle.get();
+		Whiskey whiskey = futureWhiskey.get();
+		
 		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
 	}
 }
