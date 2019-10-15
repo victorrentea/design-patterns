@@ -47,12 +47,12 @@ class CustomsService {
 	private TaxCalculator selectCalculator(String originCountry) {
 		List<TaxCalculator> calculators = asList(new UKTaxComputer(), new EUTaxComputer(), new CHTaxComputer());
 		
-		for (TaxCalculator calculator : calculators) {
-			if (calculator.isApplicable(originCountry)) {
-				return calculator;
-			}
-		}
-		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		return calculators.stream()
+				.filter(c -> c.isApplicable(originCountry))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry));
+		
+
 	}
 }
 interface TaxCalculator {
