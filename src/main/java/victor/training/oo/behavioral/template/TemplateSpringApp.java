@@ -18,9 +18,11 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailSender emailSender;
+	@Autowired
+	private Emails emails;
 	public void run(String... args) {
-		emailSender.sendEmail("a@b.com", new OrderReceivedEmailWriter());
-		emailSender.sendEmail("a@b.com", new OrderShippedEmailWriter());
+		emailSender.sendEmail("a@b.com", emails::writeOrderReceivedEmail);
+		emailSender.sendEmail("a@b.com", emails::writeOrderShippedEmail);
 	}
 }
 
@@ -46,16 +48,13 @@ interface EmailWriter {
 	void writeEmail(Email email);
 }
 
-class OrderReceivedEmailWriter implements EmailWriter {
-	@Override
-	public void writeEmail(Email email) {
+@Service
+class Emails {
+	public void writeOrderReceivedEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-class OrderShippedEmailWriter implements EmailWriter {
-	@Override
-	public void writeEmail(Email email) {
+	public void writeOrderShippedEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram sa ajunga(de data asta)");
 	}
