@@ -35,7 +35,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 		SpringApplication.run(SingletonSpringApp.class);
 	}
 	
-	@Autowired 
+	@Autowired // @EJB
 	private OrderExporter exporter;
 	
 	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
@@ -45,27 +45,28 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
 		exporter.export(Locale.ENGLISH);
-//		exporter.export(Locale.FRENCH);
+		exporter.export(Locale.FRENCH);
 	}
 }
 
 @Slf4j
-@Service
+@Service // @Stateless
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-	@Autowired
+	@Autowired // @EJB
 	private LabelService labelService;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
+		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
 		invoiceExporter.exportInvoice();
 	}
 }
 
 @Slf4j
-@Service 
+@Service  // @Stateless
 class InvoiceExporter {
 	@Autowired
 	private LabelService labelService;
@@ -76,7 +77,7 @@ class InvoiceExporter {
 }
 
 @Slf4j
-@Service
+@Service // @Stateless  @Stateful
 class LabelService {
 	@Autowired
 	private CountryRepo countryRepo;
@@ -87,10 +88,9 @@ class LabelService {
 
 	private Map<String, String> countryNames;
 	
-	@PostConstruct
-	public void load() {
+	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
-		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
+		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 	
 	public String getCountryName(String iso2Code) {
