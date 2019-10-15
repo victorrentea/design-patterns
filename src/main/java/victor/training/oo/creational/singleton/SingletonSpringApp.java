@@ -3,8 +3,6 @@ package victor.training.oo.creational.singleton;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -54,35 +52,38 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-	@Autowired // @EJB
-	private LabelService labelService;
+	@Autowired
+    private CountryRepo countryRepo;
+//	@Autowired // @EJB
+//	private LabelService labelService;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
+		LabelServiceNEO labelService = new LabelServiceNEO(countryRepo);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
 @Slf4j
 @Service  // @Stateless
 class InvoiceExporter {
-	@Autowired
-	private LabelService labelService;
+//	@Autowired
+//	private LabelServiceNEO labelService;
 	
-	public void exportInvoice() {
+	public void exportInvoice(LabelServiceNEO labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
-@Service // @Stateless  @Stateful
-class LabelService {
-	@Autowired
+//@Service // @Stateless  @Stateful
+class LabelServiceNEO {
+//	@Autowired
 	private CountryRepo countryRepo;
-	
-	public LabelService(CountryRepo countryRepo) {
+
+	public LabelServiceNEO(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
 
