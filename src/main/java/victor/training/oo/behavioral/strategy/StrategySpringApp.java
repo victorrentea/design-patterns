@@ -1,7 +1,11 @@
 package victor.training.oo.behavioral.strategy;
 
+import static java.util.Arrays.asList;
+
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -36,40 +40,51 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobacoValue, double regularValue) { // UGLY API we CANNOT change
-		TaxCalculator taxCalculator = null;
-		switch (originCountry) {
-		case "UK": 
-			taxCalculator = new UKTaxComputer();
-		case "CH": 
-			taxCalculator = new CHTaxComputer();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": taxCalculator = new EUTaxComputer();
-//		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
+		TaxCalculator taxCalculator = selectCalculator(originCountry);
 		return taxCalculator.compute(tobacoValue, regularValue);
+	}
+
+	private TaxCalculator selectCalculator(String originCountry) {
+		List<TaxCalculator> calculators = asList(new UKTaxComputer(), new EUTaxComputer(), new CHTaxComputer());
+		
+		for (TaxCalculator calculator : calculators) {
+			if (calculator.getCountryCodes().contains(originCountry)) {
+				return calculator;
+			}
+		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 	}
 }
 interface TaxCalculator {
-
 	double compute(double tobacoValue, double regularValue);
+	List<String> getCountryCodes();
 	
+}
+class UKTaxComputer implements TaxCalculator {
+	public double compute(double tobacoValue, double regularValue) {
+		return tobacoValue/2 + regularValue/2;
+	}
+	public List<String> getCountryCodes() {
+		return asList("UK");
+	}
 }
 class EUTaxComputer implements TaxCalculator {
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue/3;
+	}
+	public List<String> getCountryCodes() {
+		return asList("RO","ES","FR");
 	}
 }
 class CHTaxComputer implements TaxCalculator {
 	public double compute(double tobacoValue, double regularValue) {
 		return tobacoValue + regularValue;
 	}
-}
-class UKTaxComputer implements TaxCalculator {
-	public double compute(double tobacoValue, double regularValue) {
-		return tobacoValue/2 + regularValue/2;
+	public List<String> getCountryCodes() {
+		return asList("CH");
 	}
 }
+
 
 
 
