@@ -60,6 +60,7 @@ class OrderExporter  {
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
 		LabelServiceNEO labelService = new LabelServiceNEO(countryRepo);
+//		LabelServiceNEO labelService = new InitialContext().lookup("java:/LabelServiceNEO");
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
 		invoiceExporter.exportInvoice(labelService);
@@ -79,8 +80,9 @@ class InvoiceExporter {
 
 @Slf4j
 //@Service // @Stateless  @Stateful
+	//@Stateful
 class LabelServiceNEO {
-//	@Autowired
+//	@Autowired // @EJB
 	private CountryRepo countryRepo;
 
 	public LabelServiceNEO(CountryRepo countryRepo) {
