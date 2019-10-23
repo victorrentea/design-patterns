@@ -20,28 +20,46 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private EmailService service;
 	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendEmail("a@b.com");
+		new Witchcraft().sendEmail("a@b.com");
 	}
 }
 
 @Service
 class EmailService {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
+		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			enrichEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
+
+	protected void enrichEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
 }
+class Witchcraft extends EmailService {
+	@Override
+	protected void enrichEmail(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("We've sent you.");
+	}
+}
+
+
+
+
+
+
 
 class EmailContext {
 	public boolean send(Email email) {
