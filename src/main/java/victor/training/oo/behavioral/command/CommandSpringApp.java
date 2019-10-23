@@ -86,6 +86,9 @@ class Barman {
 	@Async("aleBarman")
 	public CompletableFuture<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
+		 if (true) {
+		 	throw new IllegalStateException("Out of beer");
+		 }
 		 ThreadUtils.sleep(1000);
 		 return completedFuture(new Ale());
 	 }
