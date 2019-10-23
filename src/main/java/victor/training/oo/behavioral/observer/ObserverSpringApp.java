@@ -56,7 +56,7 @@ class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
-	@Order(1)
+	@Order(10)
 	@EventListener
 	public void handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.orderId);
@@ -68,7 +68,7 @@ class StockManagementService {
 @Service
 class InvoiceService {
 
-	@Order(2)
+	@Order(20)
 	@EventListener
 	public void generateInvoice(OrderPlaced event) {
 		log.info("Generating invoice for order id: " + event.getOrderId()); // TODO get orderId
