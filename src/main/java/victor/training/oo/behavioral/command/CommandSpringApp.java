@@ -9,6 +9,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import victor.training.oo.stuff.ThreadUtils;
 import java.util.concurrent.*;
 
 import static java.util.Arrays.asList;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @EnableAsync
 @SpringBootApplication
@@ -31,12 +33,23 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor(@Value("${barman.thread.count:2}") int barmanCount) {
+	public ThreadPoolTaskExecutor whiskeyBarman(@Value("${barman.thread.count:2}") int barmanCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(barmanCount);
 		executor.setMaxPoolSize(barmanCount);
 		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("barman-");
+		executor.setThreadNamePrefix("whiskey-");
+		executor.initialize();
+		executor.setWaitForTasksToCompleteOnShutdown(true);
+		return executor;
+	}
+	@Bean
+	public ThreadPoolTaskExecutor aleBarman(@Value("${barman.thread.count:2}") int barmanCount) {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(barmanCount);
+		executor.setMaxPoolSize(barmanCount);
+		executor.setQueueCapacity(500);
+		executor.setThreadNamePrefix("ale-");
 		executor.initialize();
 		executor.setWaitForTasksToCompleteOnShutdown(true);
 		return executor;
@@ -50,17 +63,14 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
 
-	@Autowired
-	private ThreadPoolTaskExecutor pool;
-
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order");
-		Future<Ale> futureAle = pool.submit(() -> barman.getOneAle());
-		Future<Whiskey> futureWhiskey = pool.submit(() -> barman.getOneWhiskey());
-
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
+		log.debug("The waitress left with my command");
 		Ale ale = futureAle.get();
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
@@ -70,16 +80,18 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async("aleBarman")
+	public CompletableFuture<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return completedFuture(new Ale());
 	 }
-	
-	 public Whiskey getOneWhiskey() {
+
+	@Async("whiskeyBarman")
+	 public CompletableFuture<Whiskey> getOneWhiskey() {
 		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Whiskey();
+		 return completedFuture(new Whiskey());
 	 }
 }
 
