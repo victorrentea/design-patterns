@@ -19,13 +19,13 @@ public class TemplateSpringApp implements CommandLineRunner {
 	@Autowired
 	private EmailSender emailSender;
 	@Autowired
-	private OrderReceivedEmailEnricher receivedEmailEnricher;
-	@Autowired
-	private OrderShippedEmailEnricher shippedEmailEnricher;
+	private EmailEnrichers emailEnrichers;
 
 	public void run(String... args) {
-		emailSender.sendEmail("a@b.com", receivedEmailEnricher);
-		emailSender.sendEmail("a@b.com", shippedEmailEnricher);
+	    // this code happens while executing the place order flow
+		emailSender.sendEmail("a@b.com", emailEnrichers::enrichEmailReceived);
+	    // this code happens while executing the ship order flow
+		emailSender.sendEmail("a@b.com", emailEnrichers::enrichEmailShipped);
 //		new OrderShippedEmailEnricher().sendEmail("a@b.com");
 	}
 }
@@ -53,16 +53,12 @@ interface EmailEnricher {
 
 }
 @Service
-class OrderReceivedEmailEnricher implements EmailEnricher {
-	public void enrich(Email email) {
+class EmailEnrichers {
+	public void enrichEmailReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-
-@Service
-class OrderShippedEmailEnricher implements EmailEnricher {
-	public void enrich(Email email) {
+	public void enrichEmailShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've sent you.");
 	}
