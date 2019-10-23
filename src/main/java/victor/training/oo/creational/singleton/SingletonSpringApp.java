@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
@@ -55,10 +56,11 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-	private LabelService labelService;
+	private ApplicationContext theWholeSpring;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
+		LabelService labelService = theWholeSpring.getBean(LabelService.class);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
 		invoiceExporter.exportInvoice(labelService);
