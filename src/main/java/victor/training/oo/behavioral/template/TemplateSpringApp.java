@@ -16,17 +16,14 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
-	
+
 	public void run(String... args) {
-		new EmailService().sendEmail("a@b.com");
-		new Witchcraft().sendEmail("a@b.com");
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+abstract class AbstractEmailSender {
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -42,12 +39,18 @@ class EmailService {
 		}
 	}
 
+	protected abstract void enrichEmail(Email email);
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+	@Override
 	protected void enrichEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-class Witchcraft extends EmailService {
+
+class OrderShippedEmailSender extends AbstractEmailSender {
 	@Override
 	protected void enrichEmail(Email email) {
 		email.setSubject("Order Shipped");
