@@ -25,11 +25,16 @@ public class InterfaceProxies {
         };
         MathsReal golem = (MathsReal) Enhancer.create(MathsReal.class, handler);
 
-        System.out.println(golem.sum(1,1));
-        System.out.println(golem.sum(2,0));
-        System.out.println(golem.sum(3,-1));
-        System.out.println(golem.sum(3,1));
-        System.out.println(golem.prod(2,1));
+        bizLogic(golem);
+    }
+
+    private static void bizLogic(MathsReal maths) {
+        System.out.println("With who am I talking to ? " + maths.getClass());
+        System.out.println(maths.sum(1,1));
+        System.out.println(maths.sum(2,0));
+        System.out.println(maths.sum(3,-1));
+        System.out.println(maths.sum(3,1));
+        System.out.println(maths.prod(2,1));
     }
 }
 
