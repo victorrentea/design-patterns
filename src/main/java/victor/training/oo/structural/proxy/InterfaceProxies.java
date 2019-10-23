@@ -1,5 +1,10 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -10,19 +15,15 @@ public class InterfaceProxies {
 
         MathsReal mathsReal = new MathsReal();
 
-        InvocationHandler h = new InvocationHandler() {
+        MethodInterceptor handler = new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
                 System.out.println("MI5 here: " + method.getName() +
                         " with args " + Arrays.toString(args));
                 return method.invoke(mathsReal, args);
             }
         };
-
-
-        Maths golem = (Maths) Proxy.newProxyInstance(InterfaceProxies.class.getClassLoader(),
-                new Class<?>[]{ Maths.class},
-                h);
+        MathsReal golem = (MathsReal) Enhancer.create(MathsReal.class, handler);
 
         System.out.println(golem.sum(1,1));
         System.out.println(golem.sum(2,0));
@@ -33,19 +34,10 @@ public class InterfaceProxies {
 }
 
 
-interface Maths {
-    Integer sum(int a, int b);
-    Integer prod(int a, int b);
-}
-
-class MathsReal implements  Maths{
-
-    @Override
+class MathsReal {
     public Integer sum(int a, int b) {
         return a+b;
     }
-
-    @Override
     public Integer prod(int a, int b) {
         return a*b;
     }
