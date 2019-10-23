@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -16,16 +16,24 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
+	@Autowired
+	private EmailSender emailSender;
+	@Autowired
+	private OrderReceivedEmailEnricher receivedEmailEnricher;
+	@Autowired
+	private OrderShippedEmailEnricher shippedEmailEnricher;
 
 	public void run(String... args) {
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", receivedEmailEnricher);
+		emailSender.sendEmail("a@b.com", shippedEmailEnricher);
+//		new OrderShippedEmailEnricher().sendEmail("a@b.com");
 	}
 }
 
-abstract class AbstractEmailSender {
+@Service
+class EmailSender {
 
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailEnricher enricher) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -33,26 +41,28 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			enrichEmail(email);
+			enricher.enrich(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
-	protected abstract void enrichEmail(Email email);
 }
+interface EmailEnricher {
+	void enrich(Email email);
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
-	@Override
-	protected void enrichEmail(Email email) {
+}
+@Service
+class OrderReceivedEmailEnricher implements EmailEnricher {
+	public void enrich(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-	@Override
-	protected void enrichEmail(Email email) {
+@Service
+class OrderShippedEmailEnricher implements EmailEnricher {
+	public void enrich(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've sent you.");
 	}
