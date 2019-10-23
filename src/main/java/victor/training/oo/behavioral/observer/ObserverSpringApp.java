@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootApplication
 public class ObserverSpringApp implements CommandLineRunner {
@@ -22,12 +23,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -39,6 +40,7 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [2] control the order
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
+//	@Transactional
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
 		//afterTransaction.runInTransaction();
@@ -61,6 +63,7 @@ class StockManagementService {
 		log.info("Checking stock for products in order " + event.orderId);
 		log.info("If something goes wrong - throw an exception");
 		publisher.publishEvent(new OrderInStock(event.getOrderId()));
+		if (true) throw new IllegalArgumentException("Surprise. Will the event be sent or not ?!");
 	}
 }
 
