@@ -80,6 +80,52 @@ class InvoiceExporter {
 	}
 }
 
+class C {
+	String s,g,h,j;
+
+	static {
+		new C()
+				.setS("s")
+				.setG("g");
+	}
+
+	public String getS() {
+		return s;
+	}
+
+	public C setS(String s) {
+		this.s = s;
+		return this;
+	}
+
+	public String getG() {
+		return g;
+	}
+
+	public C setG(String g) {
+		this.g = g;
+		return this;
+	}
+
+	public String getH() {
+		return h;
+	}
+
+	public C setH(String h) {
+		this.h = h;
+		return this;
+	}
+
+	public String getJ() {
+		return j;
+	}
+
+	public C setJ(String j) {
+		this.j = j;
+		return this;
+	}
+}
+
 @Slf4j
 @Service
 @Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
