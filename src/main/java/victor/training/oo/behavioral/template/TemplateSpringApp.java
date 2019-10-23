@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.template;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -33,7 +34,12 @@ public class TemplateSpringApp implements CommandLineRunner {
 @Service
 class EmailSender {
 
+	@FunctionalInterface
+	public interface EmailEnricher {
+		void enrich(Email email);
+	}
 	public void sendEmail(String emailAddress, EmailEnricher enricher) {
+//	public void sendEmail(String emailAddress, Consumer<Email> enricher) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -46,11 +52,6 @@ class EmailSender {
 			if (success) break;
 		}
 	}
-
-}
-interface EmailEnricher {
-	void enrich(Email email);
-
 }
 @Service
 class EmailEnrichers {
