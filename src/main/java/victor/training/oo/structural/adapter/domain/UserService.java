@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserService { // SACRED GROUND ZEN PEACE SACRED GROUND ZEN PEACE SACRED GROUND ZEN PEACE SACRED GROUND ZEN PEACE SACRED GROUND ZEN PEACE
 
-	private final UserLdapRepository userRepo;
+	private final UserRepository userRepo;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = userRepo.searchByUsername(username);
