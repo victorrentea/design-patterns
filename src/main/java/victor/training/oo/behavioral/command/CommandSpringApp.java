@@ -75,7 +75,7 @@ class Drinker implements CommandLineRunner {
 		Whiskey whiskey = futureWhiskey.get();
 		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
 
-		barman.curse("!^%#^@!%!^$%^@!%#^@!#");
+		barman.curse("!^%#^@!%!^$%^@!%#^@!#").get();
 		log.debug("Got home safe");
 	}
 }
@@ -86,9 +86,9 @@ class Barman {
 	@Async("aleBarman")
 	public CompletableFuture<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
-		 if (true) {
-		 	throw new IllegalStateException("Out of beer");
-		 }
+//		 if (true) {
+//		 	throw new IllegalStateException("Out of beer");
+//		 }
 		 ThreadUtils.sleep(1000);
 		 return completedFuture(new Ale());
 	 }
@@ -101,7 +101,7 @@ class Barman {
 	 }
 
 	 @Async
-	public void curse(String s) {
+	public Future<Void> curse(String s) {
 		throw new IllegalArgumentException("Glass at you");
 	}
 }
