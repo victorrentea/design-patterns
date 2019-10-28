@@ -20,13 +20,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 //	private EmailService service;
 
 	public void run(String... args) {
-		new OrderReceivedEmailSender().sendOrderReceivedEmail("a@b.com");
-		new OrderShippedEmailSender().sendOrderReceivedEmail("a@b.com");
+		new EmailSender(new OrderReceivedEmailFiller()).sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailFiller()).sendEmail("a@b.com");
 	}
 }
 
-abstract class AbstractEmailSender {
-	public void sendOrderReceivedEmail(String emailAddress) {
+class EmailSender {
+	private EmailDetailsFiller filler;
+
+	public EmailSender(EmailDetailsFiller filler) {
+		this.filler = filler;
+	}
+
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/* smtpConfig,etc */);
 		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++) {
@@ -34,25 +40,27 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			fillEmailDetails(email);
+			filler.fill(email);
 			boolean success = context.send(email);
 			if (success)
 				break;
 		}
 	}
 
-	public abstract void fillEmailDetails(Email email);
+}
+interface EmailDetailsFiller {
+	void fill(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
-	public void fillEmailDetails(Email email) {
+class OrderReceivedEmailFiller implements EmailDetailsFiller {
+	public void fill(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-	public void fillEmailDetails(Email email) {
+class OrderShippedEmailFiller implements EmailDetailsFiller {
+	public void fill(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas, Speram s-ajunga (de data asta)");
 	}
