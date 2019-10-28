@@ -58,25 +58,25 @@ class OrderPlaced {
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
-
-	@Order(1)
 	@EventListener
-	public void handle(OrderPlaced event) {
+	public OrderInStock handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
+		return new OrderInStock(event.getOrderId());
 	}
 }
 //over the hills and far away
 
+@Data
+class OrderInStock {
+	private final long orderId;
+}
 
 @Slf4j
 @Service
 class InvoiceService {
-	@Order(2)
 	@EventListener
-	public void generateInvoice(OrderPlaced event) {
+	public void generateInvoice(OrderInStock event) {
 		log.info("Generating invoice for order id: " + event.getOrderId()); // TODO get orderId
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
