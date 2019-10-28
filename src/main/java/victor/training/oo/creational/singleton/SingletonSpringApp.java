@@ -47,6 +47,9 @@ public class SingletonSpringApp implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		new Thread(()->	exporter.export(Locale.ENGLISH)).start();
 		new Thread(()->	exporter.export(Locale.FRENCH)).start();
+		
+		
+		
 	}
 }
 
