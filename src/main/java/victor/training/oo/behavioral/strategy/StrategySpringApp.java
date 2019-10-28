@@ -1,5 +1,7 @@
 package victor.training.oo.behavioral.strategy;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 import java.util.Map;
 
@@ -41,35 +43,44 @@ class CustomsService {
 	}
 
 	private TaxComputer selectTaxCalculator(String originCountry) {
-		switch (originCountry) { 
-		case "UK": return new BrexitTaxComputer(); 
-		case "CN": return new ChinaTaxComputer(); 
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxComputer();
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
+		List<TaxComputer> toate = asList(
+			new BrexitTaxComputer(), 
+			new ChinaTaxComputer(),
+			new EUTaxComputer());
+			
+		return toate.stream()
+			.filter(computer -> computer.supports(originCountry))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry));
 	}
 }
 interface TaxComputer {
 	double compute(double tobaccoValue, double regularValue);
-	
+	boolean supports(String originCountry)	;
 }
 class EUTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/3;
 	}
+	public boolean supports(String originCountry) {
+		return asList("FR","RO","ES").contains(originCountry);
+	}
 }
 class BrexitTaxComputer implements TaxComputer {
-//	"UK"
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/2 + regularValue;
+	}
+	public boolean supports(String originCountry) {
+		return "UK".equals(originCountry);
 	}
 }
 class ChinaTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// logica muuuulta 30-100 linii
 		return tobaccoValue + regularValue;
+	}
+	public boolean supports(String originCountry) {
+		return "CN".equals(originCountry);
 	}
 }
 
