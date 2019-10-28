@@ -12,6 +12,7 @@ import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +23,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -39,13 +40,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 	// TODO [2] control the order
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
+//	@Transactional
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
 		//afterTransaction.runInTransaction();
+		System.out.println("COMMIT");
 	}
-	
-	@Autowired
-	InvoiceService invoiceService;
 }
 
 @Data
@@ -62,6 +62,7 @@ class StockManagementService {
 	public OrderInStock handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
+		if (true) throw new IllegalArgumentException("EU");
 		return new OrderInStock(event.getOrderId());
 	}
 }
