@@ -16,30 +16,45 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
-	
+//	@Autowired
+//	private EmailService service;
+
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new Y().sendOrderReceivedEmail("a@b.com");
+		new X().sendOrderReceivedEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
-
+abstract class AbstractEmailService {
 	public void sendOrderReceivedEmail(String emailAddress) {
-		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
-		for (int i = 0; i < MAX_RETRIES; i++ ) {
+		EmailContext context = new EmailContext(/* smtpConfig,etc */);
+		final int MAX_RETRIES = 3;
+		for (int i = 0; i < MAX_RETRIES; i++) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			p(email);
 			boolean success = context.send(email);
-			if (success) break;
+			if (success)
+				break;
 		}
+	}
+
+	public abstract void p(Email email);
+}
+
+class Y extends AbstractEmailService {
+	public void p(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+class X extends AbstractEmailService {
+	public void p(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimas, Speram s-ajunga (de data asta)");
 	}
 }
 

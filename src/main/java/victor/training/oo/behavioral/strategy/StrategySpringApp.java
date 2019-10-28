@@ -57,6 +57,7 @@ class CustomsService {
 interface TaxComputer {
 	double compute(double tobaccoValue, double regularValue);
 	boolean supports(String originCountry)	;
+//	Set<String> supportedCountries();
 }
 @Service
 class EUTaxComputer implements TaxComputer {
