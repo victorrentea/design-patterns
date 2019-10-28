@@ -71,10 +71,13 @@ class Beutor implements CommandLineRunner {
 		Ale ale = futureAle.get();
 		Whiskey whiskey = futureWhiskey.get();
 		
+		
 //		Ale ale = barman.getOneAle();
 //		Whiskey whiskey = barman.getOneWhiskey();
 		log.debug("Got my order! Thank you lad! " + 
 				asList(ale, whiskey));
+		barman.injura();
+		log.debug("Ajung acasa in siguranta" );
 	}
 }
 
@@ -84,11 +87,18 @@ class Barman {
 	@Async
 	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
+		 if (true) throw new IllegalStateException("Nu mai bere!");
 		 ThreadUtils.sleep(1000);
 		 return completedFuture(new Ale());
 	 }
 	
-	 @Async
+	@Async
+	 public void injura() {
+		throw new IllegalArgumentException("Iti fac buzunar/Te casez");
+		
+	}
+
+	@Async
 	 public Future<Whiskey> getOneWhiskey() {
 		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
