@@ -21,13 +21,14 @@ public class StrategySpringApp implements CommandLineRunner {
 
 	
 	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	@Autowired
+	CustomsService service;
 	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -36,18 +37,17 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 }
 
+@Service
 class CustomsService {
+	@Autowired
+	private List<TaxComputer> toate;
+
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxComputer computer = selectTaxCalculator(originCountry); 
 		return computer.compute(tobaccoValue, regularValue);
 	}
-
+	
 	private TaxComputer selectTaxCalculator(String originCountry) {
-		List<TaxComputer> toate = asList(
-			new BrexitTaxComputer(), 
-			new ChinaTaxComputer(),
-			new EUTaxComputer());
-			
 		return toate.stream()
 			.filter(computer -> computer.supports(originCountry))
 			.findFirst()
@@ -58,6 +58,7 @@ interface TaxComputer {
 	double compute(double tobaccoValue, double regularValue);
 	boolean supports(String originCountry)	;
 }
+@Service
 class EUTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/3;
@@ -66,6 +67,7 @@ class EUTaxComputer implements TaxComputer {
 		return asList("FR","RO","ES").contains(originCountry);
 	}
 }
+@Service
 class BrexitTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/2 + regularValue;
@@ -74,6 +76,7 @@ class BrexitTaxComputer implements TaxComputer {
 		return "UK".equals(originCountry);
 	}
 }
+@Service
 class ChinaTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// logica muuuulta 30-100 linii
