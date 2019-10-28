@@ -46,7 +46,7 @@ public class ObserverSpringApp implements CommandLineRunner {
 
 @Data
 class OrderPlaced {
-	public final long orderId;
+	private final long orderId;
 }
 
 @Slf4j
@@ -57,7 +57,7 @@ class StockManagementService {
 
 	@EventListener
 	public void handle(OrderPlaced event) {
-		log.info("Checking stock for products in order " + event.orderId);
+		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
 	}
 }
