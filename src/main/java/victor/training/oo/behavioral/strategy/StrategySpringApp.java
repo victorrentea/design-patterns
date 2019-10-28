@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.strategy;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -35,13 +36,44 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxComputer computer = selectTaxCalculator(originCountry); 
+		return computer.compute(tobaccoValue, regularValue);
+	}
+
+	private TaxComputer selectTaxCalculator(String originCountry) {
 		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
+		case "UK": return new BrexitTaxComputer(); 
+		case "CN": return new ChinaTaxComputer(); 
 		case "FR": 
 		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
+		case "RO": return new EUTaxComputer();
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		}
 	}
 }
+interface TaxComputer {
+	double compute(double tobaccoValue, double regularValue);
+	
+}
+class EUTaxComputer implements TaxComputer {
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue/3;
+	}
+}
+class BrexitTaxComputer implements TaxComputer {
+//	"UK"
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue/2 + regularValue;
+	}
+}
+class ChinaTaxComputer implements TaxComputer {
+	public double compute(double tobaccoValue, double regularValue) {
+		// logica muuuulta 30-100 linii
+		return tobaccoValue + regularValue;
+	}
+}
+
+
+
+
+
