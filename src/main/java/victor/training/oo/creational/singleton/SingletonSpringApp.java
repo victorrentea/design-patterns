@@ -10,12 +10,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.ls.LSException;
 
 @Slf4j // if this doesn't compile:
 // IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
@@ -54,9 +56,10 @@ public class SingletonSpringApp implements CommandLineRunner{
 @RequiredArgsConstructor
 class OrderExporter  {
 	private final InvoiceExporter invoiceExporter;
-	private final LabelService labelService;
+	private final ApplicationContext spring;
 
 	public void export(Locale locale) {
+		LabelService labelService = spring.getBean(LabelService.class);
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
