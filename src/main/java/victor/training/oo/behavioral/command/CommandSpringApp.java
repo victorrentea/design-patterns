@@ -1,5 +1,6 @@
 package victor.training.oo.behavioral.command;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.Arrays;
+import java.util.concurrent.*;
 
 import static java.util.Arrays.asList;
 
@@ -45,17 +47,24 @@ public class CommandSpringApp {
 
 @Slf4j
 @Component
-class Drinker implements CommandLineRunner {
-	@Autowired
-	private Barman barman;
+@RequiredArgsConstructor
+class Beutor implements CommandLineRunner {
+	private final Barman barman;
 
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) {
+	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
+
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+
+		Future<Ale> futureAle = pool.submit(barman::getOneAle);
+		Future<Whiskey> futureWhiskey = pool.submit(barman::getOneWhiskey);
+		Ale ale = futureAle.get();
+		Whiskey whiskey = futureWhiskey.get();
+
+		pool.shutdown();
 		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
 	}
 }
