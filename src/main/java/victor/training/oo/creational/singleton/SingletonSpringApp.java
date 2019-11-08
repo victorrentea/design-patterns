@@ -56,32 +56,24 @@ class OrderExporter  {
 	private final CountryRepo countryRepo;
 
 	public void export(Locale locale) {
-
 		LabelService labelService = new LabelService(countryRepo);
-
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice(locale);
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class InvoiceExporter {
-
-	private final CountryRepo countryRepo;
-
-	public void exportInvoice(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
-		labelService.load(locale);
-
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
+// OBJECT MANDRU SI FALNIC
 class LabelService {
 	private CountryRepo countryRepo;
 	public LabelService(CountryRepo countryRepo) {
