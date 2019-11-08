@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.command;
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +10,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ import victor.training.oo.stuff.ThreadUtils;
 import java.util.concurrent.*;
 
 import static java.util.Arrays.asList;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @EnableAsync
 @SpringBootApplication
@@ -54,32 +57,44 @@ class Beutor implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws ExecutionException, InterruptedException {
-		log.debug("Submitting my order");
+		log.debug("Submitting my order " + barman.getClass());
 
+		Future<Ale> futureAle = barman.getOneAle();
+		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
+		log.debug("A plecat fata cu comanda");
 
-		Future<Ale> futureAle = pool.submit(barman::getOneAle);
-		Future<Whiskey> futureWhiskey = pool.submit(barman::getOneWhiskey);
 		Ale ale = futureAle.get();
 		Whiskey whiskey = futureWhiskey.get();
-
 		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
+
+		barman.injura("%@!^%#^@!#^@!%#").get();
+
+		System.out.println("Ajung in pace acasa");
 	}
 }
-
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
+	@Async
+	public Future<Ale> getOneAle() {
 		 log.debug("Pouring Ale...");
+//		 if (true) {
+//		 	throw new IllegalStateException("Nu mai e BERE");
+//		 }
 		 ThreadUtils.sleep(1000);
-		 return new Ale();
+		 return completedFuture(new Ale());
 	 }
-	
-	 public Whiskey getOneWhiskey() {
+	@Async
+	 public Future<Whiskey> getOneWhiskey() {
 		 log.debug("Pouring Whiskey...");
 		 ThreadUtils.sleep(1000);
-		 return new Whiskey();
+		 return completedFuture(new Whiskey());
 	 }
+
+	 @Async
+	public Future<Void> injura(String s) {
+		throw  new RuntimeException("Te casez");
+	}
 }
 
 @Data
