@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@EnableCaching
+@EnableCaching()
 @EnableAspectJAutoProxy(exposeProxy = true)
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
