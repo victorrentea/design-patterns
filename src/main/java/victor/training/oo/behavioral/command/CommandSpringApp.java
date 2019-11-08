@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import victor.training.oo.stuff.ThreadUtils;
 
 import static java.util.Arrays.asList;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
