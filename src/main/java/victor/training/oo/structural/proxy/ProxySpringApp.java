@@ -1,11 +1,15 @@
 package victor.training.oo.structural.proxy;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +18,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @EnableCaching
@@ -34,7 +39,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-
+		log.debug("Oare cu cine vorbesc eu aici ? " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -53,5 +58,24 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
-	
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {}
+
+@Slf4j
+@Aspect
+@Component
+class SRI {
+//	@Around("execution(* victor..ExpensiveOps.*(..))")
+//	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
+	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+	public Object m(ProceedingJoinPoint point) throws Throwable {
+		log.debug("Cheama fraeru metoda {} cu param {}",
+				point.getSignature().getName(),
+				Arrays.toString(point.getArgs()));
+		return point.proceed();
+	}
 }

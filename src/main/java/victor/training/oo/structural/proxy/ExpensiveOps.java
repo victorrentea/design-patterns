@@ -15,6 +15,7 @@ import org.jooq.lambda.Unchecked;
 import org.springframework.aop.config.AopConfigUtils;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+//@LoggedClass
 public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
 	@Cacheable("primes")
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@LoggedMethod
+//	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Boolean isPrime(int n) {
+		new RuntimeException().printStackTrace();
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -56,6 +60,8 @@ public class ExpensiveOps {
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 
+
+//		CacheManager // programatic cache management
 		log.debug("10000169 is prime ? ");
 		ExpensiveOps myselfProxied = (ExpensiveOps) AopContext.currentProxy();
 		log.debug("Got: " + myselfProxied.isPrime(10_000_169) + "\n");
