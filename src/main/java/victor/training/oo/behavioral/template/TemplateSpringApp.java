@@ -2,7 +2,6 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,17 +19,16 @@ public class TemplateSpringApp implements CommandLineRunner {
 //	private EmailService service;
 	
 	public void run(String... args) {
-		new Patratezl().sendOrderReceivedEmail("a@b.com");
-		new Hackareala().sendOrderReceivedEmail("a@b.com");
+		new OrderReceivedEmailSender().send("a@b.com");
+		new OrderShippedEmailSender().send("a@b.com");
 //		Hackareala.sendOrderShippedEmail("a@b.com");
 	}
 }
 
 @Service
-abstract
-class EmailService {
+abstract class AbstractEmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void send(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -38,24 +36,23 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			p(email);
+			fillContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
-	protected abstract void p(Email email);
+	protected abstract void fillContent(Email email);
 }
-class Patratezl extends EmailService {
-	public void p(Email email) {
+class OrderReceivedEmailSender extends AbstractEmailSender {
+	public void fillContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class Hackareala extends EmailService {
-	@Override
-	protected void p(Email email) {
+class OrderShippedEmailSender extends AbstractEmailSender {
+	protected void fillContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas, Speram sa ajunga");
 	}
