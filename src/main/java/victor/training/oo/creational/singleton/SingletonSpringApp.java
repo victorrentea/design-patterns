@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -56,32 +57,31 @@ public class SingletonSpringApp implements CommandLineRunner{
 @Slf4j
 @Service
 @RequiredArgsConstructor
-abstract
 class OrderExporter  {
 	private final InvoiceExporter invoiceExporter;
-	@Lookup
-	public abstract LabelService createLabelService();
+	private final  LabelService labelService;
 
 	public void export(Locale locale) {
-		LabelService labelService = createLabelService();
+		log.debug("HTH are you ?" + labelService.getClass());
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class InvoiceExporter {
-	public void exportInvoice(LabelService labelService) {
+	private final  LabelService labelService;
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
 @Service
-@Scope("prototype")
+@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RequiredArgsConstructor
 // OBJECT MANDRU SI FALNIC
 class LabelService {
