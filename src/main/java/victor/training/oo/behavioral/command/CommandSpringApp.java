@@ -17,9 +17,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.stuff.ThreadUtils;
 
-import java.util.Arrays;
-
 import static java.util.Arrays.asList;
+import static victor.training.oo.stuff.ThreadUtils.sleep;
 
 @EnableAsync
 @SpringBootApplication
@@ -54,32 +53,33 @@ class Drinker implements CommandLineRunner {
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) {
 		log.debug("Submitting my order");
-		Ale ale = barman.getOneAle();
-		Whiskey whiskey = barman.getOneWhiskey();
-		log.debug("Got my order! Thank you lad! " + asList(ale, whiskey));
+		Beer beer = barman.pourBeer();
+		Vodka vodka = barman.pourWhiskey();
+		log.debug("Waiting for my drinks...");
+		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
 	}
 }
 
 @Slf4j
 @Service
 class Barman {
-	public Ale getOneAle() {
-		 log.debug("Pouring Ale...");
-		 ThreadUtils.sleep(1000);
-		 return new Ale();
+	public Beer pourBeer() {
+		 log.debug("Pouring Beer...");
+		 sleep(1000);
+		 return new Beer();
 	 }
 	
-	 public Whiskey getOneWhiskey() {
+	 public Vodka pourWhiskey() {
 		 log.debug("Pouring Whiskey...");
-		 ThreadUtils.sleep(1000);
-		 return new Whiskey();
+		 sleep(1000);
+		 return new Vodka();
 	 }
 }
 
 @Data
-class Ale {
+class Beer {
 }
 
 @Data
-class Whiskey {
+class Vodka {
 }

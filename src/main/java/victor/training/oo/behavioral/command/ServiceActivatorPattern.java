@@ -2,11 +2,7 @@ package victor.training.oo.behavioral.command;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.NotImplementedException;
-import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.integration.annotation.MessageEndpoint;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -46,8 +42,8 @@ class MessageHandler {
 
     private Object callBarman(DrinkType drinkType) {
         switch (drinkType) {
-            case ALE: return barman.getOneAle();
-            case WHISKEY: return barman.getOneWhiskey();
+            case ALE: return barman.pourBeer();
+            case WHISKEY: return barman.pourWhiskey();
             default: throw new NotImplementedException("Unknown drink type: " + drinkType);
         }
     }
