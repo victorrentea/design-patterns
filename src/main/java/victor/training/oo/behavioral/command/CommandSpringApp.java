@@ -59,6 +59,9 @@ class Beutor implements CommandLineRunner {
 	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order " + barman.getClass());
 
+
+		Runnable runnable = () -> System.out.println("P'asta");
+		pool.submit(runnable);
 		Future<Ale> futureAle = barman.getOneAle();
 		Future<Whiskey> futureWhiskey = barman.getOneWhiskey();
 		log.debug("A plecat fata cu comanda");

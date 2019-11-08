@@ -3,7 +3,6 @@ package victor.training.oo.behavioral.template;
 import java.util.Random;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,20 +10,24 @@ import org.springframework.stereotype.Service;
 
 import lombok.Data;
 
+@RequiredArgsConstructor
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
+
+	private final EmailSender sender;
+	private final Emails emails;
+
 	public static void main(String[] args) {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailSender sender;
-	
+
+
 	public void run(String... args) {
 		//UC2342
-		sender.send("a@b.com", new OrderReceivedEmailFiller());
+		sender.send("a@b.com", emails::fillOrderReceivedContent);
 		// UC232
-		sender.send("a@b.com", new OrderShippedEmailFiller());
+		sender.send("a@b.com", emails::fillOrderShippedContent);
 //		Hackareala.sendOrderShippedEmail("a@b.com");
 	}
 }
@@ -32,7 +35,10 @@ public class TemplateSpringApp implements CommandLineRunner {
 @RequiredArgsConstructor
 @Service
 class EmailSender {
-
+	@FunctionalInterface
+	interface ContentFiller {
+		void fillContent(Email email);
+	}
 	public void send(String emailAddress, ContentFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
@@ -48,20 +54,13 @@ class EmailSender {
 	}
 }
 
-interface ContentFiller {
-	void fillContent(Email email);
-}
 @Service
-class OrderReceivedEmailFiller implements ContentFiller {
-	public void fillContent(Email email) {
+class Emails {
+	public void fillOrderReceivedContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-
-@Service
-class OrderShippedEmailFiller implements ContentFiller {
-	public void fillContent(Email email) {
+	public void fillOrderShippedContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas, Speram sa ajunga");
 	}
