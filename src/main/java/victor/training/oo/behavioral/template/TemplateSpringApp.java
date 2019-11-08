@@ -16,15 +16,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
+//	@Autowired
+//	private EmailService service;
 	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new Patratezl().sendOrderReceivedEmail("a@b.com");
+		new Hackareala().sendOrderReceivedEmail("a@b.com");
+//		Hackareala.sendOrderShippedEmail("a@b.com");
 	}
 }
 
 @Service
+abstract
 class EmailService {
 
 	public void sendOrderReceivedEmail(String emailAddress) {
@@ -35,11 +38,26 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			p(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	protected abstract void p(Email email);
+}
+class Patratezl extends EmailService {
+	public void p(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+class Hackareala extends EmailService {
+	@Override
+	protected void p(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimas, Speram sa ajunga");
 	}
 }
 
