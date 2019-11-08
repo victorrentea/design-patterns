@@ -6,17 +6,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Objects;
 
 @SpringBootApplication
 public class ObserverSpringApp implements CommandLineRunner {
@@ -24,12 +17,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-	@Bean
-    public ApplicationEventMulticaster applicationEventMulticaster() {
-        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        return eventMulticaster;
-    }
+//	@Bean
+//    public ApplicationEventMulticaster applicationEventMulticaster() {
+//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+//        return eventMulticaster;
+//    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -53,24 +46,25 @@ class OrderPlaced {
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
-	@Order(10)
 	@EventListener
-	public void handle(OrderPlaced event) {
+	public OrderCheckedEvent handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
-		if (true) throw new RuntimeException();
 		log.info("If something goes wrong - throw an exception");
+//		publisher.publishEvent(new IssueInvoiceCommand(event.getOrderId()));
+		return new OrderCheckedEvent(event.getOrderId());
 	}
+}
+
+@Data
+class OrderCheckedEvent {
+	private final long orderId;
 }
 
 @Slf4j
 @Service
 class InvoiceService {
-
-	@Order(20)
 	@EventListener
-	public void generateInvoice(OrderPlaced event) {
+	public void generateInvoice(OrderCheckedEvent event) {
 		log.info("Generating invoice for order id: " + event.getOrderId()); // TODO get orderId
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
