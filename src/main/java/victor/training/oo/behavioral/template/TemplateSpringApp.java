@@ -2,6 +2,8 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,20 +17,23 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-//	@Autowired
-//	private EmailService service;
+	@Autowired
+	private EmailSender sender;
 	
 	public void run(String... args) {
-		new OrderReceivedEmailSender().send("a@b.com");
-		new OrderShippedEmailSender().send("a@b.com");
+		//UC2342
+		sender.send("a@b.com", new OrderReceivedEmailFiller());
+		// UC232
+		sender.send("a@b.com", new OrderShippedEmailFiller());
 //		Hackareala.sendOrderShippedEmail("a@b.com");
 	}
 }
 
+@RequiredArgsConstructor
 @Service
-abstract class AbstractEmailSender {
+class EmailSender {
 
-	public void send(String emailAddress) {
+	public void send(String emailAddress, ContentFiller filler) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -36,23 +41,27 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			fillContent(email);
+			filler.fillContent(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-
-	protected abstract void fillContent(Email email);
 }
-class OrderReceivedEmailSender extends AbstractEmailSender {
+
+interface ContentFiller {
+	void fillContent(Email email);
+}
+@Service
+class OrderReceivedEmailFiller implements ContentFiller {
 	public void fillContent(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-	protected void fillContent(Email email) {
+@Service
+class OrderShippedEmailFiller implements ContentFiller {
+	public void fillContent(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimas, Speram sa ajunga");
 	}
