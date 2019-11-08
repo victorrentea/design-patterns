@@ -1,5 +1,10 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -9,16 +14,15 @@ public class IaUiteAicea {
 
     public static void main(String[] args) {
         Mate mate = new Mate();
-        InvocationHandler h = new InvocationHandler() {
+        MethodInterceptor callback = new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
                 System.out.println("Fraeru cheama metoda " + method.getName()
                      + " cu param " + Arrays.toString(args));
                 return method.invoke(mate, args);
             }
         };
-        IMate golem = (IMate) Proxy.newProxyInstance(IaUiteAicea.class.getClassLoader(),
-                new Class<?>[]{IMate.class}, h);
+        Mate golem = (Mate) Enhancer.create(Mate.class, callback);
         //demo
 
         System.out.println(golem.sum(1,1));
@@ -28,17 +32,10 @@ public class IaUiteAicea {
         System.out.println(golem.prod(3,2));
     }
 }
-
-interface IMate {
-    int sum(int a, int b);
-    int prod(int a, int b);
-}
-class Mate implements IMate {
+class Mate {
     public int sum(int a, int b) {
         return a + b;
     }
-
-    @Override
     public int prod(int a, int b) {
         return a*b;
     }
