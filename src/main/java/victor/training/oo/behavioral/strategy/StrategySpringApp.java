@@ -4,6 +4,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -36,34 +42,45 @@ class CustomsService {
 	}
 
 	private TaxCalculator chooseTaxCalculator(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKCustomsTaxCalculator();
-		case "CN": return new ChinaCustomsTaxCalculator();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUCustomsTaxCalculator();
-		default:
-			throw new IllegalStateException("JDD Unexpected value: " + originCountry);
-		}
+        List<TaxCalculator> allCalculators = asList(
+                new UKCustomsTaxCalculator(),
+                new ChinaCustomsTaxCalculator(),
+                new EUCustomsTaxCalculator()
+        );
+        return allCalculators.stream()
+                .filter(c -> c.getCountryCodes().contains(originCountry))
+                .findFirst()
+                .orElseThrow(() ->new IllegalStateException("JDD Unexpected value: " + originCountry));
 	}
 }
 
 interface TaxCalculator {
 	double calculate(double tobaccoValue, double regularValue);
+	List<String> getCountryCodes();
 }
 
 class EUCustomsTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue/3;
 	}
+    public List<String> getCountryCodes() {
+        return asList("RO","ES","FR");
+    }
 }
 class ChinaCustomsTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
+    public List<String> getCountryCodes() {
+        return asList("CN");
+    }
+
 }
 class UKCustomsTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue/2 + regularValue;
 	}
+    public List<String> getCountryCodes() {
+        return Collections.singletonList("UK");
+    }
 }
