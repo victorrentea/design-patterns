@@ -4,6 +4,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -31,21 +35,28 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 
-//	private final static Map<String, I>
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxCalculator calculator = selectTaxCalculator(originCountry);
 		return calculator.calculate(tobaccoValue, regularValue);
 	}
 
+	private final static Map<String, TaxCalculator> mistake = new HashMap<>();
+	static {
+	    mistake.put("UK", new UKTaxCalculator());
+    }
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKTaxCalculator();
-		case "CN": return new ChinaTaxCalculator();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator();
-		default: throw new IllegalStateException("Unexpected value: " + originCountry);
-		}
+
+	    return Optional.ofNullable(mistake.get(originCountry))
+                .orElseThrow(() -> new IllegalStateException("Unexpected value: " + originCountry));
+//
+//		switch (originCountry) {
+//		case "UK": return new UKTaxCalculator();
+//		case "CN": return new ChinaTaxCalculator();
+//		case "FR":
+//		case "ES": // other EU country codes...
+//		case "RO": return new EUTaxCalculator();
+//		default: throw new IllegalStateException("Unexpected value: " + originCountry);
+//		}
 	}
 
 }
