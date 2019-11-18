@@ -19,10 +19,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Service
+@LoggedClass
 public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
-	
+
+//	@LoggedMethod
+	@Cacheable("primes")
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);

@@ -1,18 +1,20 @@
 package victor.training.oo.structural.proxy;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @EnableCaching
@@ -29,8 +31,9 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
+
+	@Autowired ExpensiveOps ops;
 	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps(); 
 
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
@@ -46,4 +49,23 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 	
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {}
+
+@Aspect
+@Component
+@Slf4j
+class LogAllMethods {
+
+//	@Around("execution(* victor.training..*.*(..))")
+//	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)")
+	public Object log(ProceedingJoinPoint point) throws Throwable {
+		log.debug("Calling method {}", point.getSignature().getName());
+		return point.proceed();
+	}
 }
