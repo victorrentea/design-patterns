@@ -40,23 +40,15 @@ class CustomsService {
 		return calculator.calculate(tobaccoValue, regularValue);
 	}
 
-	private final static Map<String, TaxCalculator> mistake = new HashMap<>();
-	static {
-	    mistake.put("UK", new UKTaxCalculator());
-    }
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-
-	    return Optional.ofNullable(mistake.get(originCountry))
-                .orElseThrow(() -> new IllegalStateException("Unexpected value: " + originCountry));
-//
-//		switch (originCountry) {
-//		case "UK": return new UKTaxCalculator();
-//		case "CN": return new ChinaTaxCalculator();
-//		case "FR":
-//		case "ES": // other EU country codes...
-//		case "RO": return new EUTaxCalculator();
-//		default: throw new IllegalStateException("Unexpected value: " + originCountry);
-//		}
+		switch (originCountry) {
+		case "UK": return new UKTaxCalculator();
+		case "CN": return new ChinaTaxCalculator();
+		case "FR":
+		case "ES": // other EU country codes...
+		case "RO": return new EUTaxCalculator();
+		default: throw new IllegalStateException("Unexpected value: " + originCountry);
+		}
 	}
 
 }
