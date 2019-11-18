@@ -17,8 +17,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 import static java.util.Arrays.asList;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
 @EnableAsync
@@ -57,18 +59,46 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order");
 
-		ExecutorService pool = Executors.newFixedThreadPool(2);
-		Callable<Beer> beerCommand = barman::pourBeer;
-		Future<Beer> futureBeer = pool.submit(beerCommand);
-		Future<Vodka> futureVodka = pool.submit(barman::pourVodka);
+
+		CompletableFuture<Beer> beerPromise = supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		 supplyAsync(barman::pourBeer);
+		Supplier<Vodka> xx = barman::pourVodka;
+		CompletableFuture<Vodka> vodkaPromise = supplyAsync(xx);
 
 		log.debug("The waitress went away with my command");
-		Beer beer = futureBeer.get();
-		Vodka vodka = futureVodka.get();
+		Beer beer = beerPromise.get();
+		Vodka vodka = vodkaPromise.get();
 
 		log.debug("Waiting for my drinks...");
 		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
-		pool.shutdown();
 	}
 }
 
@@ -76,8 +106,17 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
 	public Beer pourBeer() {
+			// WRONG: like reading feed/book/door in the toilet
 		 log.debug("Pouring Beer...");
+		 //WRONG: like sleeping in the toilet
 		 sleep(1000);
+
+		 // OK
+		 int sum = 0;
+		for (int i = 0; i < 100000; i++) {
+			sum += i*i;
+
+		}
 		 return new Beer();
 	 }
 	
