@@ -1,5 +1,10 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -8,23 +13,30 @@ import java.util.Arrays;
 public class LetsPlay {
 
     public static void main(String[] args) {
-        MatematicaImpl realImpl = new MatematicaImpl();
-        InvocationHandler h = new InvocationHandler() {
+        Matematika realImpl = new Matematika();
+
+        MethodInterceptor handler = new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
                 System.out.println("DS: Are you calling "  + method.getName() + " with args " + Arrays.toString(args));
                 return method.invoke(realImpl, args);
             }
         };
+        Matematika m = (Matematika) Enhancer.create(Matematika.class, handler);
 
-        Matematika m = (Matematika) Proxy.newProxyInstance(LetsPlay.class.getClassLoader(),
-                new Class<?>[]{Matematika.class},
-                h);
 
         bizLogic(m);
+//        bizLogic(new Matematika(){
+//            @Override
+//            public int suma(int a, int b) {
+//                System.out.println("Meeeee too!");
+//                return super.suma(a, b);
+//            }
+//        });
     }
 
     private static void bizLogic(Matematika m) {
+        System.out.println("What the heck are you ? " + m.getClass());
         System.out.println(m.suma(1,1));
         System.out.println(m.suma(2,0));
         System.out.println(m.suma(3,-1));
@@ -33,19 +45,13 @@ public class LetsPlay {
     }
 }
 
-interface Matematika {
-    int suma(int a, int b);
-    int proizvedenie(int a, int b);
-}
 
-class MatematicaImpl implements  Matematika {
-    @Override
+class Matematika {
     public int suma(int a, int b) {
         return a+b;
     }
-
-    @Override
     public int proizvedenie(int a, int b) {
         return a*b;
     }
 }
+
