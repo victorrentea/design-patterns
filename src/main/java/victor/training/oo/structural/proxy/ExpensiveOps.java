@@ -12,11 +12,14 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -27,6 +30,7 @@ public class ExpensiveOps {
 
 //	@LoggedMethod
 	@Cacheable("primes")
+//	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -46,9 +50,19 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Autowired
+	private ExpensiveOps myself;
+
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
+
+
+		log.debug("Got: " + myself.isPrime(10000169) + "\n");
+
+
+
+
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
 			Files.walk(folder.toPath())
