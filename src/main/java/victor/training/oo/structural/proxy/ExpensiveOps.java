@@ -31,7 +31,7 @@ public class ExpensiveOps {
 //	@LoggedMethod
 	@Cacheable("primes")
 //	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Boolean isPrime(int n) { 
+	public final Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
