@@ -15,7 +15,7 @@ public class LetsPlay {
 //        Matematika m = (Matematika) Enhancer.create(Matematika.class, handler);
 
 
-        bizLogic(new MatematikaWithLogging());
+        bizLogic(new MatematikaWithLogging(realImpl));
 //        bizLogic(new Matematika(){
 //            @Override
 //            public int suma(int a, int b) {
