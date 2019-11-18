@@ -4,9 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -40,15 +40,18 @@ class CustomsService {
 		return calculator.calculate(tobaccoValue, regularValue);
 	}
 
+	private final static List<TaxCalculator> calculators = asList(
+			new UKTaxCalculator(),
+			new ChinaTaxCalculator(),
+			new EUTaxCalculator()
+	);
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKTaxCalculator();
-		case "CN": return new ChinaTaxCalculator();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator();
-		default: throw new IllegalStateException("Unexpected value: " + originCountry);
+		for (TaxCalculator calculator : calculators) {
+			if (calculator.accepts(originCountry)) {
+				return calculator;
+			}
 		}
+		throw new IllegalStateException("Unexpected value: " + originCountry);
 	}
 
 }
@@ -56,6 +59,9 @@ class CustomsService {
 class EUTaxCalculator implements TaxCalculator{
 	public double calculate(double tobaccoValue, /*useless*/ double regularValue) {
 		return tobaccoValue/3;
+	}
+	public boolean accepts(String countryCode) {
+		return asList("RO","ES","FR").contains(countryCode);
 	}
 }
 
@@ -66,16 +72,29 @@ class ChinaTaxCalculator implements TaxCalculator{
 		return tobaccoValue + regularValue;
 	}
 
+	@Override
+	public boolean accepts(String countryCode) {
+		return "CN".equals(countryCode);
+	}
+
 }
 
 class UKTaxCalculator implements TaxCalculator {
+
+
 	public double calculate(double tobaccoValue, double regularValue) {
 		// Joe adds here 1 more line of logic
 		// So does mary
 		return tobaccoValue/2 + regularValue;
 	}
+
+	@Override
+	public boolean accepts(String countryCode) {
+		return "UK".equals(countryCode);
+	}
 }
 
 interface TaxCalculator {
 	double calculate(double tobaccoValue, double regularValue);
+	boolean accepts(String countryCode);
 }
