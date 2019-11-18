@@ -45,8 +45,8 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
-		exporter.export(Locale.ENGLISH);
-		exporter.export(Locale.FRENCH);
+		new Thread(() ->exporter.export(Locale.ENGLISH)).start();
+		new Thread(() ->exporter.export(Locale.FRENCH)).start();
 	}
 }
 
@@ -60,7 +60,7 @@ class OrderExporter  {
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
+		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 		invoiceExporter.exportInvoice();
 	}
 }
