@@ -22,12 +22,12 @@ public class ObserverSpringApp implements CommandLineRunner {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-	@Bean
-    public ApplicationEventMulticaster applicationEventMulticaster() {
-        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        return eventMulticaster;
-    }
+//	@Bean
+//    public ApplicationEventMulticaster applicationEventMulticaster() {
+//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+//        return eventMulticaster;
+//    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
