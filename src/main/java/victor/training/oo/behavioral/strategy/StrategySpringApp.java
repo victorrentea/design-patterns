@@ -1,12 +1,8 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -34,14 +30,49 @@ public class StrategySpringApp implements CommandLineRunner {
 }
 
 class CustomsService {
+
+//	private final static Map<String, I>
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		TaxCalculator calculator = selectTaxCalculator(originCountry);
+		return calculator.calculate(tobaccoValue, regularValue);
 	}
+
+	private TaxCalculator selectTaxCalculator(String originCountry) {
+		switch (originCountry) {
+		case "UK": return new UKTaxCalculator();
+		case "CN": return new ChinaTaxCalculator();
+		case "FR":
+		case "ES": // other EU country codes...
+		case "RO": return new EUTaxCalculator();
+		default: throw new IllegalStateException("Unexpected value: " + originCountry);
+		}
+	}
+
+}
+
+class EUTaxCalculator implements TaxCalculator{
+	public double calculate(double tobaccoValue, /*useless*/ double regularValue) {
+		return tobaccoValue/3;
+	}
+}
+
+class ChinaTaxCalculator implements TaxCalculator{
+	public double calculate(double tobaccoValue, double regularValue) {
+		// Joe adds here 1 more line of logic
+		// Joe adds here 1 more line of logic
+		return tobaccoValue + regularValue;
+	}
+
+}
+
+class UKTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		// Joe adds here 1 more line of logic
+		// So does mary
+		return tobaccoValue/2 + regularValue;
+	}
+}
+
+interface TaxCalculator {
+	double calculate(double tobaccoValue, double regularValue);
 }
