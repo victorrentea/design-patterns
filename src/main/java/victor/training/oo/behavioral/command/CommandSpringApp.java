@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.*;
+
 import static java.util.Arrays.asList;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
@@ -52,12 +54,21 @@ class Drinker implements CommandLineRunner {
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) {
+	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order");
-		Beer beer = barman.pourBeer();
-		Vodka vodka = barman.pourWhiskey();
+
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+		Callable<Beer> beerCommand = barman::pourBeer;
+		Future<Beer> futureBeer = pool.submit(beerCommand);
+		Future<Vodka> futureVodka = pool.submit(barman::pourVodka);
+
+		log.debug("The waitress went away with my command");
+		Beer beer = futureBeer.get();
+		Vodka vodka = futureVodka.get();
+
 		log.debug("Waiting for my drinks...");
 		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
+		pool.shutdown();
 	}
 }
 
@@ -70,7 +81,7 @@ class Barman {
 		 return new Beer();
 	 }
 	
-	 public Vodka pourWhiskey() {
+	 public Vodka pourVodka() {
 		 log.debug("Pouring Whiskey...");
 		 sleep(1000);
 		 return new Vodka();
