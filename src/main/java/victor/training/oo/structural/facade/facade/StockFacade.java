@@ -11,8 +11,6 @@ import victor.training.oo.structural.facade.repo.EmailRepository;
 @Facade
 @RequiredArgsConstructor
 public class StockFacade {
-	private final EmailClient emailClient;
-	private final EmailRepository emailRepo;
 
 	public void checkStock() {
 		// Domain Logic
