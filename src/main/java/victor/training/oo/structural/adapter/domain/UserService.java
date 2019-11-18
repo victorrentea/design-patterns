@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import victor.training.oo.structural.adapter.external.LdapUser;
-import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
+import victor.training.oo.structural.adapter.infra.LdapUser;
+import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
 
 @Slf4j
 @Service
