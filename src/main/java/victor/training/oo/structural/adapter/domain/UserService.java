@@ -1,45 +1,35 @@
 package victor.training.oo.structural.adapter.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import victor.training.oo.structural.adapter.external.LdapUser;
-import victor.training.oo.structural.adapter.external.LdapUserWebserviceClient;
 
 @Slf4j
 @Service
+// ZEN HOLY DOMAIN LOGIC
+@RequiredArgsConstructor
 public class UserService {
-	@Autowired
-	private LdapUserWebserviceClient wsClient;
+	private final UserProvider ldapUserAdapter;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
+		List<User> list = ldapUserAdapter.searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-		
+		User user = list.get(0);
+
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
 		}
 		log.debug("Insert user in my database");
 	}
-	
+
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
-		}
-		return results;
+		return ldapUserAdapter.searchByUsername(username);
 	}
-	
+
+
 }
