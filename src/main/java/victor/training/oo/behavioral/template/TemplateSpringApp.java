@@ -2,11 +2,9 @@ package victor.training.oo.behavioral.template;
 
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import lombok.Data;
 
@@ -16,30 +14,47 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
+//	@Autowired
+//	private EmailService service;
 	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
+//		service.sendOrderShippedEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+//@Service
+abstract class AbstractEmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
+		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			composeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+	protected abstract void composeEmail(Email email);
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+	@Override
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+class OrderShippedEmailSender extends AbstractEmailSender {
+	@Override
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("We've sent you. Hope it gets to you this time!");
 	}
 }
 
