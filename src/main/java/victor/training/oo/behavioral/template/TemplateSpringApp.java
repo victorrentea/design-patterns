@@ -39,6 +39,14 @@ class EmailSender {
 		void compose(Email email);
 	}
 
+
+//	public EmailComposer upperSubject(EmailComposer emailComposer) {
+//		return email -> {
+//			emailComposer.compose(email);
+//			email.setSubject(email.getSubject().toUpperCase());
+//		};
+//	}
+
 	public void sendEmail(String emailAddress, EmailComposer composer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
