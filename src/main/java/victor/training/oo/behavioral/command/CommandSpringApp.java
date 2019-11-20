@@ -55,7 +55,7 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) {
 		log.debug("Submitting my order");
 		Beer beer = barman.pourBeer();
-		Vodka vodka = barman.pourWhiskey();
+		Vodka vodka = barman.pourVodka();
 		log.debug("Waiting for my drinks...");
 		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
 	}
@@ -70,8 +70,8 @@ class Barman {
 		 return new Beer();
 	 }
 	
-	 public Vodka pourWhiskey() {
-		 log.debug("Pouring Whiskey...");
+	 public Vodka pourVodka() {
+		 log.debug("Pouring Vodka...");
 		 sleep(1000);
 		 return new Vodka();
 	 }
