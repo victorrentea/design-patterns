@@ -30,7 +30,19 @@ class Order {
     }
 }
 
-class MemberCard {
+interface  MemberCard {
+    public int getFidelityPoints();
+
+    public void addPoints(int newPoints);
+}
+final class NoCard implements MemberCard {
+    public int getFidelityPoints() {
+        return -1;
+    }
+    public void addPoints(int newPoints) {
+    }
+}
+class MemberCardImpl implements MemberCard {
     private String email, address, socialHandles, phone;
     private int shoeSize, nbChildren;
 
@@ -45,7 +57,8 @@ class MemberCard {
     }
 }
 class Customer {
-    private MemberCard card;
+    private static final MemberCard NO_CARD = new NoCard();
+    private MemberCard card = NO_CARD;
 
     public MemberCard getCard() {
         return card;
