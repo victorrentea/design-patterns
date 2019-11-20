@@ -31,9 +31,9 @@ class Order {
 }
 
 interface  MemberCard {
-    public int getFidelityPoints();
+    int getFidelityPoints();
 
-    public void addPoints(int newPoints);
+    void addPoints(int newPoints);
 }
 final class NoCard implements MemberCard {
     public int getFidelityPoints() {
