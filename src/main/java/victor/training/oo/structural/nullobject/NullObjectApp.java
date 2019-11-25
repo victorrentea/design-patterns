@@ -1,5 +1,8 @@
 package victor.training.oo.structural.nullobject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +39,10 @@ interface  MemberCard {
     void addPoints(int newPoints);
 }
 final class NoCard implements MemberCard {
+    private static final Logger log = LoggerFactory.getLogger(NoCard.class);
     public int getFidelityPoints() {
+
+        log.debug("a");
         return -1;
     }
     public void addPoints(int newPoints) {
