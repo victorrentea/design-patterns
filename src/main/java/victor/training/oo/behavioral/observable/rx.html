@@ -35,14 +35,14 @@
 
 <script>
 
-    var suggestionElem1 = document.querySelector('.suggestion1');
-    var suggestionElem2 = document.querySelector('.suggestion2');
-    var suggestionElem3 = document.querySelector('.suggestion3');
 
     var refreshButton = document.querySelector('.refresh');
     var closeButton1 = document.querySelector('.close1');
     var closeButton2 = document.querySelector('.close2');
     var closeButton3 = document.querySelector('.close3');
+
+
+    // START HERE ...
 
     var refreshClickStream = Rx.Observable.fromEvent(refreshButton, 'click');
     var close1ClickStream = Rx.Observable.fromEvent(closeButton1, 'click');
@@ -82,6 +82,12 @@
 
 
     // Rendering ---------------------------------------------------
+    // elements
+    var suggestionElem1 = document.querySelector('.suggestion1');
+    var suggestionElem2 = document.querySelector('.suggestion2');
+    var suggestionElem3 = document.querySelector('.suggestion3');
+
+    // rendering function
     function renderSuggestion(suggestedUser, suggestionElem) {
         if (suggestedUser === null) {
             suggestionElem.style.visibility = 'hidden';
@@ -95,6 +101,7 @@
             imgEl.src = suggestedUser.avatar_url;
         }
     }
+
 
     suggestion1Stream.subscribe(function (suggestedUser) {
         renderSuggestion(suggestedUser, suggestionElem1);
