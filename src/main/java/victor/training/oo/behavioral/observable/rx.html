@@ -35,6 +35,10 @@
 
 <script>
 
+    var suggestionElem1 = document.querySelector('.suggestion1');
+    var suggestionElem2 = document.querySelector('.suggestion2');
+    var suggestionElem3 = document.querySelector('.suggestion3');
+
     var refreshButton = document.querySelector('.refresh');
     var closeButton1 = document.querySelector('.close1');
     var closeButton2 = document.querySelector('.close2');
@@ -78,31 +82,30 @@
 
 
     // Rendering ---------------------------------------------------
-    function renderSuggestion(suggestedUser, selector) {
-        var suggestionEl = document.querySelector(selector);
+    function renderSuggestion(suggestedUser, suggestionElem) {
         if (suggestedUser === null) {
-            suggestionEl.style.visibility = 'hidden';
+            suggestionElem.style.visibility = 'hidden';
         } else {
-            suggestionEl.style.visibility = 'visible';
-            var usernameEl = suggestionEl.querySelector('.username');
+            suggestionElem.style.visibility = 'visible';
+            var usernameEl = suggestionElem.querySelector('.username');
             usernameEl.href = suggestedUser.html_url;
             usernameEl.textContent = suggestedUser.login;
-            var imgEl = suggestionEl.querySelector('img');
+            var imgEl = suggestionElem.querySelector('img');
             imgEl.src = "";
             imgEl.src = suggestedUser.avatar_url;
         }
     }
 
     suggestion1Stream.subscribe(function (suggestedUser) {
-        renderSuggestion(suggestedUser, '.suggestion1');
+        renderSuggestion(suggestedUser, suggestionElem1);
     });
 
     suggestion2Stream.subscribe(function (suggestedUser) {
-        renderSuggestion(suggestedUser, '.suggestion2');
+        renderSuggestion(suggestedUser, suggestionElem2);
     });
 
     suggestion3Stream.subscribe(function (suggestedUser) {
-        renderSuggestion(suggestedUser, '.suggestion3');
+        renderSuggestion(suggestedUser, suggestionElem3);
     });
 
 </script>
