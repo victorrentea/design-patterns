@@ -17,6 +17,7 @@ import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import victor.training.oo.stuff.ConcurrencyUtil;
 
 @Slf4j // if this doesn't compile:
 // IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
@@ -57,10 +58,11 @@ class OrderExporter  {
 	private final InvoiceExporter invoiceExporter;
 	private final LabelService labelService;
 
-	public void export(Locale locale) {
+	public synchronized void export(Locale locale) {
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
+		ConcurrencyUtil.sleep2(2000);
+		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 		invoiceExporter.exportInvoice();
 	}
 }
