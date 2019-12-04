@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,16 @@ import java.security.MessageDigest;
 
 @Slf4j
 @Service
+//@Scope("prototype")
 public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
+//	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Cacheable("prime")
-	public Boolean isPrime(int n) { 
+	public Boolean isPrime(int n) {
+
+		new RuntimeException("intentionat").printStackTrace();
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -41,9 +46,15 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Autowired
+	private ExpensiveOps myselfProxiat;
+
 	@Cacheable("foldere")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
+		System.out.println(System.identityHashCode(myselfProxiat));
+		System.out.println("Chemat din aceeasi metoda " + myselfProxiat.isPrime(10000169));
+
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here

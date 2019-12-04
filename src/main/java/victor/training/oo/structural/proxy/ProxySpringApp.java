@@ -29,6 +29,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
 
+		System.out.println(System.identityHashCode(ops));
 		log.debug("Oare cu cine vorbesc ? " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
