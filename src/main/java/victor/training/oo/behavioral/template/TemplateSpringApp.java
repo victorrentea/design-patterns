@@ -17,16 +17,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailSender sender;
+	@Autowired
+	private Emails emails;
 
 	public void run(String... args) {
 		//US1
-		sender.sendEmail("a@b.com",new OrderReceivedEmailComposer());
+		sender.sendEmail("a@b.com", emails::composeOrderReceivedEmail);
 		//US7
-		sender.sendEmail("a@b.com",new OrderShippedEmailComposer());
+		sender.sendEmail("a@b.com", emails::composeOrderShippedEmail);
 	}
 }
 @Service
 class EmailSender {
+	@FunctionalInterface
+	interface EmailComposer {
+		void composeEmail(Email email);
+	}
 	public void sendEmail(String emailAddress, EmailComposer composer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
@@ -42,17 +48,13 @@ class EmailSender {
 	}
 }
 
-interface EmailComposer {
-	void composeEmail(Email email);
-}
-class OrderReceivedEmailComposer implements EmailComposer {
-	public void composeEmail(Email email) {
+@Service
+class Emails {
+	public void composeOrderReceivedEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-class OrderShippedEmailComposer implements EmailComposer {
-	public void composeEmail(Email email) {
+	public void composeOrderShippedEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram sa ajunga (de data asta).");
 	}
