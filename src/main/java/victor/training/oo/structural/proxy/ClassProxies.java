@@ -38,10 +38,11 @@ public class ClassProxies {
 
 
 class MateImpl {
-    public final int suma(int a, int b) {
+    public int suma(int a, int b) {
         return a + b;
     }
-    public final int produs(int a, int b) {
+    public int produs(int a, int b) {
+        suma(1,1);
         return a * b;
     }
 }
