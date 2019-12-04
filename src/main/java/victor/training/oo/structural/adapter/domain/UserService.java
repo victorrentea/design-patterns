@@ -1,11 +1,10 @@
 package victor.training.oo.structural.adapter.domain;
 
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -13,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 // Loc de verdeata, loc de racoare, de unde a fugit toata intristarea si suspinul.
 public class UserService {
 	@Autowired
-	private UserServiceAdapter userServiceAdapter;
+	private IUserServiceAdapter userServiceAdapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = userServiceAdapter.searchByUsername(username);
