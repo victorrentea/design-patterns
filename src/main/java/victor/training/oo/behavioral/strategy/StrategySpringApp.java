@@ -4,6 +4,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -36,33 +40,43 @@ class CustomsService {
 	}
 
 	private TaxCalculator selectTaxCalculator(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKTaxCalculator();
-		case "CN": return new ChinaTaxCalculator();
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxCalculator();
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		List<TaxCalculator> calculators = asList(new UKTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
+
+		for (TaxCalculator calculator : calculators) {
+			if (calculator.supports(originCountry)) {
+				return calculator;
+			}
 		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 	}
 
 }
 interface TaxCalculator {
 	double compute(double tobaccoValue, double regularValue);
+	boolean supports(String originCountry);
 }
 class EUTaxCalculator implements TaxCalculator {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/3;
+	}
+	public boolean supports(String originCountry) {
+		return asList("RO","ES","FR").contains(originCountry);
 	}
 }
 class ChinaTaxCalculator implements TaxCalculator {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
+	public boolean supports(String originCountry) {
+		return "CN".equals(originCountry);
+	}
 }
 
 class UKTaxCalculator implements TaxCalculator {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue/2 + regularValue;
+	}
+	public boolean supports(String originCountry) {
+		return "UK".equals(originCountry);
 	}
 }
