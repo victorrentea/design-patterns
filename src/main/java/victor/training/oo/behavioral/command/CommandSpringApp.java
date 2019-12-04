@@ -17,10 +17,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
@@ -61,15 +60,37 @@ class Beutor implements CommandLineRunner {
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws ExecutionException, InterruptedException {
-		log.debug("Submitting my order");
 
-		Future<Beer> futureBeer = barman.pourBeer();
-		Future<Vodka> futureVodka = barman.pourVodka();
+		logic();
+		log.debug("Main-ul e liber. Am ajuns acasa in patutz.");
+	}
+
+	private void logic() throws InterruptedException, ExecutionException {
+		log.debug("Submitting my order");
+		CompletableFuture<Beer> futureBeer = barman.pourBeer();
+		CompletableFuture<Vodka> futureVodka = barman.pourVodka();
 		log.debug("A plecat fata cu comanda");
 		log.debug("Waiting for my drinks...");
-		Beer beer = futureBeer.get();
-		Vodka vodka = futureVodka.get();
-		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
+
+//		futureBeer.thenAccept(bere-> log.debug("Beau "+bere));
+//		futureVodka.thenAccept(vodka -> log.debug("Beau "+vodka ));
+//
+		futureBeer
+				.exceptionally(b -> {log.error("nu e bere ");return null;})
+				.thenCombine(futureVodka, (b,v) -> {
+			log.debug("Bauturile sunt servite: " + b + " cu " + v);
+			return "bacsis";
+		})
+				.exceptionally(t -> {log.error("PROST " +t);return "";})
+				;
+
+		barman.injura("#@!##@!#!");
+
+
+//		Beer beer = futureBeer.get();
+//		Vodka vodka = futureVodka.get();
+
+//		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
 	}
 }
 
@@ -77,17 +98,25 @@ class Beutor implements CommandLineRunner {
 @Service
 class Barman {
 	@Async
-	public Future<Beer> pourBeer() {
+	public CompletableFuture<Beer> pourBeer() {
 		 log.debug("Pouring Beer...");
 		 sleep(1000);
-		 return completedFuture(new Beer());
+		if (true) {
+			throw new IllegalStateException("Nu mai e bere");
+		}
+		return completedFuture(new Beer());
 	 }
 	@Async
-	 public Future<Vodka> pourVodka() {
+	 public CompletableFuture<Vodka> pourVodka() {
 		 log.debug("Pouring Vodka...");
 		 sleep(1000);
 		 return completedFuture(new Vodka());
 	 }
+
+	 @Async
+	public void injura(String s) {
+		throw new IllegalArgumentException("Te casez");
+	}
 }
 
 @Data
