@@ -4,8 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -46,14 +44,14 @@ public class ExpensiveOps {
 		return true;
 	}
 
-	@Autowired
-	private ExpensiveOps myselfProxiat;
+//	@Autowired
+//	private ExpensiveOps myselfProxiat;
 
-	@Cacheable("foldere")
+//	@Cacheable("foldere")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
-		System.out.println(System.identityHashCode(myselfProxiat));
-		System.out.println("Chemat din aceeasi metoda " + myselfProxiat.isPrime(10000169));
+//		System.out.println(System.identityHashCode(myselfProxiat));
+//		System.out.println("Chemat din aceeasi metoda " + myselfProxiat.isPrime(10000169));
 
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
@@ -68,7 +66,7 @@ public class ExpensiveOps {
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
 
-	@CacheEvict("foldere")
+//	@CacheEvict("foldere")
 	public void invalidezCacheul(File file) {
 		// WARNING: Empty method. Do not delete Let the agic happen
 	}

@@ -1,19 +1,15 @@
 package victor.training.oo.behavioral.observer;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
 public class ObserverSpringApp implements CommandLineRunner {
@@ -43,18 +39,16 @@ public class ObserverSpringApp implements CommandLineRunner {
 		//afterTransaction.runInTransaction();
 	}
 }
-
 @Data
 class OrderPlaced {
 	private final long orderId;
 }
-
 @Slf4j
 @Service
 class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
-
+	@Order(100)
 	@EventListener
 	public void handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
@@ -65,9 +59,11 @@ class StockManagementService {
 @Slf4j
 @Service
 class InvoiceService {
-	
-	public void generateInvoice(long orderId) {
-		log.info("Generating invoice for order id: " + orderId);
+
+	@Order(200)
+	@EventListener
+	public void generateInvoice(OrderPlaced event) {
+		log.info("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
