@@ -10,7 +10,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -51,14 +53,15 @@ public class SingletonSpringApp implements CommandLineRunner{
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 class OrderExporter  {
-	private final InvoiceExporter invoiceExporter;
-	private final CountryRepo countryRepo;
+	@Autowired
+	private InvoiceExporter invoiceExporter;
+	@Autowired
+	private ApplicationContext tatSpringu;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = new LabelService(countryRepo);
+		LabelService labelService = tatSpringu.getBean(LabelService.class);
 		labelService.load(locale);
 		ConcurrencyUtil.sleep2(2000);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
@@ -68,9 +71,9 @@ class OrderExporter  {
 
 @Slf4j
 @Service
+@Scope("prototype")
 @RequiredArgsConstructor
 class InvoiceExporter {
-//	private final LabelService labelService;
 
 	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
@@ -78,12 +81,11 @@ class InvoiceExporter {
 }
 
 @Slf4j
-//@Service
+@Service
+@Scope("prototype")
+@RequiredArgsConstructor
 class LabelService {
-	private CountryRepo countryRepo;
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
+	private final CountryRepo countryRepo;
 
 	private Map<String, String> countryNames;
 
