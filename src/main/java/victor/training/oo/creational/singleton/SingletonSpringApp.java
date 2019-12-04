@@ -61,7 +61,6 @@ class OrderExporter  {
 	private ObjectFactory<LabelService> labelServiceFactory;
 
 
-
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
 		LabelService labelService = labelServiceFactory.getObject();
