@@ -1,9 +1,11 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -13,24 +15,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
+	@Autowired
+	private EmailSender sender;
 
 	public void run(String... args) {
 		//US1
-		new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
+		sender.sendEmail("a@b.com",new OrderReceivedEmailComposer());
 		//US7
-
-		new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
+		sender.sendEmail("a@b.com",new OrderShippedEmailComposer());
 	}
 }
-
+@Service
 class EmailSender {
-	private final EmailComposer composer;
-
-	public EmailSender(EmailComposer composer) {
-		this.composer = composer;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailComposer composer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
