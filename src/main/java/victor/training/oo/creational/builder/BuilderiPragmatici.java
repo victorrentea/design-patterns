@@ -6,12 +6,12 @@ import java.util.Objects;
 
 public class BuilderiPragmatici {
     public static void main(String[] args) {
-        EntitateaMea e = new EntitateaMea()
-                .setAddresss("addr")
+        EntitateaMea e = new EntitateaMea("a")
+                .setAddress("addr")
                 .addPhone("telefon")
                 .setName("name");
 
-        EntitateaMea e2 = new EntitateaMea();
+        EntitateaMea e2 = new EntitateaMea("a");
         System.out.println(e2.getName());
     }
 }
@@ -45,12 +45,4 @@ class EntitateaMea {
         return this;
     }
 
-    public String getAddresss() {
-        return addresss;
-    }
-
-    public EntitateaMea setAddresss(String addresss) {
-        this.addresss = addresss;
-        return this;
-    }
 }
