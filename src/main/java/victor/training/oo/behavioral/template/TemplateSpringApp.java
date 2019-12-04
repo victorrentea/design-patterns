@@ -16,20 +16,21 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private EmailService service;
-	
+	private OrderReceivedEmailSender orderReceivedEmailSender;
+	@Autowired
+	private OrderShippedEmailSender orderShippedEmailSender;
+
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
-		service.sendOrderReceivedEmail("a@b.com");
+		orderReceivedEmailSender.sendEmail("a@b.com");
+		orderShippedEmailSender.sendEmail("a@b.com");
 //		service.sendOrderShippedEmail("a@b.com");
 
 	}
 }
 
-@Service
-class EmailService {
+abstract class AbstractEmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -42,13 +43,17 @@ class EmailService {
 			if (success) break;
 		}
 	}
+	protected abstract void composeEmail(Email email);
+}
+@Service
+class OrderReceivedEmailSender extends AbstractEmailSender {
 	protected void composeEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-//alta clasa
-class DemisiaDemisia extends EmailService {
+@Service
+class OrderShippedEmailSender extends AbstractEmailSender {
 	@Override
 	protected void composeEmail(Email email) {
 		email.setSubject("Order Shipped");
