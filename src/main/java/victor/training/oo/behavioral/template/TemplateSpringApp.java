@@ -1,14 +1,13 @@
 package victor.training.oo.behavioral.template;
 
-import java.util.Random;
-
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
-import lombok.Data;
+import java.util.Random;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -21,6 +20,9 @@ public class TemplateSpringApp implements CommandLineRunner {
 	
 	public void run(String... args) {
 		service.sendOrderReceivedEmail("a@b.com");
+		service.sendOrderReceivedEmail("a@b.com");
+//		service.sendOrderShippedEmail("a@b.com");
+
 	}
 }
 
@@ -29,17 +31,28 @@ class EmailService {
 
 	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
+		final int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			composeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+//alta clasa
+class DemisiaDemisia extends EmailService {
+	@Override
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimis. Speram sa ajunga (de data asta).");
 	}
 }
 
