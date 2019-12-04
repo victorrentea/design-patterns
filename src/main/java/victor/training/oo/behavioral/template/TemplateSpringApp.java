@@ -1,11 +1,9 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -15,20 +13,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private OrderReceivedEmailSender orderReceivedEmailSender;
-	@Autowired
-	private OrderShippedEmailSender orderShippedEmailSender;
 
 	public void run(String... args) {
-		orderReceivedEmailSender.sendEmail("a@b.com");
-		orderShippedEmailSender.sendEmail("a@b.com");
-//		service.sendOrderShippedEmail("a@b.com");
+		//US1
+		new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
+		//US7
 
+		new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
 	}
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+	private final EmailComposer composer;
+
+	public EmailSender(EmailComposer composer) {
+		this.composer = composer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -38,24 +38,24 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composeEmail(email);
+			composer.composeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-	protected abstract void composeEmail(Email email);
 }
-@Service
-class OrderReceivedEmailSender extends AbstractEmailSender {
-	protected void composeEmail(Email email) {
+
+interface EmailComposer {
+	void composeEmail(Email email);
+}
+class OrderReceivedEmailComposer implements EmailComposer {
+	public void composeEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-@Service
-class OrderShippedEmailSender extends AbstractEmailSender {
-	@Override
-	protected void composeEmail(Email email) {
+class OrderShippedEmailComposer implements EmailComposer {
+	public void composeEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram sa ajunga (de data asta).");
 	}
