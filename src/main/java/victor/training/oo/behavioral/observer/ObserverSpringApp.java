@@ -45,14 +45,12 @@ class OrderPlaced {
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
 	@EventListener
-	public void handle(OrderPlaced event) {
+	public OrderInStockEvent handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
 //		publisher.publishEvent(new GenerateInvoiceCommand(event.getOrderId()));
-		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
+		return new OrderInStockEvent(event.getOrderId());
 	}
 }
 
@@ -72,5 +70,5 @@ class InvoiceService {
 		log.info("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
-	} 
+	}
 }
