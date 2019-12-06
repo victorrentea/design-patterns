@@ -8,6 +8,8 @@ import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
+import java.io.File;
+
 public class Utils {
     public static Observable<KeyEvent> keyPresses(Scene scene) {
         return Observable.create(observer -> {
@@ -20,10 +22,12 @@ public class Utils {
         });
     }
 
-    public static Observable<KeyEvent> enterKeys(Scene scene) {
-        return keyPresses(scene).filter(e -> e.getCode() == KeyCode.ENTER);
+    public static Observable<KeyEvent> observeKeys(Scene scene, KeyCode space) {
+        return keyPresses(scene).filter(e -> e.getCode() == space);
     }
-    public static Observable<KeyEvent> spaceBars(Scene scene) {
-        return keyPresses(scene).filter(e -> e.getCode() == KeyCode.SPACE);
+
+    public static String getResourceUri(String name) {
+        File file = new File("src/main/resources/bug/" + name);
+        return file.toURI().toString();
     }
 }
