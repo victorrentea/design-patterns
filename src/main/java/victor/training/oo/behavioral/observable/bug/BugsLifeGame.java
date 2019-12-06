@@ -93,7 +93,7 @@ public class BugsLifeGame extends Application {
         double groundY = (-tileImage.getHeight() / 2) - 5;
         double gravity = 0.1;
 
-        bug.setImage(new Image(Utils.getResourceUri("EnemyBug.png")));
+        bug.setImage(new Image(Utils.getResourceUri("Bug.png")));
         bug.setTranslateY(groundY);
         bug.setTranslateX(screenHeight / 2);
         root.getChildren().add(bug);
