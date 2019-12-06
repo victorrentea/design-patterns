@@ -52,7 +52,7 @@ public class BugsLifeGame extends Application {
         root.setAlignment(Pos.BOTTOM_LEFT);
         Scene scene = new Scene(root);
 
-        Observable<Long> clock = Observable.interval(0, 1000 / 60, TimeUnit.MILLISECONDS, scheduler)
+        Observable<Long> clock = Observable.interval(0, 400 / 60, TimeUnit.MILLISECONDS, scheduler)
                 .observeOn(new PlatformScheduler());
 
         Canvas sky = makeSky(screenWidth, screenHeight);
@@ -68,6 +68,16 @@ public class BugsLifeGame extends Application {
             root.getChildren().add(tile);
             tiles.add(tile);
         }
+
+        clock.scan(1, (dX, a) -> dX).subscribe(dX -> {
+            for (ImageView tile : tiles) {
+                if (tile.getTranslateX() <= -tile.getImage().getWidth()) {
+                    tile.setTranslateX(screenWidth - dX);
+                } else {
+                    tile.setTranslateX(tile.getTranslateX() - dX);
+                }
+            }
+        });
 
 
         showHeart(false);
