@@ -8,9 +8,9 @@ import java.util.List;
 
 // ZEN
 public class UserService {
-	private final UserServiceAdapter adapter;
+	private final IUserServiceAdapter adapter;
 
-	public UserService(UserServiceAdapter adapter) {
+	public UserService(IUserServiceAdapter adapter) {
 		this.adapter = adapter;
 	}
 

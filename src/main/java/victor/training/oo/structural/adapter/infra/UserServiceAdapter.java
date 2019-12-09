@@ -1,14 +1,14 @@
-package victor.training.oo.structural.adapter.domain;
+package victor.training.oo.structural.adapter.infra;
 
-import victor.training.oo.structural.adapter.infra.LdapUser;
-import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
+import victor.training.oo.structural.adapter.domain.IUserServiceAdapter;
+import victor.training.oo.structural.adapter.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 // o linie -----------------------------------------------
 //gunoi.
-public class UserServiceAdapter {
+public class UserServiceAdapter implements IUserServiceAdapter {
     private final LdapUserWebserviceClient wsClient;
 
     public UserServiceAdapter(LdapUserWebserviceClient wsClient) {
@@ -24,6 +24,7 @@ public class UserServiceAdapter {
         return ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
     }
 
+    @Override
     public List<User> searchByUsername(String username) {
         List<LdapUser> ldapUsers = wsClient.search(username.toUpperCase(), null, null);
         List<User> users = new ArrayList<>();
