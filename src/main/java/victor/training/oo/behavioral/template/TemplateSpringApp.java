@@ -6,12 +6,18 @@ import java.util.Random;
 
 public class TemplateSpringApp {
 	public static void main(String[] args) {
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
-		new OrderShippedEmailSender().sendEmail("a@b.com"); // CR 323
+		new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com"); // CR 323
 	}
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+
+	private final EmailComposer composer;
+
+	public EmailSender(EmailComposer composer) {
+		this.composer = composer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -21,24 +27,23 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composeEmail(email);
+			composer.composeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-	protected abstract void composeEmail(Email email);
 }
-class OrderReceivedEmailSender extends AbstractEmailSender {
-
-	protected void composeEmail(Email email) {
+interface EmailComposer {
+	void composeEmail(Email email);
+}
+class OrderReceivedEmailComposer implements EmailComposer {
+	public void composeEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-
-class OrderShippedEmailSender extends AbstractEmailSender {
-	@Override
-	protected void composeEmail(Email email) {
+class OrderShippedEmailComposer implements EmailComposer {
+	public void composeEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
 	}
