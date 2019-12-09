@@ -58,7 +58,8 @@ public class BugsLifeGame extends Application {
         Scheduler scheduler = Schedulers.computation();
 //        Scheduler scheduler = createTestScheduler(scene);
         Observable<Long> clock = Observable.interval(0, 400 / 60, TimeUnit.MILLISECONDS, scheduler)
-                .observeOn(new PlatformScheduler());
+                .observeOn(new PlatformScheduler())
+                ;
 
 
         // ====== TILES =======
