@@ -6,15 +6,14 @@ import java.util.Random;
 
 public class TemplateSpringApp {
 	public static void main(String[] args) {
-		EmailService service = new EmailService();
-		service.sendOrderReceivedEmail("a@b.com", false);
-		service.sendOrderReceivedEmail("a@b.com", true); // CR 323
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com"); // CR 323
 	}
 }
 
-class EmailService {
+abstract class AbstractEmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress, boolean cr323) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -22,19 +21,28 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			if (cr323){
-				email.setSubject("Order Shipped");
-				email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
-			} else {
-				email.setSubject("Order Received");
-				email.setBody("Thank you for your order");
-			}
+			composeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
+	protected abstract void composeEmail(Email email);
+}
+class OrderReceivedEmailSender extends AbstractEmailSender {
+
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
 }
 
+class OrderShippedEmailSender extends AbstractEmailSender {
+	@Override
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
+	}
+}
 
 
 
