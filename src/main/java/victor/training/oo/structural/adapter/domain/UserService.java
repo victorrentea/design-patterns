@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+
+// ZEN
 public class UserService {
 	private final LdapUserWebserviceClient wsClient;
 
@@ -16,12 +18,11 @@ public class UserService {
 	}
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
+		List<User> list = searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		User user = transformUser(ldapUser);
+		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -30,13 +31,10 @@ public class UserService {
 	}
 
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			results.add(transformUser(ldapUser));
-		}
-		return results;
+		return searchByUsername(username);
 	}
+
+	// o linie -----------------------------------------------
 
 	private User transformUser(LdapUser ldapUser) {
 		String fullName = getFullName(ldapUser);
@@ -47,8 +45,14 @@ public class UserService {
 		return ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 	}
 
-	private List<LdapUser> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
+	private List<User> searchByUsername(String username) {
+		List<LdapUser> ldapUsers = wsClient.search(username.toUpperCase(), null, null);
+		List<User> users = new ArrayList<>();
+		for (LdapUser ldapUser : ldapUsers) {
+			User user = transformUser(ldapUser);
+			users.add(user);
+		}
+		return users;
 	}
 
 }
