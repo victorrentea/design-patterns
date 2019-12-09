@@ -1,25 +1,32 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
-public class TemplateSpringApp {
+@SpringBootApplication
+public class TemplateSpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
-		new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
-		new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com"); // CR 323
+		SpringApplication.run(TemplateSpringApp.class, args);
+	}
+
+	@Autowired
+	private EmailService service;
+	
+	public void run(String... args) {
+		service.sendOrderReceivedEmail("a@b.com");
 	}
 }
 
-class EmailSender {
+@Service
+class EmailService {
 
-	private final EmailComposer composer;
-
-	public EmailSender(EmailComposer composer) {
-		this.composer = composer;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -27,39 +34,13 @@ class EmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composer.composeEmail(email);
+			email.setSubject("Order Received");
+			email.setBody("Thank you for your order");
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 }
-interface EmailComposer {
-	void composeEmail(Email email);
-}
-class OrderReceivedEmailComposer implements EmailComposer {
-	public void composeEmail(Email email) {
-		email.setSubject("Order Received");
-		email.setBody("Thank you for your order");
-	}
-}
-class OrderShippedEmailComposer implements EmailComposer {
-	public void composeEmail(Email email) {
-		email.setSubject("Order Shipped");
-		email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 class EmailContext {
 	public boolean send(Email email) {

@@ -12,15 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 
-
-
 @Slf4j
-public class ExpensiveOps implements IExpensiveOps {
+public class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
-
-	@Override
-	public Boolean isPrime(int n) {
+	
+	public Boolean isPrime(int n) { 
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -29,7 +26,7 @@ public class ExpensiveOps implements IExpensiveOps {
 		if (number.remainder(TWO).equals(BigDecimal.ZERO)) {
 			return false;
 		}
-		for (BigDecimal divisor = new BigDecimal("3");
+		for (BigDecimal divisor = new BigDecimal("3"); 
 			divisor.compareTo(number.divide(TWO)) < 0;
 			divisor = divisor.add(TWO)) {
 			if (number.remainder(divisor).equals(BigDecimal.ZERO)) {
@@ -39,7 +36,6 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 
-	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
