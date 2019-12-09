@@ -1,24 +1,16 @@
 package victor.training.oo.structural.adapter;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.structural.adapter.domain.UserService;
+import victor.training.oo.structural.adapter.domain.UserServiceAdapter;
+import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
 
 @Slf4j
-@SpringBootApplication
-public class AdapterSpringApp implements CommandLineRunner {
+public class AdapterSpringApp {
 	public static void main(String[] args) {
-		SpringApplication.run(AdapterSpringApp.class, args);
-	}
-
-	@Autowired
-	private UserService userService;
-	
-	public void run(String... args) throws Exception {
+		LdapUserWebserviceClient wsClient = new LdapUserWebserviceClient();
+		UserServiceAdapter adapter = new UserServiceAdapter(wsClient);
+		UserService userService = new UserService(adapter);
 		userService.importUserFromLdap("jdoe");
 		log.debug("Found users: " + userService.searchUserInLdap("doe"));
 	}
