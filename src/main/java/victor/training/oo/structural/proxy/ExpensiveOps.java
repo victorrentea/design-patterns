@@ -21,13 +21,13 @@ import java.security.MessageDigest;
 @Slf4j
 @Service
 @LoggedClass
-public class ExpensiveOps {
+public /*final*/ class ExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Cacheable("primesItaly")
 	@LoggedMethod
-	public Boolean isPrime(int n) { 
+	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		new RuntimeException().printStackTrace();
 		BigDecimal number = new BigDecimal(n);
