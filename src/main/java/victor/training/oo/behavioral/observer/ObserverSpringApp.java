@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @SpringBootApplication
@@ -47,7 +48,7 @@ class OrderPlaced {
 class StockManagementService {
 	@Autowired
 	private ApplicationEventPublisher publisher;
-
+@Order(10)
 	@EventListener
 	public void handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
@@ -58,6 +59,7 @@ class StockManagementService {
 @Slf4j
 @Service
 class InvoiceService {
+	@Order(20)
 
 	@EventListener
 	public void generateInvoice(OrderPlaced event) {
