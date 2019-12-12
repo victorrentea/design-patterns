@@ -29,9 +29,6 @@ public class ObserverSpringApp implements CommandLineRunner {
 	@Autowired
 	private ObserverTransaction afterTransaction;
 
-	@Autowired
-	private InvoiceService invoiceService;
-
 	// TODO [1] also generate invoice
 	// TODO [2] control the order
 	// TODO [3] chain events
@@ -39,7 +36,6 @@ public class ObserverSpringApp implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
 		//afterTransaction.runInTransaction();
-		invoiceService.generateInvoice(13);
 	}
 }
 @Data
@@ -62,9 +58,10 @@ class StockManagementService {
 @Slf4j
 @Service
 class InvoiceService {
-	
-	public void generateInvoice(long orderId) {
-		log.info("Generating invoice for order id: " + orderId);
+
+	@EventListener
+	public void generateInvoice(OrderPlaced event) {
+		log.info("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
