@@ -64,7 +64,7 @@ class Drinker implements CommandLineRunner {
 		CompletableFuture<Beer> futureBeer = barman.pourBeer();
 		CompletableFuture<Vodka> futureVodka = barman.pourVodka();
 
-		futureBeer.thenCombine(futureBeer, (beer, vodka) -> {
+		futureBeer.thenCombine(futureVodka, (beer, vodka) -> {
 			log.debug("Waiting for my drinks...");
 			log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
 			return "drunk";
