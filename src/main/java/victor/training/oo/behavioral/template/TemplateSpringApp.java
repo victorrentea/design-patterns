@@ -1,11 +1,9 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -15,18 +13,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
+//	@Autowired
+//	private EmailService service;
 	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new OrderPlacedEmailSender().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-@Service
-class EmailService {
+//@Service
+abstract class AbstractEmailSender {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -34,11 +33,26 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			compose(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
+	}
+
+	public abstract void compose(Email email);
+}
+
+class OrderPlacedEmailSender extends AbstractEmailSender {
+	public void compose(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+class OrderShippedEmailSender extends AbstractEmailSender {
+	public void compose(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("We've shipped your order. Hope it gets to you (this time)");
 	}
 }
 
