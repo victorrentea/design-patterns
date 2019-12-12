@@ -17,13 +17,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 //	private EmailService service;
 	
 	public void run(String... args) {
-		new OrderPlacedEmailSender().sendEmail("a@b.com");
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderPlacedEmailSender()).sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
 	}
 }
 
 //@Service
-abstract class AbstractEmailSender {
+class EmailSender {
+	private final EmailComposer composer;
+
+	EmailSender(EmailComposer composer) {
+		this.composer = composer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -33,23 +38,25 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			compose(email);
+			composer.compose(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
-	public abstract void compose(Email email);
+}
+interface EmailComposer {
+	void compose(Email email);
 }
 
-class OrderPlacedEmailSender extends AbstractEmailSender {
+class OrderPlacedEmailSender implements EmailComposer {
 	public void compose(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
+class OrderShippedEmailSender implements EmailComposer {
 	public void compose(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
