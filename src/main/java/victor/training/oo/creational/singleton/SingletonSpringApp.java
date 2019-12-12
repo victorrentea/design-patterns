@@ -57,6 +57,7 @@ class OrderExporter  {
 	private final LabelService labelService;
 
 	public void export(Locale locale) {
+		log.debug("With who the heck am I talkin to ? "+ labelService.getClass());
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
