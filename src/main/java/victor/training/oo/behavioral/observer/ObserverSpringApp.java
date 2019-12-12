@@ -56,14 +56,11 @@ class OrderPlaced {
 @Slf4j
 @Service
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
-
 	@EventListener
-	public void handle(OrderPlaced event) {
+	public OrderInStockEvent handle(OrderPlaced event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
-		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
+		return new OrderInStockEvent(event.getOrderId());
 	}
 }
 @Data
