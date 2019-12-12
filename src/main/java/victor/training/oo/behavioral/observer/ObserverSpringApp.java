@@ -1,19 +1,14 @@
 package victor.training.oo.behavioral.observer;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.EventListener;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
-
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
 public class ObserverSpringApp implements CommandLineRunner {
@@ -34,6 +29,9 @@ public class ObserverSpringApp implements CommandLineRunner {
 	@Autowired
 	private ObserverTransaction afterTransaction;
 
+	@Autowired
+	private InvoiceService invoiceService;
+
 	// TODO [1] also generate invoice
 	// TODO [2] control the order
 	// TODO [3] chain events
@@ -41,14 +39,13 @@ public class ObserverSpringApp implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		publisher.publishEvent(new OrderPlaced(13));
 		//afterTransaction.runInTransaction();
+		invoiceService.generateInvoice(13);
 	}
 }
-
 @Data
 class OrderPlaced {
 	private final long orderId;
 }
-
 @Slf4j
 @Service
 class StockManagementService {
