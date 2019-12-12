@@ -15,7 +15,7 @@ import java.util.List;
 // HOLY SACRED ZEN PEACE HARMONY
 // HOLY SACRED ZEN PEACE HARMONY
 public class UserService {
-	private final LdapAdapter ldapAdapter;
+	private final ILdapAdapter ldapAdapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = ldapAdapter.searchByUsername(username);
