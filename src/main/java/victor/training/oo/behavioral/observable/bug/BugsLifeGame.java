@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BugsLifeGame extends Application {
 
+    public static final int BUG_SPEED = 2;
     private final Image tileImage = new Image(Utils.getResourceUri("GrassBlock.png"));
     private static final int screenWidth = 800;
     private static final int screenHeight = 600;
@@ -65,7 +66,7 @@ public class BugsLifeGame extends Application {
         // ====== TILES =======
         List<ImageView> tiles = createTiles();
         tiles.forEach(root.getChildren()::add);
-        clock.scan(1, (dx, a) -> dx).subscribe(dX -> {
+        clock.scan(BUG_SPEED, (dx, a) -> dx).subscribe(dX -> {
             for (ImageView tile : tiles) {
                 if (tile.getTranslateX() <= -tile.getImage().getWidth()) {
                     tile.setTranslateX(screenWidth - dX);
@@ -81,7 +82,7 @@ public class BugsLifeGame extends Application {
         sun.setTranslateY(-(screenHeight - 200));
         root.getChildren().add(sun);
 
-        clock.scan(1, (dx, a) -> dx).subscribe(dX -> {
+        clock.scan(BUG_SPEED, (dx, a) -> dx).subscribe(dX -> {
             if (sun.getTranslateX() <= -sun.getImage().getWidth()) {
                 sun.setTranslateX(screenWidth - dX);
             } else {

@@ -13,7 +13,7 @@ import java.io.File;
 
 public class Utils {
     public static Observable<KeyEvent> keyPresses(Scene scene) {
-        return Observable.<KeyEvent>create(emitter -> {
+        return Observable.create(emitter -> {
             EventHandler<KeyEvent> handler = event -> emitter.onNext(event);
             scene.addEventHandler(KeyEvent.KEY_PRESSED, handler);
             // needed to allow unsusbscribing
