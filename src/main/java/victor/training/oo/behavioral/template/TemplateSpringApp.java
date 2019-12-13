@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
+@Slf4j
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -21,6 +23,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 	private Emails emails;
 
 	public void run(String... args) {
+		log.debug("HALEOE");
 		sender.sendEmail("a@b.com", emails::composeOrderReceived);
 		sender.sendEmail("a@b.com", emails::composeOrderShipped);
 	}
@@ -48,13 +51,13 @@ class EmailSender {
 }
 @Service
 class Emails {
-	public void composeOrderReceived(Email email) {
-		email.setSubject("Order Received");
-		email.setBody("Thank you for your order " + 1);
-	}
 	public void composeOrderShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
+	}
+	public void composeOrderReceived(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order " + 1);
 	}
 }
 
