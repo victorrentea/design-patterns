@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.observable.bug;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
@@ -18,10 +20,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.Subscriptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 public class BugsLifeGame extends Application {
 
     public static final int BUG_SPEED = 2;
-    private final Image tileImage = new Image(Utils.getResourceUri("GrassBlock.png"));
+    private final Image tileImage = new Image(getResourceUri("GrassBlock.png"));
     private static final int screenWidth = 800;
     private static final int screenHeight = 600;
     private final Text scoreText = new Text();
@@ -95,7 +100,7 @@ public class BugsLifeGame extends Application {
         double groundY = (-tileImage.getHeight() / 2) - 5;
         double gravity = 0.1;
 
-        bug.setImage(new Image(Utils.getResourceUri("Bug.png")));
+        bug.setImage(new Image(getResourceUri("Bug.png")));
         bug.setTranslateY(groundY);
         bug.setTranslateX(screenHeight / 2);
         root.getChildren().add(bug);
@@ -113,9 +118,9 @@ public class BugsLifeGame extends Application {
                 });
 
         double jumpSpeed = 8;
-        Utils.observeKeys(scene, KeyCode.SPACE)
+        observeKeys(scene, KeyCode.SPACE)
                 .filter(e -> bug.getTranslateY() >= groundY)
-                .doOnEach(e -> new AudioClip(Utils.getResourceUri("smb3_jump.wav")).play())
+                .doOnEach(e -> new AudioClip(getResourceUri("smb3_jump.wav")).play())
                 .subscribe(e -> jumps.onNext(jumpSpeed));
 
 
@@ -128,7 +133,7 @@ public class BugsLifeGame extends Application {
         s.subscribe(hits -> {
             if (!hits.get(0)) {
                 showHeart(true);
-                new AudioClip(Utils.getResourceUri("smb3_coin.wav"));
+                new AudioClip(getResourceUri("smb3_coin.wav"));
             } else {
                 showHeart(false);
             }
@@ -143,9 +148,9 @@ public class BugsLifeGame extends Application {
         scoreText.setFont(Font.font("Consolas", FontWeight.BOLD, 40));
         root.getChildren().add(scoreText);
 
-        Utils.observeKeys(scene, KeyCode.ESCAPE).subscribe(e -> System.exit(1));
+        observeKeys(scene, KeyCode.ESCAPE).subscribe(e -> System.exit(1));
 
-        stage.setOnShown(e -> new AudioClip(Utils.getResourceUri("smb3_power-up.wav")).play());
+        stage.setOnShown(e -> new AudioClip(getResourceUri("smb3_power-up.wav")).play());
         stage.setTitle("A Bugs Life");
         stage.setScene(scene);
         stage.show();
@@ -153,7 +158,7 @@ public class BugsLifeGame extends Application {
 
     private Scheduler createTestScheduler(Scene scene) {
         TestScheduler testScheduler = new TestScheduler();
-        Utils.observeKeys(scene, KeyCode.ENTER).subscribe(e -> {
+        observeKeys(scene, KeyCode.ENTER).subscribe(e -> {
             testScheduler.advanceTimeBy(10000 / 60, TimeUnit.MILLISECONDS);
         });
         return testScheduler;
@@ -181,10 +186,32 @@ public class BugsLifeGame extends Application {
 
     public void showHeart(boolean b) {
         if (b) {
-            sun.setImage(new Image(Utils.getResourceUri("Heart.png")));
+            sun.setImage(new Image(getResourceUri("Heart.png")));
         } else {
-            sun.setImage(new Image(Utils.getResourceUri("Star.png")));
+            sun.setImage(new Image(getResourceUri("Star.png")));
         }
     }
+
+    public static String getResourceUri(String name) {
+        File file = new File("src/main/resources/bug/" + name);
+        return file.toURI().toString();
+    }
+
+    public static Observable<KeyEvent> keyPresses(Scene scene) {
+        return Observable.unsafeCreate(observer -> {
+            EventHandler<KeyEvent> handler = event -> observer.onNext(event);
+            scene.addEventHandler(KeyEvent.KEY_PRESSED, handler);
+            Subscription s = Subscriptions.create(() -> {
+                scene.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
+            });
+            observer.add(s);
+        });
+
+    }
+
+    public static Observable<KeyEvent> observeKeys(Scene scene, KeyCode space) {
+        return keyPresses(scene).filter(e -> e.getCode() == space);
+    }
+
 
 }
