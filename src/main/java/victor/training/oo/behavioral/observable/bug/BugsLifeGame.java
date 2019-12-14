@@ -20,11 +20,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscription;
+import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class BugsLifeGame extends Application {
         Scheduler scheduler = Schedulers.computation();
 //        Scheduler scheduler = createTestScheduler(scene);
         Observable<Long> clock = Observable.interval(0, 400 / 60, TimeUnit.MILLISECONDS, scheduler)
-                .observeOn(new PlatformScheduler())
+                .observeOn(new FxPlatformScheduler())
                 ;
 
 
@@ -198,15 +197,13 @@ public class BugsLifeGame extends Application {
     }
 
     public static Observable<KeyEvent> keyPresses(Scene scene) {
-        return Observable.unsafeCreate(observer -> {
-            EventHandler<KeyEvent> handler = event -> observer.onNext(event);
+        return Observable.unsafeCreate(subscriber -> {
+            EventHandler<KeyEvent> handler = event -> subscriber.onNext(event);
             scene.addEventHandler(KeyEvent.KEY_PRESSED, handler);
-            Subscription s = Subscriptions.create(() -> {
-                scene.removeEventHandler(KeyEvent.KEY_PRESSED, handler);
-            });
-            observer.add(s);
-        });
 
+            subscriber.add(Subscribers.create(e -> scene.removeEventHandler(KeyEvent.KEY_PRESSED, handler)));
+
+        });
     }
 
     public static Observable<KeyEvent> observeKeys(Scene scene, KeyCode space) {

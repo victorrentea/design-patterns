@@ -8,7 +8,7 @@ import rx.subscriptions.Subscriptions;
 
 import java.util.concurrent.TimeUnit;
 
-public class PlatformScheduler extends Scheduler {
+public class FxPlatformScheduler extends Scheduler {
     @Override
     public Worker createWorker() {
         return new Worker() {
