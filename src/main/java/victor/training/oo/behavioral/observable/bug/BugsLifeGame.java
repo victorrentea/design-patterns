@@ -24,10 +24,13 @@ import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
+import victor.training.oo.structural.proxy.ExpensiveOps;
+import victor.training.oo.stuff.ThreadUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class BugsLifeGame extends Application {
@@ -60,22 +63,38 @@ public class BugsLifeGame extends Application {
         root.getChildren().add(createSky());
 
 
+        // TODO create an observer that fires every 10ms on the computation() thread,
+        //  but its subscribers (+operators) run in the GUI event loop thread
         Scheduler scheduler = Schedulers.computation();
-//        Scheduler scheduler = createTestScheduler(scene);
-        Observable<Long> clock = Observable.interval(0, 400 / 60, TimeUnit.MILLISECONDS, scheduler)
-                .observeOn(new FxPlatformScheduler())
-                ;
+        Observable<Long> clock = Observable.interval(0, 10, TimeUnit.MILLISECONDS, scheduler)
+                .observeOn(new FxPlatformScheduler());
 
+//        Scheduler scheduler = createTestScheduler(scene);
+
+        // TODO Play a bit with these tick evens: filter, map, buffer, scan
+        // TODO try prime number computation + lower period
+        // TODO backpressure
+        Scheduler ss = Schedulers.from(Executors.newFixedThreadPool(1));
+        Observable.interval(0, 1, TimeUnit.MILLISECONDS, scheduler)
+                .onBackpressureLatest()
+                .observeOn(ss)
+                .map(n -> n+"="+new ExpensiveOps().isPrime((int) (long) n))
+                .subscribe(System.out::println);
+        Observable.interval(0, 2000, TimeUnit.MILLISECONDS, scheduler)
+                .observeOn(ss)
+                .subscribe(n -> ThreadUtils.sleep(1000));
 
         // ====== TILES =======
         List<ImageView> tiles = createTiles();
         tiles.forEach(root.getChildren()::add);
-        clock.scan(BUG_SPEED, (dx, a) -> dx).subscribe(dX -> {
+
+        // TODO make every tile move left with BUG_SPEED, and then return from right when out (translateX <= -width)
+        clock.subscribe(a -> {
             for (ImageView tile : tiles) {
                 if (tile.getTranslateX() <= -tile.getImage().getWidth()) {
-                    tile.setTranslateX(screenWidth - dX);
+                    tile.setTranslateX(screenWidth - BUG_SPEED);
                 } else {
-                    tile.setTranslateX(tile.getTranslateX() - dX);
+                    tile.setTranslateX(tile.getTranslateX() - BUG_SPEED);
                 }
             }
         });
@@ -86,11 +105,12 @@ public class BugsLifeGame extends Application {
         sun.setTranslateY(-(screenHeight - 200));
         root.getChildren().add(sun);
 
-        clock.scan(BUG_SPEED, (dx, a) -> dx).subscribe(dX -> {
+        // TODO make sun move left with BUG_SPEED, and then return from right when out (translateX <= -width)
+        clock.subscribe(dX -> {
             if (sun.getTranslateX() <= -sun.getImage().getWidth()) {
-                sun.setTranslateX(screenWidth - dX);
+                sun.setTranslateX(screenWidth - BUG_SPEED);
             } else {
-                sun.setTranslateX(sun.getTranslateX() - dX);
+                sun.setTranslateX(sun.getTranslateX() - BUG_SPEED);
             }
         });
 
@@ -107,7 +127,10 @@ public class BugsLifeGame extends Application {
         // ========== JUMPS ===========
         PublishSubject<Double> jumps = PublishSubject.create();
 
-        jumps.flatMap(v0 -> clock.scan(v0, (v, tick) -> v - gravity).takeUntil(jumps))
+        // TODO jump dynamics with gravity: remember Y decreases UPWARDS
+        jumps
+                .doOnNext(s -> System.out.println("Speed: " + s))
+                .flatMap(v0 -> clock.scan(v0, (v, tick) -> v - gravity).takeUntil(jumps))
                 .subscribe(dy -> {
                     if (bug.getTranslateY() < groundY + dy) {
                         bug.setTranslateY(bug.getTranslateY() - dy);
@@ -117,19 +140,25 @@ public class BugsLifeGame extends Application {
                 });
 
         double jumpSpeed = 8;
+        // TODO on SPACE jump up with this speed
+        // OPT play sound: new AudioClip(getResourceUri("smb3_jump.wav")).play()
         observeKeys(scene, KeyCode.SPACE)
                 .filter(e -> bug.getTranslateY() >= groundY)
                 .doOnEach(e -> new AudioClip(getResourceUri("smb3_jump.wav")).play())
                 .subscribe(e -> jumps.onNext(jumpSpeed));
 
 
+
+        // TODO observable of positions: sun.localToScene(sun.getLayoutBounds());
         Observable<Bounds> heartBoundingBoxes = clock.map(t -> sun.localToScene(sun.getLayoutBounds()));
         Observable<Bounds> bugBoundingBoxes = clock.map(t -> bug.localToScene(bug.getLayoutBounds()));
 
-        Observable<List<Boolean>> s = Observable.combineLatest(bugBoundingBoxes, heartBoundingBoxes, (bug, heart) -> bug.intersects(heart))
+        // TODO intersect the observable of positions, and fire only when they intersect. ONLY ONCE.
+        Observable<List<Boolean>> hitsObservable = Observable.combineLatest(bugBoundingBoxes, heartBoundingBoxes, (bug, heart) -> bug.intersects(heart))
                 .buffer(2, 1)
                 .filter(hits -> hits.get(0) != hits.get(1));
-        s.subscribe(hits -> {
+        // TODO turn sun into a heart for the duration of the impact: showHeart(true);
+        hitsObservable.subscribe(hits -> {
             if (!hits.get(0)) {
                 showHeart(true);
                 new AudioClip(getResourceUri("smb3_coin.wav"));
@@ -137,7 +166,8 @@ public class BugsLifeGame extends Application {
                 showHeart(false);
             }
         });
-        s.filter(hits -> !hits.get(0))
+        // TODO increment and display a score: scoreText.setText("Score: " + count);
+        hitsObservable.filter(hits -> !hits.get(0))
                 .scan(0, (count, bb) -> count + 1)
                 .subscribe(count -> {
                     scoreText.setText("Score: " + count);
@@ -147,6 +177,7 @@ public class BugsLifeGame extends Application {
         scoreText.setFont(Font.font("Consolas", FontWeight.BOLD, 40));
         root.getChildren().add(scoreText);
 
+        // TODO: on KeyCode.ESCAPE -> System.exit()
         observeKeys(scene, KeyCode.ESCAPE).subscribe(e -> System.exit(1));
 
         stage.setOnShown(e -> new AudioClip(getResourceUri("smb3_power-up.wav")).play());
