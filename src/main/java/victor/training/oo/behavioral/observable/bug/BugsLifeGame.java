@@ -171,7 +171,6 @@ public class BugsLifeGame extends Application {
 
 
         // TODO observable of positions: sun.localToScene(sun.getLayoutBounds());
-
         Observable<Bounds> sunPosition = clock.map(tick -> sun.localToScene(sun.getLayoutBounds()));
         Observable<Bounds> bugPosition = clock.map(tick -> bug.localToScene(bug.getLayoutBounds()));
 
