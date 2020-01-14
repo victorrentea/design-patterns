@@ -37,8 +37,12 @@ public class ObserverVsSubscriber {
                     return n * 2;
                 });
 
+        ThreadUtils.sleep(2000);
         ceas.subscribe(subscriber);
-        ceas.subscribe(tick -> log.debug("Ora" + tick)); // orice subscriber tine in viata sursa.
+
+        ThreadUtils.sleep(2000);
+
+        ceas.subscribe(tick -> log.debug("Ora " + tick)); // orice subscriber tine in viata sursa.
 
         ThreadUtils.sleep(3000);
 
