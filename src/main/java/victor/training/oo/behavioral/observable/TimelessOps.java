@@ -18,16 +18,21 @@ public class TimelessOps {
         // useru face un click pt filmul 13
         Observable<Long> movieIdObs = Observable.just(13L);
 
+        Observable<String> plotObs = movieIdObs.flatMap(TimelessOps::requestPlot);
+        Observable<Float> ratingOps = movieIdObs.flatMap(TimelessOps::requestRating);
 
-        movieIdObs.flatMap(id ->
-                Observable.zip(requestPlot(id), requestRating(id), PlotAndRating::new))
-                .subscribe(pr -> display(pr.getPlot(), pr.getRating()));
+        Observable.zip(plotObs, ratingOps, PlotAndRating::new)
+                .subscribe(TimelessOps::display);
+
+//        movieIdObs.flatMap(id ->
+//                Observable.zip(requestPlot(id), requestRating(id), PlotAndRating::new))
+//                .subscribe(pr -> display(pr.getPlot(), pr.getRating()));
 
         sleep(3000);
     }
 
-    public static void display(String plot, float rating) {
-        System.out.println("Movie " + plot + " and " + rating);
+    public static void display(PlotAndRating pr ) {
+        System.out.println("Movie " + pr.getPlot() + " and " + pr.getRating());
     }
 
     public static Observable<Float> requestRating(long movieId) {
