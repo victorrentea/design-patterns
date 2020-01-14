@@ -1,4 +1,4 @@
-package victor.training.oo.behavioral.observable.exercise;
+package victor.training.oo.behavioral.observable.pitfall;
 
 import rx.subjects.PublishSubject;
 
@@ -6,9 +6,10 @@ public class ToListTrap {
     public static void main(String[] args) {
 
         PublishSubject<String> p = PublishSubject.create();
+        p./*toList().*/subscribe(System.out::println);
         p.onNext("a");
-        p.onCompleted();
+        p.onNext("b");
 
-        p.toList().subscribe(System.out::println);
+        p.onCompleted();
     }
 }
