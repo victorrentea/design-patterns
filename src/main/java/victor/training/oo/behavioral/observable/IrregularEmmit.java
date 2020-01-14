@@ -21,8 +21,9 @@ public class IrregularEmmit {
     public static Observable<Long> emitAtIntervals(List<Integer> delays) {
         return Observable.from(delays)
                 .scan(0, Integer::sum)
+                .skip(1)
                 .flatMap(delay -> {
-//                    log.debug("Oare cand creeaza");
+//                    log.debug("Oare cand creeaza " + delay);
                     return Observable.timer(delay, TimeUnit.MILLISECONDS);
                 });
     }
