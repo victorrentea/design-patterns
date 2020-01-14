@@ -17,7 +17,6 @@ public class FlatMapZip {
 
         // useru face un click pt filmul 13
         Observable<Long> movieIdObs = Observable.just(13L);
-
         Observable<String> plotObs = movieIdObs.flatMap(FlatMapZip::requestPlot);
         Observable<Float> ratingOps = movieIdObs.flatMap(FlatMapZip::requestRating);
 
