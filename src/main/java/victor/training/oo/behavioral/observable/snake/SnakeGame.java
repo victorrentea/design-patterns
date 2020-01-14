@@ -74,6 +74,7 @@ public class SnakeGame extends Application {
 
         Observable.interval(1, TimeUnit.SECONDS)
                 .observeOn(new FxPlatformScheduler())
+                .takeUntil(gameEnded)
                 .subscribe(tick -> {
                     timeLeft --;
                     refreshScore();
@@ -85,6 +86,7 @@ public class SnakeGame extends Application {
 //                .zipWith(randomObservable, (p, d) -> new Tuple2(p, d))
 //                .delay(p -> randomObservable)
                 .delay(10, TimeUnit.SECONDS)
+                .takeUntil(gameEnded)
                 .subscribe(this::removeFlower);
         flowerObservable
                 .subscribe(this::addFlower);

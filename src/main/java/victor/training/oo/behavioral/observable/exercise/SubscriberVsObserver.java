@@ -1,9 +1,7 @@
-package victor.training.oo.behavioral.observable;
+package victor.training.oo.behavioral.observable.exercise;
 
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
-import victor.training.oo.stuff.ConcurrencyUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +10,7 @@ import static victor.training.oo.stuff.ConcurrencyUtil.sleep2;
 
 public class SubscriberVsObserver {
     public static void main(String[] args) {
-        Subscriber<Long> observer = new Subscriber<Long>() {
+        Subscriber<Long> subscriber = new Subscriber<Long>() {
             @Override
             public void onCompleted() {
                 log("DONE");
@@ -33,11 +31,11 @@ public class SubscriberVsObserver {
                 log("Square " + n);
                 return n * n;
             })
-//                .deb
-            .subscribe(observer);
-        sleep2(1500);
+            .subscribe(subscriber);
+        sleep2(1600);
 
-        // observer.unsubscribe();
+
+        subscriber.unsubscribe(); // TODO switch to Observer and try this again
         log("Unsubscribed");
 
         sleep2(1000);

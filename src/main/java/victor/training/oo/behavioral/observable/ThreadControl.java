@@ -1,19 +1,39 @@
 package victor.training.oo.behavioral.observable;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
-import victor.training.oo.structural.adapter.domain.User;
+import rx.Observer;
+import rx.observables.SyncOnSubscribe;
 import victor.training.oo.stuff.ConcurrencyUtil;
 
 import java.util.Arrays;
 
 import static rx.schedulers.Schedulers.computation;
 import static rx.schedulers.Schedulers.io;
-import static victor.training.oo.stuff.ConcurrencyUtil.*;
+import static victor.training.oo.stuff.ConcurrencyUtil.log;
+import static victor.training.oo.stuff.ConcurrencyUtil.sleep2;
 
 public class ThreadControl {
 
     public static void main(String[] args) {
+        Observable.create(new SyncOnSubscribe<Long, Long>() {
+            @Override
+            protected Long generateState() {
+                return 0L;
+            }
+
+            @Override
+            protected Long next(Long state, Observer<? super Long> observer) {
+                observer.onNext(state);
+                log("Computing next...");
+                sleep2(200);
+                return state + 2;
+            }
+        })
+                .observeOn(computation())
+                .subscribe(ConcurrencyUtil::log);
+
+
+
         Observable.defer(() -> getUsers())
                 .map(s-> {
                     log("map");

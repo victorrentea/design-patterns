@@ -1,12 +1,11 @@
-package victor.training.oo.behavioral.observable;
+package victor.training.oo.behavioral.observable.exercise;
 
 import rx.subjects.PublishSubject;
 
-public class Collect {
+public class ToListTrap {
     public static void main(String[] args) {
 
         PublishSubject<String> p = PublishSubject.create();
-
         p.onNext("a");
         p.onCompleted();
 

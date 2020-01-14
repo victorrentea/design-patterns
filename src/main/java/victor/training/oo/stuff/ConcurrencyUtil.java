@@ -1,10 +1,7 @@
 package victor.training.oo.stuff;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ConcurrencyUtil {
 	static Random random = new Random();
@@ -30,6 +27,9 @@ public class ConcurrencyUtil {
 	}
 	
 	static List<String> position = new ArrayList<>();
+	public static void log(Object anything) {
+		log(Objects.toString(anything));
+	}
 	public static void log(String message) {
 		int PAD_SIZE = 20;
 		String line = new SimpleDateFormat("hh:mm:ss.SSS").format(new Date()) + " ";
