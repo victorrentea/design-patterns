@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
 @Slf4j
-public class TimelessOps {
+public class FlatMapZip {
     public static void main(String[] args) {
 
         log.debug("Start");
@@ -18,11 +18,11 @@ public class TimelessOps {
         // useru face un click pt filmul 13
         Observable<Long> movieIdObs = Observable.just(13L);
 
-        Observable<String> plotObs = movieIdObs.flatMap(TimelessOps::requestPlot);
-        Observable<Float> ratingOps = movieIdObs.flatMap(TimelessOps::requestRating);
+        Observable<String> plotObs = movieIdObs.flatMap(FlatMapZip::requestPlot);
+        Observable<Float> ratingOps = movieIdObs.flatMap(FlatMapZip::requestRating);
 
         Observable.zip(plotObs, ratingOps, PlotAndRating::new)
-                .subscribe(TimelessOps::display);
+                .subscribe(FlatMapZip::display);
 
 //        movieIdObs.flatMap(id ->
 //                Observable.zip(requestPlot(id), requestRating(id), PlotAndRating::new))
