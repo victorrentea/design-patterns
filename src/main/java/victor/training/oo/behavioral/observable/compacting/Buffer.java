@@ -1,6 +1,7 @@
-package victor.training.oo.behavioral.observable;
+package victor.training.oo.behavioral.observable.compacting;
 
 import rx.Observable;
+import victor.training.oo.behavioral.observable.IrregularEmmit;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.List;
