@@ -17,13 +17,16 @@ public class TheMostComplexMarble {
     }
 
     public static void main(String[] args) {
+        fibonacciObservable()
+                .take(10)
+                .subscribe(System.out::println);
+
         long t0 = System.currentTimeMillis();
-        Observable.just(1)
-                .map(n -> {
+        Observable.defer(() -> {
                     if (System.currentTimeMillis() - t0 > 3_000) {
-                        return "data";
+                        return Observable.just("data");
                     } else {
-                        throw new RuntimeException("Connection Error");
+                        return Observable.error(new RuntimeException("Connection Error"));
                     }
                 })
                 // TODO retry with a fibonacci backoff delay
@@ -37,9 +40,7 @@ public class TheMostComplexMarble {
                 .toBlocking()
                 .subscribe(System.out::println);
 
-        fibonacciObservable()
-                .take(10)
-                .subscribe(System.out::println);
+
     }
 
 
