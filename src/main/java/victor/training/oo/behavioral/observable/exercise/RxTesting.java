@@ -17,6 +17,7 @@ public class RxTesting
 {
     @Test
     public void synchronousObservers() {
+
         Observable<Integer> indexesObs = Observable.range(1, Integer.MAX_VALUE);
         Observable<String> stringsObs = Observable.from("abc".split(""))
                 .zipWith(indexesObs, (s, i) -> i + ":" + s);
