@@ -18,9 +18,11 @@ public class Buffer {
                 })
 //                .buffer(300, TimeUnit.MILLISECONDS)
 //                .buffer(5)
+//                .delay
                 .buffer(100, TimeUnit.MILLISECONDS,2)
                 .flatMap(Buffer::doSearchOverHttp)
                 .subscribe(r -> System.out.println(r));
+
 
         ThreadUtils.sleep(3000);
     }
