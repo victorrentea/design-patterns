@@ -20,9 +20,11 @@ public class TimelessOps {
         Random r = new Random();
 
         Observable.interval(500, TimeUnit.MILLISECONDS)
+                .take(6)
                 .map(tick -> r.nextInt(100))
                 .doOnNext(n -> System.out.println("Acum: " +n))
-                .scan(0, Integer::max)
+//                .scan(0, Integer::max)
+                .reduce(0, Integer::max)
                 .subscribe(max -> System.out.println("Max: " + max));
 
         ThreadUtils.sleep(5000);
