@@ -8,6 +8,7 @@ import static victor.training.oo.stuff.ThreadUtils.sleep;
 @Slf4j
 public class ReplayVsCache {
     public static void main(String[] args) {
+        // ~~~ REF "getFavPickupPoint"
        Observable<String> request = Observable.defer(() -> Observable.just(httpSyncCall()))
                // TODO play
                 .cache();
