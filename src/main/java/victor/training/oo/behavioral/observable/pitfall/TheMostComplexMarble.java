@@ -30,7 +30,7 @@ public class TheMostComplexMarble {
                 .retryWhen(attempts ->
                         attempts.zipWith(fibonacciObservable(), (e, fib) -> fib)
                                 .flatMap(fib -> {
-                                    log.debug("Retrying after "+ fib + " ms");
+                                    log.debug("Retrying after " + fib + " ms");
                                     return Observable.timer(fib, TimeUnit.MILLISECONDS);
                                 }))
 
@@ -41,8 +41,6 @@ public class TheMostComplexMarble {
                 .take(10)
                 .subscribe(System.out::println);
     }
-
-
 
 
 }
