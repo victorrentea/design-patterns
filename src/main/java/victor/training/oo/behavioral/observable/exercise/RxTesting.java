@@ -22,6 +22,7 @@ public class RxTesting
         Observable<String> stringsObs = Observable.from("abc".split(""))
                 .zipWith(indexesObs, (s, i) -> i + ":" + s);
 
+        // TODO
         List<String> results = new ArrayList<>();
         stringsObs.subscribe(results::add);
 
@@ -34,10 +35,9 @@ public class RxTesting
         Observable<String> stringsObs = Observable.from("abc".split(""))
                 .zipWith(indexesObs, (s, i) -> i + ":" + s);
 
-
+        // TODO TestSubscriber
         TestSubscriber<String> subscriber = TestSubscriber.create();
         stringsObs.subscribe(subscriber);
-
         subscriber.assertCompleted();
         subscriber.assertValues("1:a", "2:b", "3:c");
     }
@@ -49,10 +49,9 @@ public class RxTesting
                 .zipWith(indexesObs, (s, i) -> i + ":" + s)
                 .concatWith(Observable.error(new IllegalStateException("hah")));
 
-
+        // TODO
         TestSubscriber<String> subscriber = TestSubscriber.create();
         stringsObs.subscribe(subscriber);
-
         subscriber.assertError(IllegalStateException.class);
         Throwable throwable = subscriber.getOnErrorEvents().get(0);
         assertEquals("hah",throwable.getMessage());
@@ -60,6 +59,13 @@ public class RxTesting
 
     @Test
     public void manualTimeAdvance() {
+        // INITIAL:
+//        Observable<Long> indexesObs = Observable.interval(1, TimeUnit.SECONDS);
+//        Observable<String> stringsObs = Observable.from("abc".split(""))
+//                .zipWith(indexesObs, (s, i) -> i + ":" + s);
+
+
+        // TODO TestScheduler
         TestScheduler testScheduler = Schedulers.test();
         Observable<Long> indexesObs = Observable.interval(1, TimeUnit.SECONDS, testScheduler);
         testScheduler.advanceTimeBy(1100, TimeUnit.MILLISECONDS);
