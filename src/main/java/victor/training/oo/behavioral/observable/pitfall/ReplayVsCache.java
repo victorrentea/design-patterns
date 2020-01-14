@@ -8,7 +8,7 @@ import static victor.training.oo.stuff.ThreadUtils.sleep;
 @Slf4j
 public class ReplayVsCache {
     public static void main(String[] args) {
-       Observable<String> request = Observable.defer(() -> Observable.just(httpCallObs()))
+       Observable<String> request = Observable.defer(() -> Observable.just(httpSyncCall()))
                // TODO play
                 .cache();
 //                .replay(); // autoConnect
@@ -22,7 +22,7 @@ public class ReplayVsCache {
 //        request.connect();
     }
 
-    private static String httpCallObs() {
+    private static String httpSyncCall() {
         log.debug("Sent HTTP Request. Waiting for response");
         sleep(1000);
         log.debug("Got Response.");
