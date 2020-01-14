@@ -10,6 +10,6 @@ public class ToListTrap {
         p.onNext("a");
         p.onNext("b");
 
-        p.onCompleted();
+        p.onCompleted(); // what if...
     }
 }
