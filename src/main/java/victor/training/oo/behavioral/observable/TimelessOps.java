@@ -11,9 +11,10 @@ public class TimelessOps {
     public static void main(String[] args) {
 
 
-        Observable<Integer> numbers = Observable.from(Arrays.asList(1, 2, 3, 3, 4, 5,7,2,4,8,2,10,5));
+        Observable<Integer> numbers = Observable.from(Arrays.asList(1, 2, 3, 3, 4, 5,7, 7,2,4,8,2,10,5));
         numbers.distinct()
-                .window(3)
+                .doOnNext(e -> System.out.println("BUM"))
+                .contains(7) // face un fel de break; ~ short-circuiting
                 .subscribe(System.out::println);
 
 
