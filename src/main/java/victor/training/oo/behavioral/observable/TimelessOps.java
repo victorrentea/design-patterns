@@ -17,6 +17,9 @@ public class TimelessOps {
                 .contains(7) // face un fel de break; ~ short-circuiting
                 .subscribe(System.out::println);
 
+        Observable.just(1, 1, 2, 2, 3, 3)
+                .all(n -> n < 4) // asteapta onCompleted
+                .subscribe(r -> System.out.println(r));
 
         Random r = new Random();
 
