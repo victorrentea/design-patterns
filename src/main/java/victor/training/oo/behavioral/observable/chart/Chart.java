@@ -60,8 +60,19 @@ public class Chart extends Application {
 
         keyPresses(scene)
 //            .debounce(100, TimeUnit.MILLISECONDS)
-            .sample(100, TimeUnit.MILLISECONDS)
-            .subscribe(keyEvent -> drawPoint(keyEvent.getCode().ordinal(), Color.RED));
+//            .sample(100, TimeUnit.MILLISECONDS)
+                .throttleFirst(100, TimeUnit.MILLISECONDS)
+            .subscribe(keyEvent -> drawPoint(keyEvent.getCode().ordinal(), Color.BLUE));
+        keyPresses(scene)
+//            .debounce(100, TimeUnit.MILLISECONDS)
+//            .sample(100, TimeUnit.MILLISECONDS)
+                .map(e -> 1)
+                .scan(1, Integer::sum)
+                .throttleLast(100, TimeUnit.MILLISECONDS)
+            .subscribe(v -> drawPoint(v-1, Color.GREEN));
+
+        keyPresses(scene)
+            .subscribe(keyEvent -> drawPoint(keyEvent.getCode().ordinal() + 1, Color.RED));
 
 
 
