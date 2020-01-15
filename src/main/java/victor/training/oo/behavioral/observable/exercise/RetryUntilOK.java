@@ -6,6 +6,7 @@ import rx.Observable;
 import rx.Single;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class RetryUntilOK {
@@ -14,13 +15,18 @@ public class RetryUntilOK {
         // TODO Single toObservable
         // TODO handle errors
         // TODO stop at first OK response: take(1) or first()?
-        Observable.range(1, 3)
-                .flatMap(retry -> getDeliveryEstimation(retry).toObservable())
-                .onErrorReturn(t -> new Response(1000, ""))
-                .skipWhile(response -> response.getStatusCode() >= 300)
-                .first() // or .take(1)
-                .subscribe(System.out::println);
 
+        log.debug("Start");
+        Observable.range(1, 3)
+            .zipWith(Observable.interval(0, 1, TimeUnit.SECONDS), (i,t) -> i)
+            .flatMap(retryIndex ->getDeliveryEstimation(retryIndex)
+                        .toObservable()
+                        .onErrorReturn(t->new Response(10000, null)))
+            .takeUntil(response -> response.getStatusCode() == 200)
+            .filter(response -> response.getStatusCode() == 200)
+            .first()
+            .toBlocking()
+            .subscribe(response -> System.out.println("Dau aplicatiei " + response));
 
     }
 
