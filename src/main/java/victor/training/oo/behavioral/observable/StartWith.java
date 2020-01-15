@@ -4,7 +4,7 @@ import rx.Observable;
 
 import java.util.concurrent.TimeUnit;
 
-public class CombiningObs {
+public class StartWith {
     public static void main(String[] args) {
 
         Observable<Long> time = Observable.interval(100, TimeUnit.MILLISECONDS);
@@ -24,6 +24,7 @@ public class CombiningObs {
                 .toBlocking()
                 .subscribe(x -> uiBlock(x));
 
+        // TODO cursu viitor: gpsObs().startWith(GPSacum()).subscribe(handleLocation)
 
 
     }
