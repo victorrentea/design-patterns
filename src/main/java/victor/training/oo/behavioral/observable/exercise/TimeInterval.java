@@ -2,6 +2,7 @@ package victor.training.oo.behavioral.observable.exercise;
 
 import lombok.extern.slf4j.Slf4j;
 import rx.Single;
+import rx.schedulers.Schedulers;
 import victor.training.oo.stuff.ThreadUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -14,8 +15,18 @@ public class TimeInterval
         Single.just("b")
                 .subscribe(v -> log.debug(v));
 
-        Single.just("a").delay(1, TimeUnit.SECONDS)
-                .timeout(500, TimeUnit.MILLISECONDS)
+
+
+
+        Single.just("a")
+
+                .delay(1, TimeUnit.SECONDS, Schedulers.io())
+                .doOnEach(v -> log.debug("v: " + v))
+                .delay(1, TimeUnit.SECONDS)
+                .doOnEach(v -> log.debug("v: " + v))
+                .delay(1, TimeUnit.SECONDS)
+                .doOnEach(v -> log.debug("v: " + v))
+//                .timeout(500, TimeUnit.MILLISECONDS)
 //                .doOnEach(bou -> ThreadUtils.sleep(2000))
                 .onErrorReturn(t -> "error")
                 .map(s -> {
