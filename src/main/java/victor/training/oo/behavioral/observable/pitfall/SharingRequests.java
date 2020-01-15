@@ -46,6 +46,8 @@ public class SharingRequests {
 
 
         getHttpSauCache();
+        Observable.defer(() -> getHttpSauCache());// -- posibila solutie (urata)
+
 
 
         System.out.println("===========timp==================");

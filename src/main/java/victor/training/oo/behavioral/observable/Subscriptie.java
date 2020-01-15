@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.observable;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 import victor.training.oo.stuff.ThreadUtils;
 
@@ -33,8 +34,28 @@ public class Subscriptie {
         ThreadUtils.sleep(1000);
 
         compositeSubscription.clear();
-        System.out.println("Am iesit");
+        System.out.println("Am iesit ----");
 
+
+        Subscriber<Long> s = new Subscriber<Long>() {
+            @Override
+            public void onCompleted() {
+            }
+            @Override
+            public void onError(Throwable e) {
+            }
+            @Override
+            public void onNext(Long aLong) {
+                System.out.println(aLong);
+            }
+        };
+        o1.subscribe(s);
+        o2.subscribe(s);
+
+        s.unsubscribe();
+
+
+        ThreadUtils.sleep(1000);
 
     }
 }
