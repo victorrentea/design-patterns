@@ -13,6 +13,8 @@ public class TakeOneVsFirst {
 
     private static Observable<String> obs() {
         // TODO what if .... ?
-        return Observable.just("a");
+        return Observable.empty();
+//                .doOnUnsubscribe(() -> System.out.println("Unsub"));
+
     }
 }
