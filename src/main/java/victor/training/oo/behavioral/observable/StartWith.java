@@ -38,7 +38,7 @@ public class StartWith {
     }
 
     public static Observable<String> httpVrajeala(long movieId) {
-        return Observable.just("a")
+        return Observable.just("a","b")
                 .delay(3, TimeUnit.SECONDS);
     }
 }

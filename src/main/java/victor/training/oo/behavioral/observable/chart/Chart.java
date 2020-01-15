@@ -6,7 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -79,8 +78,9 @@ public class Chart extends Application {
 
         Observable.interval(100, TimeUnit.MILLISECONDS)
                 .observeOn(new FxPlatformScheduler())
-//                .takeUntil(tick -> tick > 10 )
-                .takeUntil(keyPresses(scene).filter(e ->e.getCode() == KeyCode.ESCAPE))
+                .takeUntil(tick -> tick > 10 )
+//                .takeUntil(keyPresses(scene).filter(e ->e.getCode() == KeyCode.ESCAPE))
+                .takeUntil(Observable.empty().delay(2,TimeUnit.SECONDS)) // FRATE: la asta se subscrie de fapt observable-ul de sus. Daca nu pui linia urmatoare, stai ca la lapte pe timpu lu Ceasca
                 .subscribe(tick -> drawPoint(tick, Color.BLACK));
 
 
