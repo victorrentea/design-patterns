@@ -63,10 +63,10 @@ public class BugsLifeGame extends Application {
         // TODO create an observer that fires every 10ms on the computation() thread,
         //  but its subscribers (+operators) run in the GUI event loop thread
 
-        Observable<Long> time = Observable.interval(10, TimeUnit.MILLISECONDS)
+        Scheduler testScheduler = createTestScheduler(scene);
+        Observable<Long> time = Observable.interval(10, TimeUnit.MILLISECONDS, testScheduler)
                 .observeOn(new FxPlatformScheduler());
 
-//        Scheduler scheduler = createTestScheduler(scene);
 
 
         // ====== TILES =======
@@ -185,9 +185,9 @@ public class BugsLifeGame extends Application {
 
     private Scheduler createTestScheduler(Scene scene) {
         TestScheduler testScheduler = new TestScheduler();
-//        observeKeys(scene, KeyCode.ENTER).subscribe(e -> {
-//            testScheduler.advanceTimeBy(10000 / 60, TimeUnit.MILLISECONDS);
-//        });
+        keyPresses(scene).filter(e->e.getCode() == KeyCode.ENTER).subscribe(e -> {
+            testScheduler.advanceTimeBy(10000 / 60, TimeUnit.MILLISECONDS);
+        });
         return testScheduler;
     }
 
