@@ -33,15 +33,45 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 }
 
+// calculators.properties     country.UK=victor.training.oo.behavioral.strategy.UKTaxCalculator.UKTaxCalculator()
 class CustomsService {
+	// Map<String, I>
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxCalculator taxCalculator = selectTaxCalculator(originCountry); 
+		return taxCalculator.compute(tobaccoValue, regularValue);
+	}
+
+	private TaxCalculator selectTaxCalculator(String originCountry) {
 		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
+		case "UK": return new UKTaxCalculator();
+		case "CN": return new CNTaxCalculator();
 		case "FR": 
 		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		case "RO": return new EUTaxCalculator();
+		default: throw new IllegalArgumentException("JDD Not a valid country ISO2 code: " + originCountry);
+		}
+	}
+
+
+
+}
+interface TaxCalculator {
+	double compute(double tobaccoValue, double regularValue);
+}
+class EUTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue , double regularValue ) {
+		return tobaccoValue/3;
+	}
+}
+class CNTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+}
+class UKTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue, double regularValue) {
+		// GIgel: pun si eu aicea 60 linii
+		// Maricica: las si eu sacu asta aicea
+		return tobaccoValue/2 + regularValue;
 	}
 }
