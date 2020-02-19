@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import victor.training.oo.structural.adapter.infra.LdapUser;
 import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +18,11 @@ public class UserService {
 	}
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = findLdapUserByUsername(username);
+		List<User> list = findUsersByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		User user = convertLdapUser(ldapUser);
+		User user = list.get(0);
 		
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -30,14 +31,12 @@ public class UserService {
 	}
 	
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = findLdapUserByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			User user = convertLdapUser(ldapUser);
-			results.add(user);
-		}
-		return results;
+		return findUsersByUsername(username);
 	}
+	
+	// DEASUPRA LINEI: ZEN SI PACE, YING SI YANG, FENG SI SHUI
+	// -- o linie ---------------------------------
+	// SUB LINE: GUNOI
 	
 	
 
@@ -50,8 +49,10 @@ public class UserService {
 		return ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 	}
 
-	private List<LdapUser> findLdapUserByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
+	private List<User> findUsersByUsername(String username) {
+		return wsClient.search(username.toUpperCase(), null, null).stream()
+				.map(this::convertLdapUser)
+				.collect(toList());
 	}
 	
 }
