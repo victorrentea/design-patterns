@@ -1,16 +1,14 @@
 package victor.training.oo.structural.adapter.domain;
 
-import lombok.extern.slf4j.Slf4j;
-import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UserService {
-	private final LdapUserServiceAdapter adapter;
+	private final ExternalUserProvider adapter;
 
-	public UserService(LdapUserServiceAdapter adapter) {
+	public UserService(ExternalUserProvider adapter) {
 		this.adapter = adapter;
 	}
 
@@ -19,6 +17,7 @@ public class UserService {
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
+		
 		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {

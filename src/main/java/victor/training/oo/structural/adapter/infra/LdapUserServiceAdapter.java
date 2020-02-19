@@ -1,18 +1,19 @@
-package victor.training.oo.structural.adapter.domain;
+package victor.training.oo.structural.adapter.infra;
 
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
-import victor.training.oo.structural.adapter.infra.LdapUser;
-import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
+import victor.training.oo.structural.adapter.domain.ExternalUserProvider;
+import victor.training.oo.structural.adapter.domain.User;
 
-public class LdapUserServiceAdapter {
+public class LdapUserServiceAdapter implements ExternalUserProvider {
 	private final LdapUserWebserviceClient wsClient;
 	
 	public LdapUserServiceAdapter(LdapUserWebserviceClient wsClient) {
 		this.wsClient = wsClient;
 	}
+	@Override
 	public List<User> findUsersByUsername(String username) {
 		return wsClient.search(username.toUpperCase(), null, null).stream()
 				.map(this::convertLdapUser)
