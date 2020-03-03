@@ -6,24 +6,20 @@ import java.util.Random;
 
 public class TemplateSpringApp {
     public static void main(String[] args) {
-        new EmailSender(new OrderReceivedEmailFiller())
-                .sendEmail("a@b.com");
+        EmailSender emailSender = new EmailSender();
+        emailSender
+                .sendEmail("a@b.com", new OrderReceivedEmailFiller());
 
         /// TODO sendOrderShippedEmail la fel ca la send order received
 
-        new EmailSender(new OrderShippedEmailFiller())
-                .sendEmail("a@b.com");
+        emailSender
+                .sendEmail("a@b.com", new OrderShippedEmailFiller());
     }
 }
 
 class EmailSender {
-    private final EmailFiller filler;
 
-    public EmailSender(EmailFiller filler) {
-        this.filler = filler;
-    }
-
-    public void sendEmail(String emailAddress) {
+    public void sendEmail(String emailAddress, EmailFiller filler) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
         for (int i = 0; i < MAX_RETRIES; i++) {
