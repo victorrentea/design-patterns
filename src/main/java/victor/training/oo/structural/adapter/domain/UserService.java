@@ -13,7 +13,7 @@ import java.util.List;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
-	private ExternalUserService externalUserService;
+	private IExternalUserService externalUserService;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = externalUserService.searchByUsername(username);
@@ -31,9 +31,4 @@ public class UserService {
 	public List<User> searchUserInLdap(String username) {
 		return externalUserService.searchByUsername(username);
 	}
-	// BUN
-	// ---------------- LINIE ---------------------
-	// INFERNUL lui Dante
-	// Tu cel ce intri, abandoneaza orice speranta...
-
 }
