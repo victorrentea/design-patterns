@@ -15,75 +15,100 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
-import static java.util.Arrays.asList;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
 @EnableAsync
 @SpringBootApplication
 @EnableBinding({Sink.class, Source.class})
 public class CommandSpringApp {
-	public static void main(String[] args) {
-		SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
+    }
 
-	@Bean
-	public ThreadPoolTaskExecutor executor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
-		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("barman-");
-		executor.initialize();
-		executor.setWaitForTasksToCompleteOnShutdown(true);
-		return executor;
-	}
+    @Bean
+    public ThreadPoolTaskExecutor executor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("barman-");
+        executor.initialize();
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        return executor;
+    }
 
 }
 
 @Slf4j
 @Component
 class Drinker implements CommandLineRunner {
-	@Autowired
-	private Barman barman;
-	@Autowired
-	private ServiceActivatorPattern serviceActivatorPattern;
+    @Autowired
+    private Barman barman;
+    @Autowired
+    private ServiceActivatorPattern serviceActivatorPattern;
 
-	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
-	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
+    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
+    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) throws ExecutionException, InterruptedException {
-		log.debug("Submitting my order");
+    public void run(String... args) throws ExecutionException, InterruptedException {
+        log.debug("Submitting my order");
 
-		ExecutorService pool = Executors.newFixedThreadPool(2);
+        ForkJoinPool poolulMeu = new ForkJoinPool(100);
+        CompletableFuture<Vodka> futureVodka = supplyAsync(() -> barman.pourVodka(), poolulMeu);
+        CompletableFuture<Beer> futureBeer = supplyAsync(() -> barman.pourBeer());
 
-		Callable<Vodka> vodkaCommand = () -> barman.pourVodka();
-		Future<Vodka> futureVodka = pool.submit(vodkaCommand);
-		Future<Beer> futureBeer = pool.submit(() -> barman.pourBeer());
-		// aici a plecat fiinta cu ambele comenzi
-		Beer beer = futureBeer.get();
-		Vodka vodka = futureVodka.get();
+		CompletableFuture<DillyDilly> futureDilly = futureBeer.thenCombineAsync(futureVodka, DillyDilly::new);
 
-		log.debug("Waiting for my drinks...");
-		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
+
+//        HttpServletRequest req = null;
+//        AsyncContext asyncContext = req.startAsync();
+
+        futureDilly.thenAcceptAsync(dilly -> {
+			log.debug("Beau dilly: " + dilly);
+//            try {
+//                asyncContext.getResponse().getWriter().println("Gata beutura");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+        });
+		log.debug("Am iesit");
+    }
+
+}
+
+@Data
+@Slf4j
+class DillyDilly {
+    private final Beer beer;
+    private final Vodka vodka;
+
+	DillyDilly(Beer beer, Vodka vodka) {
+		this.beer = beer;
+		this.vodka = vodka;
+		log.debug("Fac cocktail");
 	}
 }
+
 
 @Slf4j
 @Service
 class Barman {
-	public Beer pourBeer() {
-		 log.debug("Pouring Beer...");
-		 sleep(1000);
-		 return new Beer();
-	 }
-	
-	 public Vodka pourVodka() {
-		 log.debug("Pouring Vodka...");
-		 sleep(1000);
-		 return new Vodka();
-	 }
+    public Beer pourBeer() {
+        log.debug("Pouring Beer...");
+        sleep(1000);
+        return new Beer();
+    }
+
+    public Vodka pourVodka() {
+        log.debug("Pouring Vodka...");
+        sleep(1000);
+        return new Vodka();
+    }
 }
 
 @Data
