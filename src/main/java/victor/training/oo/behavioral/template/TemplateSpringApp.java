@@ -7,18 +7,19 @@ import java.util.Random;
 public class TemplateSpringApp {
     public static void main(String[] args) {
         EmailSender emailSender = new EmailSender();
-        emailSender
-                .sendEmail("a@b.com", new OrderReceivedEmailFiller());
+        Emails emails = new Emails();
 
-        /// TODO sendOrderShippedEmail la fel ca la send order received
-
-        emailSender
-                .sendEmail("a@b.com", new OrderShippedEmailFiller());
+        emailSender.sendEmail("a@b.com", emails::fillOrderReceivedEmail);
+        emailSender.sendEmail("a@b.com", emails::fillOrderShippedEmail);
     }
 }
 
 class EmailSender {
 
+    @FunctionalInterface
+    interface EmailFiller {
+        void fillEmail(Email email);
+    }
     public void sendEmail(String emailAddress, EmailFiller filler) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
@@ -34,17 +35,14 @@ class EmailSender {
     }
 }
 
-interface EmailFiller {
-    void fillEmail(Email email);
-}
-class OrderReceivedEmailFiller implements EmailFiller {
-    public void fillEmail(Email email) {
+
+class Emails {
+    public void fillOrderReceivedEmail(Email email) {
         email.setSubject("Order Received");
         email.setBody("Thank you for your order");
     }
-}
-class OrderShippedEmailFiller implements EmailFiller {
-    public void fillEmail(Email email) {
+
+    public void fillOrderShippedEmail(Email email) {
         email.setSubject("Order Shipped");
         email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
     }
