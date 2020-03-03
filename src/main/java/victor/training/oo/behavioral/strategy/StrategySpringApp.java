@@ -31,36 +31,63 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxComputer computer = selectComputer(originCountry);
+		return computer.compute(tobaccoValue, regularValue);
+	}
+
+	private TaxComputer selectComputer(String originCountry) {
+		// other EU country codes...
 		switch (originCountry) {
 			case "UK":
-				return new UKTaxComputer().compute(tobaccoValue, regularValue);
+				return new UKTaxComputer();
 			case "CN":
-				return new ChinaTaxComputer().compute(tobaccoValue, regularValue);
+				return new ChinaTaxComputer();
 			case "FR":
 			case "ES":
 			case "RO":
-				// other EU country codes...
-				return new EUTaxComputer().compute(tobaccoValue);
+				return new EUTaxComputer();
+			default:
+				throw new IllegalStateException("Unexpected value: " + originCountry);
 		}
-		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 	}
-
-
-
+//	enum E {
+//		A,B,C
+//	}
+//	public String m(E e) {
+//	    return switch (e) {
+//			case A ->"a";
+//			case B->"b";
+//			case C -> "c";
+//		};
+//	}
 }
-class UKTaxComputer {
+interface TaxComputer {
+	double compute(double tobaccoValue, double regularValue);
+}
+class UKTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// Gigel: pun si io aicea astea 200de linii de cod si un if intautru si paote alt switch inauntru
 		return tobaccoValue / 2 + regularValue;
 	}
 }
-class ChinaTaxComputer {
+class ChinaTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
 }
-class EUTaxComputer {
-	public double compute(double tobaccoValue) {
+class ChinaExtraLogic {
+	private final ChinaTaxComputer computer;
+
+	ChinaExtraLogic(ChinaTaxComputer computer) {
+		this.computer = computer;
+	}
+	public void logicaExtra() {
+
+	}
+}
+class EUTaxComputer implements TaxComputer {
+	@Override
+	public double compute(double tobaccoValue, double regularValue) {
 		// Maricica:
 		return tobaccoValue / 3;
 	}
