@@ -6,17 +6,16 @@ import java.util.Random;
 
 public class TemplateSpringApp {
     public static void main(String[] args) {
-        new EmailService().sendOrderReceivedEmail("a@b.com");
+        new OrderReceivedEmailSender().sendEmail("a@b.com");
 
         /// TODO sendOrderShippedEmail la fel ca la send order received
 
-		new Witchcraft().sendOrderReceivedEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
     }
 }
 
-class EmailService {
-
-    public void sendOrderReceivedEmail(String emailAddress) {
+abstract class AbstractEmailSender {
+    public void sendEmail(String emailAddress) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
         for (int i = 0; i < MAX_RETRIES; i++) {
@@ -29,13 +28,17 @@ class EmailService {
             if (success) break;
         }
     }
+    protected abstract void fillEmail(Email email);
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+    @Override
     protected void fillEmail(Email email) {
         email.setSubject("Order Received");
         email.setBody("Thank you for your order");
     }
 }
-
-class Witchcraft extends EmailService {
+class OrderShippedEmailSender extends AbstractEmailSender {
     @Override
     protected void fillEmail(Email email) {
         email.setSubject("Order Shipped");
