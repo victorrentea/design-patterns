@@ -6,15 +6,23 @@ import java.util.Random;
 
 public class TemplateSpringApp {
     public static void main(String[] args) {
-        new OrderReceivedEmailSender().sendEmail("a@b.com");
+        new EmailSender(new OrderReceivedEmailFiller())
+                .sendEmail("a@b.com");
 
         /// TODO sendOrderShippedEmail la fel ca la send order received
 
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+        new EmailSender(new OrderShippedEmailFiller())
+                .sendEmail("a@b.com");
     }
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+    private final EmailFiller filler;
+
+    public EmailSender(EmailFiller filler) {
+        this.filler = filler;
+    }
+
     public void sendEmail(String emailAddress) {
         EmailContext context = new EmailContext(/*smtpConfig,etc*/);
         int MAX_RETRIES = 3;
@@ -23,24 +31,24 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            fillEmail(email);
+            filler.fillEmail(email);
             boolean success = context.send(email);
             if (success) break;
         }
     }
-    protected abstract void fillEmail(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
-    @Override
-    protected void fillEmail(Email email) {
+interface EmailFiller {
+    void fillEmail(Email email);
+}
+class OrderReceivedEmailFiller implements EmailFiller {
+    public void fillEmail(Email email) {
         email.setSubject("Order Received");
         email.setBody("Thank you for your order");
     }
 }
-class OrderShippedEmailSender extends AbstractEmailSender {
-    @Override
-    protected void fillEmail(Email email) {
+class OrderShippedEmailFiller implements EmailFiller {
+    public void fillEmail(Email email) {
         email.setSubject("Order Shipped");
         email.setBody("Ti-am trimis. Speram sa ajunga (de data asta)");
     }
