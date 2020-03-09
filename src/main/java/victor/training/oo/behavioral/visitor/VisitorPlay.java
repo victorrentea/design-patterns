@@ -1,11 +1,11 @@
 package victor.training.oo.behavioral.visitor;
 
-import java.util.Arrays;
-import java.util.List;
-
 import victor.training.oo.behavioral.visitor.model.Circle;
 import victor.training.oo.behavioral.visitor.model.Shape;
 import victor.training.oo.behavioral.visitor.model.Square;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class VisitorPlay {
 
@@ -15,21 +15,14 @@ public class VisitorPlay {
 				new Circle(5), 
 				new Square(5));
 
-		PerimeterCalculatorVisitor perimiterCalculator = new PerimeterCalculatorVisitor();
+		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
 		for (Shape shape : shapes) {
-			shape.accept(perimiterCalculator);
+			shape.accept(perimeterCalculator);
 		}
-		System.out.println("Total perimeter: " + perimiterCalculator.getTotal());
-		
-		// TODO implements a TotalPriceCalculatorVIsitor
-		
-		// SOLUTION(
-		AreaCalculatorVisitor areaCalculator = new AreaCalculatorVisitor();
-		for (Shape shape : shapes) {
-			shape.accept(areaCalculator);
-		}
-		System.out.println("Total area: " + areaCalculator.getTotalArea());
-		// SOLUTION)
+		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
+
+
+		System.out.println("Total area: " + 0); // TODO
 
 	}
 
