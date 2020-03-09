@@ -57,21 +57,25 @@ class OrderExporter  {
 	private CountryRepo countryRepo;
 
 	public void export(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
-		labelService.load(locale);
+		LabelService labelService = new LabelService(countryRepo, locale);
+//		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice(locale);
 	}
 }
 
 @Slf4j
 @Service 
 class InvoiceExporter {
+	@Autowired
+	private CountryRepo countryRepo;
 //	@Autowired
 //	private LabelService labelService;
 	
-	public void exportInvoice(LabelService labelService) {
+	public void exportInvoice(Locale locale) {
+		LabelService labelService = new LabelService(countryRepo, locale);
+//		labelService.load(locale);
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
@@ -80,8 +84,9 @@ class InvoiceExporter {
 //@Service
 class LabelService {
 	private CountryRepo countryRepo;
-	public LabelService(CountryRepo countryRepo) {
+	public LabelService(CountryRepo countryRepo, Locale locale) {
 		this.countryRepo = countryRepo;
+		load(locale);
 	}
 
 	private Map<String, String> countryNames;
