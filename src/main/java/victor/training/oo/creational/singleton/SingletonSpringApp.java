@@ -54,7 +54,7 @@ class OrderExporter  {
 	@Autowired
 	private LabelService labelService;
 
-	public void export(Locale locale) {
+	public synchronized void export(Locale locale) {
 		labelService.load(locale);
 		log.debug("Running export in " + locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
