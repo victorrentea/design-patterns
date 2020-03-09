@@ -4,6 +4,7 @@ import victor.training.oo.stuff.pretend.Entity;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NullObject {
@@ -60,19 +61,21 @@ class Customer {
         return this;
     }
 
-    public MemberCard getCard() {
-        return card;
+    public Optional<MemberCard> getCard() {
+        return Optional.ofNullable(card);
     }
 }
 
 class PriceService {
     public double computePrice(double basePrice, Customer customer) {
-//        if (customer.getCard() != null) {
-            System.out.println("Using fidelity points: " +
-                    customer.getCard().getPoints());
-            return basePrice - customer.getCard().getPoints() / 10d;
-//        } else {
-//            return basePrice;
-//        }
+        Optional<MemberCard> optCard = customer.getCard();
+
+        if (optCard.isPresent()) {
+            MemberCard card = optCard.get();
+            System.out.println("Using fidelity points: " + card.getPoints());
+            return basePrice - card.getPoints() / 10d;
+        } else {
+            return basePrice;
+        }
     }
 }
