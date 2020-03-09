@@ -1,22 +1,25 @@
 package victor.training.oo.structural.proxy;
 
-import java.lang.reflect.InvocationHandler;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-public class InterfaceProxies {
+public class ClassProxies {
     public static void main(String[] args) {
-        MateImpl mateImpl = new MateImpl();
-        InvocationHandler h = new InvocationHandler() {
+        Mate mateImpl = new Mate();
+
+        Callback callback = new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
                 System.out.println("Fraeru cheama functia " + method.getName() + " cu param " + Arrays.toString(args));
                 return method.invoke(mateImpl, args);
             }
         };
-        Mate mate = (Mate) Proxy.newProxyInstance(InterfaceProxies.class.getClassLoader(),
-            new Class<?>[]{Mate.class},h);
+        Mate mate = (Mate) Enhancer.create(Mate.class, callback);
 
         biznisLogic(mate);
     }
@@ -31,16 +34,10 @@ public class InterfaceProxies {
     }
 }
 
-interface Mate {
-    int suma(int a, int b);
-    int produs(int a, int b);
-}
-class MateImpl implements Mate {
-    @Override
+class Mate  {
     public int suma(int a, int b) {
         return a + b;
     }
-    @Override
     public int produs(int a, int b) {
         return a * b;
     }
