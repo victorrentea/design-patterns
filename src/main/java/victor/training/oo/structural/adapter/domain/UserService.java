@@ -15,9 +15,9 @@ import java.util.List;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
-	private final LdapServiceAdapter adapter;
+	private final ILdapServiceAdapter adapter;
 
-	public UserService(LdapServiceAdapter adapter) {
+	public UserService(ILdapServiceAdapter adapter) {
 		this.adapter = adapter;
 	}
 
