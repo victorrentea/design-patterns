@@ -1,5 +1,6 @@
 package victor.training.oo.creational.singleton;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -48,13 +49,14 @@ public class SingletonSpringApp implements CommandLineRunner{
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 class OrderExporter  {
-	@Autowired
-	private InvoiceExporter invoiceExporter;
-	//	@Autowired
-//	private LabelService labelService;
-	@Autowired
-	private CountryRepo countryRepo;
+	private final InvoiceExporter invoiceExporter;
+	private final CountryRepo countryRepo;
+	private final CountryRepo countryRepo2;
+	private final CountryRepo countryRepo3;
+	private final CountryRepo countryRepo4;
+	private final CountryRepo countryRepo5;
 
 	public void export(Locale locale) {
 		LabelService labelService = new LabelService(countryRepo, locale);
