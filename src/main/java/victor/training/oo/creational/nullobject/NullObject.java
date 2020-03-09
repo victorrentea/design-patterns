@@ -1,34 +1,60 @@
 package victor.training.oo.creational.nullobject;
 
-import java.util.ArrayList;
+import victor.training.oo.stuff.pretend.Entity;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class NullObject {
-    private List<String> stringuri = new ArrayList<>();
-
     public static void main(String[] args) {
-        parseInts(null);
+        // 1
+        PriceService priceService = new PriceService();
+        Customer customer = new Customer().setCard(new MemberCard(10));
+        double price = priceService.computePrice(100, customer); // TODO null it
+        System.out.println(price);
+
+        // 2
+        System.out.println(parseInts(Arrays.asList("1","2"))); // TODO null it
+        // TODO sum() Tip: CTRL-SHIFT-SPACE in .map..()
     }
 
-    static List<Integer> parseInts(List<String> numere) {
-        return numere.stream().map(Integer::parseInt).collect(Collectors.toList());
+    static List<Integer> parseInts(List<String> numbers) {
+        return numbers.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
 }
 
 
 class MemberCard {
-    public static final MemberCard NO_MEMBER_CARD = new MemberCard();
-    private String email, undeLocuiesti,aiCopii;
+    private String email;
+    private String mailAddress;
+    private boolean hipster;
+    private boolean withChildren;
     private int points;
+    public MemberCard(int points) {
+        this.points = points;
+    }
+    public MemberCard() {}
+
+    public MemberCard setPoints(int points) {
+        this.points = points;
+        return this;
+    }
 
     public int getPoints() {
         return points;
     }
 }
-// @Entity
+
+@Entity
 class Customer {
-    private MemberCard card;// = MemberCard.NO_MEMBER_CARD;
+    private String fullName;
+    private MemberCard card;
+
+    public Customer setCard(MemberCard card) {
+        this.card = card;
+        return this;
+    }
 
     public MemberCard getCard() {
         return card;
@@ -36,9 +62,8 @@ class Customer {
 }
 
 class PriceService {
-    void computePrice(Customer customer) {
-        if (customer.getCard() != null) {
-            System.out.println("aplica reducerea pe " + customer.getCard().getPoints());
-        }
+    public double computePrice(double basePrice, Customer customer) {
+        System.out.println("Using fidelity points: " + customer.getCard().getPoints());
+        return basePrice - customer.getCard().getPoints() / 10d;
     }
 }
