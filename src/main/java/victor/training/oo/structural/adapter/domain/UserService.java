@@ -1,14 +1,9 @@
 package victor.training.oo.structural.adapter.domain;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import victor.training.oo.structural.adapter.infra.LdapUser;
-import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -20,11 +15,14 @@ import static java.util.stream.Collectors.toList;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
-	@Autowired
-	private LdapUserWebserviceClient wsClient;
+	private final LdapServiceAdapter adapter;
+
+	public UserService(LdapServiceAdapter adapter) {
+		this.adapter = adapter;
+	}
 
 	public void importUserFromLdap(String username) {
-		List<User> list = searchByUsername(username);
+		List<User> list = adapter.searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
@@ -37,23 +35,11 @@ public class UserService {
 	}
 	
 	public List<User> searchUserInLdap(String username) {
-		return searchByUsername(username);
+		return adapter.searchByUsername(username);
 	}
 
 	// ZEN SI PACE, YING SI YANG, FENG si Shui
 	// ------------------------------------ o linie --------------
-	// TU cel ce intri, abandoneaza orice speranta
 
-	private User convertUser(LdapUser ldapUser) {
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-	}
-
-	private List<User> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null)
-				.stream()
-				.map(this::convertUser)
-				.collect(toList());
-	}
 
 }
