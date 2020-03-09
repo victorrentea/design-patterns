@@ -1,5 +1,7 @@
 package victor.training.oo.creational.builder;
 
+import java.util.Arrays;
+
 public class CustomerBuilder {
 	private final Customer customer = new Customer();
 
@@ -10,5 +12,15 @@ public class CustomerBuilder {
 
 	public Customer build() {
 		return customer;
+	}
+
+	public CustomerBuilder withLabel(String... labels) {
+		customer.getLabels().addAll(Arrays.asList(labels));
+		return this;
+	}
+
+	public CustomerBuilder withAddress(Address address) {
+		customer.setAddress(address);
+		return this;
 	}
 }
