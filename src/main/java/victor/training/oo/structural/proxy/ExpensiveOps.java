@@ -4,6 +4,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -11,39 +13,38 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
 
 
-class ExpensiveOpsWithCache implements IExpensiveOps {
-	private final IExpensiveOps ops;
-	private final Map<Integer, Boolean> cache = new HashMap<>();
-
-	ExpensiveOpsWithCache(IExpensiveOps ops) {
-		this.ops = ops;
-	}
-
-	public Boolean isPrime(int n) {
-		if (cache.containsKey(n)) {
-			return cache.get(n);
-		}
-		Boolean result = ops.isPrime(n);
-		cache.put(n, result);
-		return result;
-	}
-
-	@Override
-	public String hashAllFiles(File folder) {
-		return ops.hashAllFiles(folder);
-	}
-}
+//class ExpensiveOpsWithCache implements IExpensiveOps {
+//	private final IExpensiveOps ops;
+//	private final Map<Integer, Boolean> cache = new HashMap<>();
+//
+//	ExpensiveOpsWithCache(IExpensiveOps ops) {
+//		this.ops = ops;
+//	}
+//
+//	public Boolean isPrime(int n) {
+//		if (cache.containsKey(n)) {
+//			return cache.get(n);
+//		}
+//		Boolean result = ops.isPrime(n);
+//		cache.put(n, result);
+//		return result;
+//	}
+//
+//	@Override
+//	public String hashAllFiles(File folder) {
+//		return ops.hashAllFiles(folder);
+//	}
+//}
 
 @Slf4j
-public class ExpensiveOps implements IExpensiveOps {
+@Service
+public class ExpensiveOps /*implements IExpensiveOps */{
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	@Override
+	@Cacheable("primes")
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -63,7 +64,6 @@ public class ExpensiveOps implements IExpensiveOps {
 		return true;
 	}
 
-	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
