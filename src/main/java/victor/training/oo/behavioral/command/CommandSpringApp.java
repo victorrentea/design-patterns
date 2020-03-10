@@ -16,11 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import victor.training.oo.stuff.ThreadUtils;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
 @EnableAsync
@@ -59,18 +58,17 @@ class Drinker implements CommandLineRunner {
     public void run(String... args) throws ExecutionException, InterruptedException {
         log.debug("Submitting my order");
 
-        ExecutorService pool = Executors.newFixedThreadPool(2);
+        CompletableFuture<Beer> futureBeer = supplyAsync(() -> barman.pourBeer());
+        CompletableFuture<Vodka> futureVodka = supplyAsync(() -> barman.pourVodka());
 
-        Future<Beer> futureBeer = pool.submit(() -> barman.pourBeer());
-        Future<Vodka> futureVodka = pool.submit(() -> barman.pourVodka());
-        log.debug("Waiting for my drinks...");
 
-        Beer beer = futureBeer.get();
-        Vodka vodka = futureVodka.get();
+        futureBeer.thenCombine(futureVodka, DillyDilly::new)
+                .thenAccept(dilly -> log.debug("Got my order! Thank you lad! " + dilly))
+                .thenRunAsync(() -> log.debug("SMS sotiei : vin acasa, am avut livrare"));
 
-		DillyDilly dilly = new DillyDilly(beer, vodka);
 
-		log.debug("Got my order! Thank you lad! " + dilly);
+        sleep(2000);
+        log.debug("io vand casa...");
     }
 }
 
