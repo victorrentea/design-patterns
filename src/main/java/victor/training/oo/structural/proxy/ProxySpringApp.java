@@ -28,6 +28,9 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
 		log.debug("Oare cu cine vorbesc ? " + ops.getClass());
+//		ExpensiveOpsWithCache withCache = new ExpensiveOpsWithCache(ops);
+//		biznisLogic(new ExpensiveOpsWithCache(ops));
+//		biznisLogic(ops);
 		biznisLogic();
 
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
