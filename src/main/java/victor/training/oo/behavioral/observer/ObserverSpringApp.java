@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.observer;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -26,7 +27,8 @@ public class ObserverSpringApp {
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
-	
+
+
 	@Autowired
 	private ObserverTransaction afterTransaction;
 
@@ -35,37 +37,33 @@ public class ObserverSpringApp {
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
 	@EventListener
-	public void atStartup(ContextRefreshedEvent event) {
+	public void placeOrder(ContextRefreshedEvent event) {
 		log.info("Halo!");
 		publisher.publishEvent(new OrderPlaced(13));
 		// afterTransaction.runInTransaction();
 	}
 }
-
 @Data
 class OrderPlaced {
 	private final long orderId;
 }
-
+// mari si tari
 @Slf4j
 @Service
+@RequiredArgsConstructor
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher publisher;
-
 	@EventListener
-	public void handle(OrderPlaced event) {
-		log.info("Checking stock for products in order " + event.getOrderId());
+	public void handle(OrderPlaced orderPlaced) {
+		log.info("Checking stock for products in order " + orderPlaced.getOrderId());
 		log.info("If something goes wrong - throw an exception");
 	}
 }
-
 @Slf4j
 @Service
 class InvoiceService {
-	
-	public void generateInvoice(long orderId) {
-		log.info("Generating invoice for order id: " + orderId);
+	@EventListener
+	public void generateInvoice(OrderPlaced orderPlaced) {
+		log.info("Generating invoice for order id: " + orderPlaced.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
