@@ -14,7 +14,8 @@ public class Circle implements Shape {
 	public void accept(ShapeVisitor visitor) {
 		visitor.visit(this);
 	}
-	
+
+
 	public int getRadius() {
 		return radius;
 	}

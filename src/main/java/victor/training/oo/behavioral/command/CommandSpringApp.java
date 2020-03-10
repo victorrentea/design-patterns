@@ -60,7 +60,7 @@ class Drinker implements CommandLineRunner {
 
         CompletableFuture<Beer> futureBeer = supplyAsync(() -> barman.pourBeer());
         CompletableFuture<Vodka> futureVodka = supplyAsync(() -> barman.pourVodka());
-
+// la milisecunda asta, cade curentul. ...
 
         futureBeer.thenCombine(futureVodka, DillyDilly::new)
                 .thenAccept(dilly -> log.debug("Got my order! Thank you lad! " + dilly))

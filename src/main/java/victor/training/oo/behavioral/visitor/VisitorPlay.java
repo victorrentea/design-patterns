@@ -21,9 +21,18 @@ public class VisitorPlay {
 		}
 		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
+		AreaCalculatorVisitor areaCalculatorVisitor = new AreaCalculatorVisitor();
+		for (Shape shape : shapes) {
+			shape.accept(areaCalculatorVisitor);
+		}
 
-		System.out.println("Total area: " + 0); // TODO
+		System.out.println("Total area: " + areaCalculatorVisitor.getArea()); // TODO
+
+
+
+
 
 	}
+
 
 }
