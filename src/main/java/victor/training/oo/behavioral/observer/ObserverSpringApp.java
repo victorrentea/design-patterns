@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -52,6 +53,8 @@ class OrderPlaced {
 @Service
 @RequiredArgsConstructor
 class StockManagementService {
+//	private static final Logger log = LoggerFactory.getLogger(StockManagementService.class);
+	@Order(10)
 	@EventListener
 	public void handle(OrderPlaced orderPlaced) {
 		log.info("Checking stock for products in order " + orderPlaced.getOrderId());
@@ -61,6 +64,7 @@ class StockManagementService {
 @Slf4j
 @Service
 class InvoiceService {
+	@Order(20)
 	@EventListener
 	public void generateInvoice(OrderPlaced orderPlaced) {
 		log.info("Generating invoice for order id: " + orderPlaced.getOrderId());
