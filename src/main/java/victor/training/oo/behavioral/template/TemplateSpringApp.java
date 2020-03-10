@@ -14,7 +14,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 	}
 
 	public void run(String... args) {
+		placeOrder();
+		shipOrder();
+	}
+
+	private void placeOrder() {
+		// other logic
 		new EmailService().sendOrderReceivedEmail("a@b.com");
+	}
+
+	private void shipOrder() {
+		// other logic
+		// TODO send order shipped email 'similar to how send order received was implemented'
 	}
 }
 
