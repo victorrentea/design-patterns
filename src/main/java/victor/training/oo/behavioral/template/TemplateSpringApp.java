@@ -1,11 +1,9 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -15,15 +13,11 @@ public class TemplateSpringApp implements CommandLineRunner {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
 
-	@Autowired
-	private EmailService service;
-	
 	public void run(String... args) {
-		service.sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com");
 	}
 }
 
-@Service
 class EmailService {
 
 	public void sendOrderReceivedEmail(String emailAddress) {
