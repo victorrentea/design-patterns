@@ -71,6 +71,9 @@ class Customer {
     public Optional<String> getPrefix() {
         return Optional.ofNullable(prefix);
     }
+
+    public Optional<MemberCard> getCardOpt() {
+        return Optional.ofNullable(card);}
 }
 
 class PriceService {
@@ -99,7 +102,7 @@ class PriceService {
         if (customer.getCard() == null) {
             return basePrice;
         }
-        return customer.getCard().computePrice(basePrice);
+        return customer.getCardOpt().map(card -> card.computePrice(basePrice)).orElse(basePrice); // TODO copiaza algo default peste tot.
     }
 
 }
