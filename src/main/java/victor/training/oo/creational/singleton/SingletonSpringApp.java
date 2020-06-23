@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
+		// simulam HTTP requests:
 		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
 		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 	}
@@ -59,23 +61,24 @@ class OrderExporter  {
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(locale);
 	}
 }
-
 @Slf4j
+//@Scope("prototype")
 @Service
 class InvoiceExporter {
 	@Autowired
 	private LabelService labelService;
-	
-	public void exportInvoice() {
+	public void exportInvoice(Locale locale) {
+		System.out.println("Lab ser = " + labelService);
+		labelService.load(locale);
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
-
 @Slf4j
 @Service
+@Scope("prototype") // se va purta exact ca @Scope("request") in context web
 @RequiredArgsConstructor
 class LabelService {
 	private final CountryRepo countryRepo;
