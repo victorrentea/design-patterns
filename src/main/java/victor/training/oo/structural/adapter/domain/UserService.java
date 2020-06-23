@@ -21,7 +21,7 @@ import java.util.List;
 // ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
 public class UserService {
    @Autowired
-   private LdapUserWebserviceAdapter ldapAdapter;
+   private ILdapUserWebserviceAdapter ldapAdapter;
 
    public void importUserFromLdap(String username) {
       List<User> list = ldapAdapter.searchByUsername(username);
