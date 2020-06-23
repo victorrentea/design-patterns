@@ -55,7 +55,7 @@ class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
-	private LabelService labelService;
+	private LabelService labelService; // @AUtowired a unui @Service @Scope(prototype sau request sau session) intrun singleton === BUG in prod.
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
