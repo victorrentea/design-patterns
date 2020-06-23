@@ -55,7 +55,7 @@ public class Magie {
       System.out.println(mate.suma(3,1));
    }
 }
-final class Mate {
+class Mate {
    public int suma(int a, int b) {
       return a + b;
    }
