@@ -32,7 +32,7 @@ public class NullObject {
 }
 
 
-class MemberCard {
+class MemberCard implements IMemberCard {
     private String email;
     private String mailAddress;
     private boolean hipster;
@@ -43,7 +43,7 @@ class MemberCard {
     }
     public MemberCard() {}
 
-    public MemberCard setPoints(int points) {
+    public IMemberCard setPoints(int points) {
         this.points = points;
         return this;
     }
@@ -52,12 +52,18 @@ class MemberCard {
         return points;
     }
 
+    @Override
     public double computePrice(double basePrice) {
         System.out.println("Using fidelity points: " + points);
         return basePrice - points / 10d;
     }
 }
-
+class NoMemberCard implements IMemberCard {
+    @Override
+    public double computePrice(double basePrice) {
+        return basePrice;
+    }
+}
 @Entity
 class Customer {
     @Getter @Setter
@@ -66,14 +72,21 @@ class Customer {
     // e nullable in db
     private String prefix;
     @Getter @Setter
-    private MemberCard card;
+    private IMemberCard card =  new NoMemberCard(); // = new MemberCard(0puncte);
 
     public Optional<String> getPrefix() {
-        return Optional.ofNullable(prefix);
+//        if (prefix == null) {
+//            return "";
+//        }
+        return Optional.ofNullable(prefix);//.orElse("");
     }
 
-    public Optional<MemberCard> getCardOpt() {
+    public Optional<IMemberCard> getCardOpt() {
         return Optional.ofNullable(card);}
+
+    public IMemberCard getCard() {
+        return card;
+    }
 }
 
 class PriceService {
@@ -81,21 +94,21 @@ class PriceService {
         System.out.println("Hello " + customer.getPrefix().orElse("") + " " + customer.getFullName());
     }
     public double computePrice(double basePrice, Customer customer) {
-        if (customer.getCard() == null) {
-            return basePrice;
-        }
+//        if (customer.getCard() == null) {
+//            return basePrice;
+//        }
         return customer.getCard().computePrice(basePrice);
     }
     public double computePrice2(double basePrice, Customer customer) {
-        if (customer.getCard() == null) {
-            return basePrice;
-        }
+//        if (customer.getCard() == null) {
+//            return basePrice;
+//        }
         return customer.getCard().computePrice(basePrice);
     }
     public double computePrice3(double basePrice, Customer customer) {
-        if (customer.getCard() == null) {
-            return basePrice;
-        }
+//        if (customer.getCard() == null) {
+//            return basePrice;
+//        }
         return customer.getCard().computePrice(basePrice);
     }
     public double computePrice4(double basePrice, Customer customer) {
