@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -73,6 +75,12 @@ class OrderExporter  {
 
 		// back to the roots: OOP tata
 		LabelService labelService = new LabelService(countryRepo);
+//		ArrayList<String> strings = new ArrayList<>();
+		List<String> strings = new ArrayList<>(); // e mai scurt List ca ArrayList
+
+//		strings.stream();
+//		Writer writer = new StringWriter();
+
 
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
