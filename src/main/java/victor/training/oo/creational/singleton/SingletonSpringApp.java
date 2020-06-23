@@ -37,7 +37,8 @@ public class SingletonSpringApp implements CommandLineRunner{
 	
 	@Autowired 
 	private OrderExporter exporter;
-	
+	@Autowired
+	private ApplicationContext springu;
 	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
 	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
@@ -45,23 +46,24 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
 		// simulam HTTP requests:
-		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
-		new Thread(() -> exporter.export(Locale.FRENCH)).start();
+		new Thread(() -> springu.getBean(OrderExporter.class).export(Locale.ENGLISH)).start();
+		new Thread(() -> springu.getBean(OrderExporter.class).export(Locale.FRENCH)).start();
 	}
 }
 
 @Slf4j
 @Service
+@Scope("prototype")
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-//	@Autowired
-//	private LabelService labelService; // @AUtowired a unui @Service @Scope(prototype sau request sau session) intrun singleton === BUG in prod.
+	@Autowired
+	private LabelService labelService; // @AUtowired a unui @Service @Scope(prototype sau request sau session) intrun singleton === BUG in prod.
 
 	@Autowired
 	private ApplicationContext springu;
 	public void export(Locale locale) {
-		LabelService labelService = springu.getBean(LabelService.class);
+//		LabelService labelService = springu.getBean(LabelService.class);
 
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
@@ -70,7 +72,7 @@ class OrderExporter  {
 	}
 }
 @Slf4j
-//@Scope("prototype")
+@Scope("prototype")
 @Service
 class InvoiceExporter {
 	public void exportInvoice(LabelService labelService) {
