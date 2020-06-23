@@ -86,11 +86,12 @@ class InvoiceExporter {
 	}
 }
 // Spring (orice DI Framework) == Anti OOP
+//@Service
 @Slf4j
 @RequiredArgsConstructor
 class LabelService {
 	private final CountryRepo countryRepo;
-	private Map<String, String> countryNames;
+	private Map<String, String> countryNames; // -in ap obisnuite, pe singletoane @SErvice nu AI VOIE sa ai campuri cu date, specifice unui anumit request.
 
 	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
