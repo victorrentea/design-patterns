@@ -17,6 +17,7 @@ public class ServiceLocatorPlay {
 // In app enterprise tipic se separa: (adica exact pe dos cum zice OOP)
 // 1 - clasele de date @Entity
 // 2 - clasele cu logica @Service
+
 // un design pur "separate logic from data" - zice ca nu tre sa ai date de loc in clasele cu logica.
 // --> deci neavand date in ele, o singura instanta este suficienta --> Singleton
 

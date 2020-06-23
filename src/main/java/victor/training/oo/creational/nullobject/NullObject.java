@@ -32,6 +32,7 @@ public class NullObject {
 }
 
 
+@Entity
 class MemberCard implements IMemberCard {
     private String email;
     private String mailAddress;
@@ -57,6 +58,7 @@ class MemberCard implements IMemberCard {
         System.out.println("Using fidelity points: " + points);
         return basePrice - points / 10d;
     }
+
 }
 class NoMemberCard implements IMemberCard {
     @Override
@@ -74,6 +76,9 @@ class Customer {
     @Getter @Setter
     private IMemberCard card =  new NoMemberCard(); // = new MemberCard(0puncte);
 
+    public String toExportFormat() {
+        return fullName + ";" + card;
+    }
     public Optional<String> getPrefix() {
 //        if (prefix == null) {
 //            return "";
