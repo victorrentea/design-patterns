@@ -1,7 +1,13 @@
 package victor.training.oo.creational.servicelocator;
 
+import victor.training.oo.stuff.ThreadUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ServiceLocatorPlay {
    public static void main(String[] args) {
+      B.getInstance().getDateScumpeDinBaza(); // foarte usor sa obtii instanta de B de **oriunde**
       new A().m();
    }
 }
@@ -15,9 +21,20 @@ public class ServiceLocatorPlay {
 // --> deci neavand date in ele, o singura instanta este suficienta --> Singleton
 
 class ServiceLocator {
-//   public static B createB() {
-//      return new B(new C()/*, new D(new DA()), new E()*/);
-//   }
+   static Map<Class<?>, Object> registry = new HashMap<>();
+   static {
+      registry.put(C.class, new C());
+      // din teste, puteai hackui, suprascrie, sa decorezi
+      registry.put(C.class, new C() {
+         @Override
+         public void p() {
+            //fake
+         }
+      });
+   }
+   public static C createC() {
+      return (C) registry.get(C.class);
+   }
 }
 
 class A2{
@@ -38,6 +55,7 @@ class A {
       String s = b.n();
       System.out.println(s);
    }
+//      BEAger beAger;
    public void m2() {
 //      B b = new B(new C(), new D(new DA()), new E());
 //      B b = B.getInstance();
@@ -46,9 +64,31 @@ class A {
    }
 }
 
+class BEager {
+   public final static BEager INSTANCE = new BEager();
+   private BEager() {
+      System.out.println("Eager singleton: constr ruleaza la class load (adica prima data cand referi numele clasei de undeva)");
+      System.out.println("Problema: e posibil sa ruleze prea devreme.");
+
+//      jdbc.query(...) posibil sa crape pentru ca inca nu s-a incarcat si initializat coresp conex cu DB
+   }
+}
+
 class B {
-   private B() {}
-//   private final static B b = new B();
+   private String dateScumpeDinBaza;
+   private B() {
+      System.out.println("Constr ruleaza lazy la primul apel al lui getInstance");
+      System.out.println("Calling DB");
+      dateScumpeDinBaza = "din DB";
+      ThreadUtils.sleep(2000);
+      System.out.println("results back");
+   }
+
+   public String getDateScumpeDinBaza() {
+      return dateScumpeDinBaza;
+   }
+
+   //   private final static B b = new B();
 
    private static B INSTANCE;
    public  static B getInstance() {
@@ -64,21 +104,24 @@ class B {
       }
    }
 
-   private C c /*= new C()*/    /* similar cu = C.getInstance()*/;
+   private C c = ServiceLocator.createC(); /*= new C()*/    /* similar cu = C.getInstance()*/;
 //   private D d;
 //   private E e;
 //   public B(C c) {
 //      this.c = c;
 //   }
-   void setC(C c) {
-      this.c = c;
-   }
+//   void setC(C c) {
+//      this.c = c;
+//   }
    public String n() {
       // 300 linii de cod
       c.p();
       return "x";
    }
 
+   public synchronized void reportPerson(String person) {
+      //call WS exactly once in parallel
+   }
 }
 
 class C {
