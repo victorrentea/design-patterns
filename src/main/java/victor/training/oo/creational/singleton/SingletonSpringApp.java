@@ -1,5 +1,6 @@
 package victor.training.oo.creational.singleton;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -41,8 +42,8 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
 	public void run(String... args) throws Exception {
-		exporter.export(Locale.ENGLISH);
-		exporter.export(Locale.FRENCH);
+		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
+		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 	}
 }
 
@@ -75,15 +76,13 @@ class InvoiceExporter {
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 class LabelService {
-	private CountryRepo countryRepo;
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
+	private final CountryRepo countryRepo;
 
 	private Map<String, String> countryNames;
-	
-//	@PostConstruct
+
+	//	@PostConstruct
 	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
