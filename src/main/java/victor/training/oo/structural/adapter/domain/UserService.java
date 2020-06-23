@@ -6,22 +6,32 @@ import org.springframework.stereotype.Service;
 import victor.training.oo.structural.adapter.infra.LdapUser;
 import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
+// ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE ZEN SI PACE
 public class UserService {
 	@Autowired
 	private LdapUserWebserviceClient wsClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
+		List<User> list = searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		//convert
-		User user = convertUser(list.get(0));
+		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -30,12 +40,7 @@ public class UserService {
 	}
 	
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			results.add(convertUser(ldapUser));
-		}
-		return results;
+		return searchByUsername(username);
 	}
 
 
@@ -46,8 +51,11 @@ public class UserService {
 		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 	}
 
-	private List<LdapUser> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
+	private List<User> searchByUsername(String username) {
+		return wsClient.search(username.toUpperCase(), null, null)
+				.stream()
+				.map(this::convertUser)
+				.collect(Collectors.toList());
 	}
 
 }
