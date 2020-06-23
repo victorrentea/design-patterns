@@ -15,7 +15,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		SpringApplication.run(ProxySpringApp.class, args);
 	}
 
-	@Autowired IExpensiveOps expensiveOps;
+	@Autowired ExpensiveOps expensiveOps;
 	
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
