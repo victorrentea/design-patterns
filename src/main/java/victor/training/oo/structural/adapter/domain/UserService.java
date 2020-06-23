@@ -16,14 +16,13 @@ public class UserService {
 	private LdapUserWebserviceClient wsClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
+		List<LdapUser> list = searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-		
+		//convert
+		User user = convertUser(list.get(0));
+
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
 		}
@@ -31,14 +30,24 @@ public class UserService {
 	}
 	
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
+		List<LdapUser> list = searchByUsername(username);
 		List<User> results = new ArrayList<>();
 		for (LdapUser ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
+			results.add(convertUser(ldapUser));
 		}
 		return results;
 	}
-	
+
+
+	//  ------------------- o linie ----~~~~~~~~~===========
+
+	private User convertUser(LdapUser ldapUser) {
+		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
+		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
+	}
+
+	private List<LdapUser> searchByUsername(String username) {
+		return wsClient.search(username.toUpperCase(), null, null);
+	}
+
 }
