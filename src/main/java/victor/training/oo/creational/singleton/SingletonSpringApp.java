@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
@@ -54,25 +55,26 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	@Autowired
 	private InvoiceExporter invoiceExporter;
-	@Autowired
-	private LabelService labelService; // @AUtowired a unui @Service @Scope(prototype sau request sau session) intrun singleton === BUG in prod.
+//	@Autowired
+//	private LabelService labelService; // @AUtowired a unui @Service @Scope(prototype sau request sau session) intrun singleton === BUG in prod.
 
+	@Autowired
+	private ApplicationContext springu;
 	public void export(Locale locale) {
+		LabelService labelService = springu.getBean(LabelService.class);
+
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice(locale);
+		log.debug("Origin Country: " + labelService.getCountryName("rO"));
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 @Slf4j
 //@Scope("prototype")
 @Service
 class InvoiceExporter {
-	@Autowired
-	private LabelService labelService;
-	public void exportInvoice(Locale locale) {
+	public void exportInvoice(LabelService labelService) {
 		System.out.println("Lab ser = " + labelService);
-		labelService.load(locale);
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
