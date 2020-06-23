@@ -53,16 +53,20 @@ public class SingletonSpringApp implements CommandLineRunner{
 @Slf4j
 @Service
 @Scope("prototype")
+@RequiredArgsConstructor
 class OrderExporter  {
-	@Autowired
-	private InvoiceExporter invoiceExporter;
+//	@Autowired
+	private final InvoiceExporter invoiceExporter;
 //	@Autowired
 //	private LabelService labelService; // @AUtowired a unui @Service @Scope(prototype sau request sau session) intrun singleton === BUG in prod.
 
 //	@Autowired
 //	private ApplicationContext springu;
-	@Autowired
-	private CountryRepo countryRepo; // imi injectez eu dependintele ei :( #eroina mea
+//	@Autowired
+	private final CountryRepo countryRepo; // imi injectez eu dependintele ei :( #eroina mea
+
+//	@Value("${key.from.property.file}")
+//	private String url;
 
 	public void export(Locale locale) {
 //		LabelService labelService = springu.getBean(LabelService.class);
@@ -84,11 +88,26 @@ class InvoiceExporter {
 		System.out.println("Lab ser = " + labelService);
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
+
+	// method injection
+//	private TransactionTemplate txTemplate;
+//	@Autowired
+//	public void initTxTemplate(PlatformTransactionManager platformTransactionManager) {
+//		txTemplate = new TransactionTemplate(platformTransactionManager);
+//		txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	}
+//	public void m() {
+//		txTemplate.execute(status -> {
+//			// in tranzactie
+//			return null;
+//		});
+//	}
 }
 // Spring (orice DI Framework) == Anti OOP
 //@Service
 @Slf4j
 @RequiredArgsConstructor
+//@AllArgsConstructor()
 class LabelService {
 	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames; // -in ap obisnuite, pe singletoane @SErvice nu AI VOIE sa ai campuri cu date, specifice unui anumit request.
