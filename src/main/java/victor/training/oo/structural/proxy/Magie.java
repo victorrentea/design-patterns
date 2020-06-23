@@ -24,6 +24,11 @@ public class Magie {
           new Class<?>[]{Mate.class},
           h);
 
+      businessLogic(mate);
+   }
+
+   private static void businessLogic(Mate mate) {
+      System.out.println("Eu oare cu ce instanta de mate lucrez ? " + mate.getClass());
       System.out.println(mate.suma(1,1));
       System.out.println(mate.suma(2,0));
       System.out.println(mate.suma(3,-1));
