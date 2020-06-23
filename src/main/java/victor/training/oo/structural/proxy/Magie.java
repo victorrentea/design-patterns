@@ -33,6 +33,16 @@ public class Magie {
       };
       Mate mate = (Mate) Enhancer.create(Mate.class, callback);
 
+      // pe sub, CGLIB face exact asta:
+//      Mate mate = new Mate() {
+//         @Override
+//         public int suma(int a, int b) {
+//            System.out.println("Cheama clientu metoda " + "suma" + " cu param " + a  + "," + b);
+//            return mateImpl.suma(a, b);
+//         }
+      // TODO celelalte metode
+//      };
+
       businessLogic(mate);
    }
 
@@ -45,7 +55,7 @@ public class Magie {
       System.out.println(mate.suma(3,1));
    }
 }
-class Mate {
+final class Mate {
    public int suma(int a, int b) {
       return a + b;
    }
