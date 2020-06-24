@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 @SpringBootApplication
@@ -64,7 +63,7 @@ class CustomsService {
       List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new CNTaxCalculator(), new EUTaxCalculator());
 
       for (TaxCalculator calculator : calculators) {
-         if (calculator.getCountryNames().contains(originCountry)) {
+         if (calculator.isApplicable(originCountry)) {
             return calculator;
          }
       }
@@ -74,8 +73,8 @@ class CustomsService {
 
 interface TaxCalculator {
    double calculate(double tobaccoValue, double regularValue);
-   Collection<String> getCountryNames();
-//   boolean isApplicable(String countryName);
+//   Collection<String> getCountryNames();
+   boolean isApplicable(String countryName);
 }
 
 class CNTaxCalculator implements TaxCalculator {
@@ -86,9 +85,10 @@ class CNTaxCalculator implements TaxCalculator {
       // Marcel a lasat si el aici 20 linii de cod
       return tobaccoValue + regularValue;
    }
+
    @Override
-   public Collection<String> getCountryNames() {
-      return Arrays.asList("CN");
+   public boolean isApplicable(String countryName) {
+      return "CN".equals(countryName);
    }
 }
 
@@ -96,9 +96,10 @@ class EUTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) { // loss of specificity. luam un param de-a-n boulea
       return tobaccoValue / 3;
    }
+
    @Override
-   public Collection<String> getCountryNames() {
-      return Arrays.asList("FR","RO","ES");
+   public boolean isApplicable(String countryName) {
+      return Arrays.asList("FR","RO","ES").contains(countryName);
    }
 }
 
@@ -109,8 +110,9 @@ class UKTaxCalculator implements TaxCalculator {
       // Marcel a lasat si el aici 20 linii de cod
       return tobaccoValue / 2 + regularValue;
    }
+
    @Override
-   public Collection<String> getCountryNames() {
-      return Arrays.asList("UK");
+   public boolean isApplicable(String countryName) {
+      return "UK".equals(countryName);
    }
 }
