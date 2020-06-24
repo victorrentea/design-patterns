@@ -22,21 +22,28 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
    @Autowired
    private EmailSender emailSender;
+   @Autowired
+   private EmailTemplates emailTemplates;
 
    private void placeOrder() {
       // other logic
-      emailSender.sendEmail("a@b.com", new OrderReceivedEmailSender());
+      emailSender.sendEmail("a@b.com", emailTemplates::composeOrderReceivedEmail);
    }
 
    private void shipOrder() {
       // other logic
-      emailSender.sendEmail("a@b.com", new OrderShippedEmailSender());
+      emailSender.sendEmail("a@b.com", emailTemplates::composeOrderShippedEmail);
       // TODO send order shipped email 'similar to how send order received was implemented'
    }
 }
 
 @Service
 class EmailSender {
+   @FunctionalInterface //-- imi place
+   // pero no me gusta default int x () { reutrn 1;}
+   interface EmailComposer {
+      void composeEmail(Email email);
+   }
    public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
@@ -51,21 +58,14 @@ class EmailSender {
       }
    }
 }
-@FunctionalInterface //-- imi place
-// pero no me gusta default int x () { reutrn 1;}
-interface EmailComposer {
-   void composeEmail(Email email);
-}
+
 @Service
-class OrderReceivedEmailSender implements EmailComposer {
-   public void composeEmail(Email email) {
+class EmailTemplates {
+   public void composeOrderReceivedEmail(Email email) {
       email.setSubject("Order Received");
       email.setBody("Thank you for your order");
    }
-}
-@Service
-class OrderShippedEmailSender implements EmailComposer {
-   public void composeEmail(Email email) {
+   public void composeOrderShippedEmail(Email email) {
       email.setSubject("Order Shipped");
       email.setBody("Ti-am trimis. Speram sa ajunga * de data asta");
    }
