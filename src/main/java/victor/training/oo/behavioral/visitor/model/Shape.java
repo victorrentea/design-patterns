@@ -4,4 +4,7 @@ import victor.training.oo.behavioral.visitor.ShapeVisitor;
 
 public interface Shape {
 	void accept(ShapeVisitor visitor);
+
+
+	double area();
 }

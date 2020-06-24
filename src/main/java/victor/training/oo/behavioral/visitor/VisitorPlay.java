@@ -14,15 +14,19 @@ public class VisitorPlay {
 				new Square(10), 
 				new Circle(5), 
 				new Square(5));
+//
+//		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
+//		for (Shape shape : shapes) {
+//			shape.accept(perimeterCalculator);
+//		}
+//		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
-		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
+		double area = 0;
 		for (Shape shape : shapes) {
-			shape.accept(perimeterCalculator);
+			area += shape.area();
 		}
-		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
-
-		System.out.println("Total area: " + 0); // TODO
+		System.out.println("Total area: " + area); // TODO
 
 	}
 
