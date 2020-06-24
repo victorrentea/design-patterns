@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,15 @@ import java.security.MessageDigest;
 
 @Slf4j
 @Service
-public class ExpensiveOps /*implements IExpensiveOps */{
+//@Scope(proxyMode = ScopedProxyMode.INTERFACES)
+@LoggedClass
+public class ExpensiveOps implements IExpensiveOps {
 	
 	private static final BigDecimal TWO = new BigDecimal("2");
 
 	@Cacheable("primes")
-	public Boolean isPrime(int n) {
+	@LoggedMethod
+	public /*final*/ Boolean isPrime(int n) {
 		new RuntimeException().printStackTrace();
 		log.debug("Computing isPrime({})", n);
 
@@ -43,9 +47,18 @@ public class ExpensiveOps /*implements IExpensiveOps */{
 		return true;
 	}
 
+
+
+	@Autowired
+	private IExpensiveOps myselfProxied;
+
 	@SneakyThrows
 	@Cacheable("foldersX")
 	public String hashAllFiles(File folder) {
+
+		log.debug("10000169 is prime ? ");
+		log.debug("Got: " + myselfProxied.isPrime(10000169) + "\n");
+
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
@@ -59,6 +72,7 @@ public class ExpensiveOps /*implements IExpensiveOps */{
 	    return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
 
+	@Override
 	@CacheEvict("foldersX")
 	public void killFolderCache(File file) {
 		// EMPTY. Magic! Do not touch!

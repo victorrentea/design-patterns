@@ -1,23 +1,31 @@
 package victor.training.oo.structural.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 @Slf4j
-@EnableCaching
+@EnableCaching(order = 2)
 @SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(ProxySpringApp.class, args);
 	}
 
-	@Autowired ExpensiveOps expensiveOps;
+	@Autowired IExpensiveOps expensiveOps;
 	
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
@@ -26,7 +34,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-//		IExpensiveOps ops = new ExpensiveOps();
+//		IExpensiveOps expensiveOps = new ExpensiveOps();
 //		ops = new ExpensiveOpsWithCache(ops);
 
 		log.debug("Oare ce mi-o dat Springu pe post de expensiveOps? " + expensiveOps.getClass());
@@ -51,4 +59,27 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Got: " + expensiveOps.hashAllFiles(new File(".")) + "\n");
 	}
 	
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedClass {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {}
+
+@Component
+@Aspect
+@Slf4j
+@Order(1)
+class LoggingInterceptor {
+//	@Around("execution(* victor.training..*.*(..))") // aplicat aspectul pe toate clasele din pachetul X - periculos. tinde sa de nervi
+//	@Around("execution(* *(..)) && @within(victor.training.oo.structural.proxy.LoggedClass)") // adnotari pe clase
+	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)") // adnotari pe clase
+	public Object logCall(ProceedingJoinPoint pjp) throws Throwable {
+		log.debug("Calling method {} with params {}",
+			pjp.getSignature().getName(),
+			Arrays.toString(pjp.getArgs())
+			);
+		Object result = pjp.proceed();
+		return result;
+	}
 }
