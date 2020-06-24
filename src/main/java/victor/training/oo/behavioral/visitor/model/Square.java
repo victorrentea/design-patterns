@@ -17,7 +17,9 @@ public class Square implements Shape {
 
 	@Override
 	public double area() {
-		return edge * edge;
+
+//		return edge * edge;
+		return ShapeUtils.squareArea(this);
 	}
 
 	public int getEdge() {

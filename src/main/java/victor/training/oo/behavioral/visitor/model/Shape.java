@@ -7,4 +7,6 @@ public interface Shape {
 
 
 	double area();
+
+//	String drawInAsciiArt(); // implem acestei functii in subtipuri va necesita 80% (20-100linii) de cod comun
 }

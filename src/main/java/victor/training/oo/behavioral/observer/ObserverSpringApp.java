@@ -93,6 +93,9 @@ class StockManagementService {
          throw new IllegalStateException("N-am");
       }
 		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
+
+//		publisher.publishEvent(new GenerateInvoiceCommand(event.getOrderId()));
+
 //      return new OrderInStockEvent(event.getOrderId()); // idem behavior
    }
 }

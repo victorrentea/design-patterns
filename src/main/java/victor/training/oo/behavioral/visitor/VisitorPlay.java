@@ -15,18 +15,25 @@ public class VisitorPlay {
 				new Circle(5), 
 				new Square(5));
 //
-//		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
-//		for (Shape shape : shapes) {
-//			shape.accept(perimeterCalculator);
-//		}
-//		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
-
-		double area = 0;
+		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
 		for (Shape shape : shapes) {
-			area += shape.area();
+			shape.accept(perimeterCalculator);
+		}
+		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
+
+		// implem de Interviu, OOP geek
+//		double area = 0;
+//		for (Shape shape : shapes) {
+//			area += shape.area();
+//		}
+
+		// implem din Infern.
+		AreaCalculatorVisitor areaVisitor = new AreaCalculatorVisitor();
+		for (Shape shape : shapes) {
+			shape.accept(areaVisitor);
 		}
 
-		System.out.println("Total area: " + area); // TODO
+		System.out.println("Total area: " + areaVisitor.getTotalArea()); // TODO
 
 	}
 
