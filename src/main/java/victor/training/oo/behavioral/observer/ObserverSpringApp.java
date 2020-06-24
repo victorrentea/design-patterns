@@ -76,15 +76,18 @@ class OrderInStockEvent {
 @Service
 @Slf4j
 class StockManagementService {
-//	@Autowired
-//	private ApplicationEventPublisher publisher;
+	@Autowired
+	private ApplicationEventPublisher publisher;
 
    @EventListener
-   public OrderInStockEvent checkStock(OrderPlacedEvent event) { // NOSONAR
+   public void checkStock(OrderPlacedEvent event) { // NOSONAR
       log.debug("Checking stock for products in order " + event.getOrderId());
       log.debug("If something goes wrong - throw an exception");
-//		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
-      return new OrderInStockEvent(event.getOrderId()); // idem behavior
+		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
+      if (true) {
+         throw new IllegalStateException("N-am");
+      }
+//      return new OrderInStockEvent(event.getOrderId()); // idem behavior
    }
 }
 
