@@ -60,15 +60,21 @@ public class ObserverSpringApp {
 //	private InvoiceService invoiceService;
 }
 
+// event package
 @Value
 class OrderPlacedEvent {
    long orderId;
+//   long customerId;
+//   long discountCouponId;
 }
 
 @Value
 class OrderInStockEvent {
    long orderId;
 }
+// ------------
+
+
 
 // "record" java 14
 //record OrderPlacedEvent2(long orderId) {}
@@ -83,10 +89,10 @@ class StockManagementService {
    public void checkStock(OrderPlacedEvent event) { // NOSONAR
       log.debug("Checking stock for products in order " + event.getOrderId());
       log.debug("If something goes wrong - throw an exception");
-		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
       if (true) {
          throw new IllegalStateException("N-am");
       }
+		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
 //      return new OrderInStockEvent(event.getOrderId()); // idem behavior
    }
 }
