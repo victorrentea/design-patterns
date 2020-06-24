@@ -3,6 +3,7 @@ package victor.training.oo.behavioral.command;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,10 +32,10 @@ public class CommandSpringApp {
 	}
 
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
+	public ThreadPoolTaskExecutor executor(@Value("${barman.count:2}") int barmanCount) {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
+		executor.setCorePoolSize(barmanCount);
+		executor.setMaxPoolSize(barmanCount);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("barman-");
 		executor.initialize();
