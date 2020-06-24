@@ -1,12 +1,8 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -35,13 +31,40 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
+		TaxCalculator calculator;
+		switch (originCountry) {
+		case "UK": calculator = new UKTaxCalculator(); break;
+		case "CN": calculator = new CNTaxCalculator(); break;
+		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
+		case "RO": calculator = new EUTaxCalculator(); break;
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		}
+		return calculator.calculate(tobaccoValue, regularValue);
+	}
+}
+interface TaxCalculator {
+	double calculate(double tobaccoValue, double regularValue);
+}
+class CNTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		// Maricica inca 15 linii
+		// Maricica inca 15 linii
+		// Maricica inca 15 linii
+		// Marcel a lasat si el aici 20 linii de cod
+		return tobaccoValue + regularValue;
+	}
+}
+class EUTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) { // loss of specificity. luam un param de-a-n boulea
+		return tobaccoValue/3;
+	}
+}
+class UKTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		// Marcel a lasat si el aici 20 linii de cod
+		// Marcel a lasat si el aici 20 linii de cod
+		// Marcel a lasat si el aici 20 linii de cod
+		return tobaccoValue/2 + regularValue;
 	}
 }
