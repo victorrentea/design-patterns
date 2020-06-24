@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,8 @@ public class StrategySpringApp implements CommandLineRunner {
           .run(args);
    }
 
+   @Autowired
+   private CustomsService service;
 
    @Autowired
    private ConfigProvider configProvider;
@@ -26,7 +29,7 @@ public class StrategySpringApp implements CommandLineRunner {
    // TODO [4] ConfigProvider: selected based on environment props, with Spring
    public void run(String... args) {
       System.out.println(configProvider.getProperties());
-      CustomsService service = new CustomsService();
+//      CustomsService service = new CustomsService();
       System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
       System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
       System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -35,6 +38,7 @@ public class StrategySpringApp implements CommandLineRunner {
    }
 }
 
+@Service
 class CustomsService {
    public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
       TaxCalculator calculator = selectTaxCalculator(originCountry);
@@ -60,7 +64,7 @@ class CustomsService {
 //      }
 
       // chain of responsibility
-      List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new CNTaxCalculator(), new EUTaxCalculator());
+//      List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new CNTaxCalculator(), new EUTaxCalculator());
 
       for (TaxCalculator calculator : calculators) {
          if (calculator.isApplicable(originCountry)) {
@@ -69,6 +73,10 @@ class CustomsService {
       }
       throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
    }
+   @Autowired
+   List<TaxCalculator> calculators;
+//   @Autowired
+//   Optional<ConfigProvider> configProvider;
 }
 
 interface TaxCalculator {
@@ -76,7 +84,7 @@ interface TaxCalculator {
 //   Collection<String> getCountryNames();
    boolean isApplicable(String countryName);
 }
-
+@Service
 class CNTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       // Maricica inca 15 linii
@@ -91,7 +99,7 @@ class CNTaxCalculator implements TaxCalculator {
       return "CN".equals(countryName);
    }
 }
-
+@Service
 class EUTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) { // loss of specificity. luam un param de-a-n boulea
       return tobaccoValue / 3;
@@ -102,7 +110,7 @@ class EUTaxCalculator implements TaxCalculator {
       return Arrays.asList("FR","RO","ES").contains(countryName);
    }
 }
-
+@Service
 class UKTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       // Marcel a lasat si el aici 20 linii de cod
