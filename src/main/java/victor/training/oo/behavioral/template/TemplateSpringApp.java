@@ -20,19 +20,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com", true);
+		new EmailService().sendOrderReceivedEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com", false);
+		new Hackareala().sendOrderReceivedEmail("a@b.com");
 		// TODO send order shipped email 'similar to how send order received was implemented'
 	}
 }
 
 class EmailService {
-
-	public void sendOrderReceivedEmail(String emailAddress, boolean receivedEmail) {
+	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -40,18 +39,24 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			if (receivedEmail) {
-				email.setSubject("Order Received");
-				email.setBody("Thank you for your order");
-			} else {
-				email.setSubject("Order Shipped");
-				email.setBody("Ti-am trimis. Speram sa ajunga * de data asta");
-			}
+			p(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
 
+	public void p(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+class Hackareala extends EmailService {
+	@Override
+	public void p(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("Ti-am trimis. Speram sa ajunga * de data asta");
+	}
 }
 
 class EmailContext {
