@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Random;
@@ -29,8 +30,18 @@ public class TemplateSpringApp implements CommandLineRunner {
       new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
       // TODO send order shipped email 'similar to how send order received was implemented'
    }
+
+//   @Bean
+//   public EmailSender orderShippedSender() {
+//      return new EmailSender(new OrderShippedEmailSender());
+//   }
+//   @Bean
+//   public EmailSender orderReceivedSender() {
+//      return new EmailSender(new OrderReceivedEmailSender());
+//   }
 }
 
+//@Service
 class EmailSender {
    private final EmailComposer composer;
 
@@ -57,14 +68,14 @@ class EmailSender {
 interface EmailComposer {
    void composeEmail(Email email);
 }
-
+@Service
 class OrderReceivedEmailSender implements EmailComposer {
    public void composeEmail(Email email) {
       email.setSubject("Order Received");
       email.setBody("Thank you for your order");
    }
 }
-
+@Service
 class OrderShippedEmailSender implements EmailComposer {
    public void composeEmail(Email email) {
       email.setSubject("Order Shipped");
