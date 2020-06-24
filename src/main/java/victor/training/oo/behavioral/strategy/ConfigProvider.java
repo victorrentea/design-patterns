@@ -1,17 +1,20 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.io.InputStream;
-import java.util.Properties;
-
+import lombok.SneakyThrows;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import lombok.SneakyThrows;
+import java.io.InputStream;
+import java.util.Properties;
 
 public interface ConfigProvider {
 	Properties getProperties();
 }
 
+@Component
+@Primary
+@Profile("local")
 class ConfigFileProvider implements ConfigProvider {
 	
 	@SneakyThrows
@@ -24,6 +27,7 @@ class ConfigFileProvider implements ConfigProvider {
 	}
 }
 
+@Component
 class ConfigDatabaseProvider implements ConfigProvider {
 
 	public Properties getProperties() {
