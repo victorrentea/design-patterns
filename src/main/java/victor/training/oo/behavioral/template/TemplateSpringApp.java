@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,37 +20,24 @@ public class TemplateSpringApp implements CommandLineRunner {
       placeOrder();
       shipOrder();
    }
+   @Autowired
+   private EmailSender emailSender;
 
    private void placeOrder() {
       // other logic
-      new EmailSender(new OrderReceivedEmailSender()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderReceivedEmailSender());
    }
 
    private void shipOrder() {
       // other logic
-      new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderShippedEmailSender());
       // TODO send order shipped email 'similar to how send order received was implemented'
    }
-
-//   @Bean
-//   public EmailSender orderShippedSender() {
-//      return new EmailSender(new OrderShippedEmailSender());
-//   }
-//   @Bean
-//   public EmailSender orderReceivedSender() {
-//      return new EmailSender(new OrderReceivedEmailSender());
-//   }
 }
 
-//@Service
+@Service
 class EmailSender {
-   private final EmailComposer composer;
-
-   EmailSender(EmailComposer composer) {
-      this.composer = composer;
-   }
-
-   public void sendEmail(String emailAddress) {
+   public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       for (int i = 0; i < MAX_RETRIES; i++) {
