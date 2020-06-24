@@ -26,7 +26,9 @@ public class ObserverSpringApp {
    @Bean
    public ApplicationEventMulticaster applicationEventMulticaster() {
       SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-      eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+      SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
+//      taskExecutor.set
+      eventMulticaster.setTaskExecutor(taskExecutor);
       return eventMulticaster;
    }
 
