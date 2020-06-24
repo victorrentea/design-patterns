@@ -5,6 +5,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
    public static void main(String[] args) {
@@ -45,19 +49,33 @@ class CustomsService {
 //         case "FR", "ES", "RO" -> new EUTaxCalculator();
 //         default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 //      };
-      switch (originCountry) {
-         case "UK": return new UKTaxCalculator();
-         case "CN": return new CNTaxCalculator();
-         case "FR":
-         case "ES": // other EU country codes...
-         case "RO": return new EUTaxCalculator();
-         default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+
+      // cu switch + Visitor
+//      switch (originCountry) {
+//         case "UK": return new UKTaxCalculator();
+//         case "CN": return new CNTaxCalculator();
+//         case "FR":
+//         case "ES": // other EU country codes...
+//         case "RO": return new EUTaxCalculator();
+//         default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//      }
+
+      // chain of responsibility
+      List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new CNTaxCalculator(), new EUTaxCalculator());
+
+      for (TaxCalculator calculator : calculators) {
+         if (calculator.getCountryNames().contains(originCountry)) {
+            return calculator;
+         }
       }
+      throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
    }
 }
 
 interface TaxCalculator {
    double calculate(double tobaccoValue, double regularValue);
+   Collection<String> getCountryNames();
+//   boolean isApplicable(String countryName);
 }
 
 class CNTaxCalculator implements TaxCalculator {
@@ -68,11 +86,19 @@ class CNTaxCalculator implements TaxCalculator {
       // Marcel a lasat si el aici 20 linii de cod
       return tobaccoValue + regularValue;
    }
+   @Override
+   public Collection<String> getCountryNames() {
+      return Arrays.asList("CN");
+   }
 }
 
 class EUTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) { // loss of specificity. luam un param de-a-n boulea
       return tobaccoValue / 3;
+   }
+   @Override
+   public Collection<String> getCountryNames() {
+      return Arrays.asList("FR","RO","ES");
    }
 }
 
@@ -82,5 +108,9 @@ class UKTaxCalculator implements TaxCalculator {
       // Marcel a lasat si el aici 20 linii de cod
       // Marcel a lasat si el aici 20 linii de cod
       return tobaccoValue / 2 + regularValue;
+   }
+   @Override
+   public Collection<String> getCountryNames() {
+      return Arrays.asList("UK");
    }
 }

@@ -1,0 +1,6 @@
+tax.calculators:
+  - countries: FR,ES
+    implClass: victor.training.oo.behavioral.strategy.EUTaxCalculator
+
+  - countries: FR,ES
+    implClass: victor.training.oo.behavioral.strategy.EUTaxCalculator
