@@ -15,7 +15,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static java.util.Arrays.asList;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
@@ -50,14 +52,16 @@ class Drinker implements CommandLineRunner {
 	@Autowired
 	private ServiceActivatorPattern serviceActivatorPattern;
 
+	@Autowired
+	public ThreadPoolTaskExecutor pool;
+
 	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
 	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
     // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order");
 
-		ExecutorService pool = Executors.newFixedThreadPool(2);
-
+//		ExecutorService pool = Executors.newFixedThreadPool(2);
 
 		Callable<Beer> beerCommand = () -> barman.pourBeer();
 		Future<Beer> futureBeer = pool.submit(beerCommand);
