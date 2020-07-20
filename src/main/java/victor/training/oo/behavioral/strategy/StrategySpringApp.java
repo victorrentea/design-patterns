@@ -47,26 +47,6 @@ class CustomsService {
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry); // 1
 		}
 	}
-//	Map<CsvHeader, Function<AllDataAggregate, String>> extractors;
-	{
-		// 1 put / case
-		// + pare mai structurat
-		// +++ daca incarci ceva de prin vreun fisier
-
-		// validezi ca for (enum: CsvHeader.values()) -> containsKey(enum)
-	}
-
-//	public void m() {
-//		for (randuri)
-//			for(coloane) {
-//				extractors.get(coloana).apply(data); - NPE
-//				// ca sa implementezi un fel de default
-//				extractors.getOrDefault(...)
-//		}
-//
-//	}
-
-//	20 headere --> 20 functii --> mai multe fisiere ?
 }
 
 interface CustomsComputer {
