@@ -43,9 +43,12 @@ public class ObserverSpringApp {
 		System.out.println("Halo!");
 		stockManagementService.checkStock(orderId);
 		// TODO call invoicing too
+		invoiceService.generateInvoice(orderId);
 	}
 	@Autowired
 	private StockManagementService stockManagementService;
+	@Autowired
+	private InvoiceService invoiceService;
 }
 
 @Service
