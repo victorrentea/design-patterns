@@ -24,7 +24,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [6] Back to singleton (are you still alive?)
 
 	@Autowired
-	private ExpensiveOps ops;
+	private ExpensiveOpsImpl ops;
 
 
 	public void run(String... args) throws Exception {
@@ -32,7 +32,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		metodaDeBizni$$(ops);
 	}
 
-	private void metodaDeBizni$$(ExpensiveOps ops) {
+	private void metodaDeBizni$$(ExpensiveOpsImpl ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");

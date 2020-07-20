@@ -16,11 +16,10 @@ import java.security.MessageDigest;
 
 @Slf4j
 @Service
-public class ExpensiveOpsImpl implements ExpensiveOps {
+public class ExpensiveOpsImpl/* implements ExpensiveOps*/ {
 
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	@Override
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -40,7 +39,6 @@ public class ExpensiveOpsImpl implements ExpensiveOps {
 		return true;
 	}
 
-	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
