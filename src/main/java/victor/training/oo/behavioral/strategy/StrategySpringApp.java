@@ -32,30 +32,34 @@ public class StrategySpringApp implements CommandLineRunner {
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) { 
-		case "UK": return computeCustomsForUK(tobaccoValue, regularValue);
+		case "UK": return new UKCustomsComputer().computeCustomsForUK(tobaccoValue, regularValue);
 
-		case "CN": 	return computeCustomsForCN(tobaccoValue, regularValue);
+		case "CN": 	return new ChinaCustomsComputer().computeCustomsForCN(tobaccoValue, regularValue);
 
 		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return computeCustomsForEU(tobaccoValue);
+		case "RO": return new EUCustomsComputer().computeCustomsForEU(tobaccoValue);
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		} 
 	}
+}
 
-	private double computeCustomsForEU(double tobaccoValue) {
-		// 20 linii cod
-		return tobaccoValue/3;
-	}
-
-	private double computeCustomsForCN(double tobaccoValue, double regularValue) {
-		// 20 linii cod
+class ChinaCustomsComputer {
+	public double computeCustomsForCN(double tobaccoValue, double regularValue) {
+		// 50 linii cod
 		return tobaccoValue + regularValue;
 	}
-
-	private double computeCustomsForUK(double tobaccoValue, double regularValue) {
+}
+class UKCustomsComputer {
+	public double computeCustomsForUK(double tobaccoValue, double regularValue) {
 		// Gabi: las si io asta aici // 30 linii cod
 		// Maria: pun si io if-u asta, ca n-am unde sa-l las
 		return tobaccoValue/2 + regularValue;
+	}
+}
+class EUCustomsComputer {
+	public double computeCustomsForEU(double tobaccoValue) {
+		// 50 linii cod
+		return tobaccoValue/3;
 	}
 }
