@@ -33,18 +33,22 @@ class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		CustomsComputer customsComputer; // 3
 
-		switch (originCountry) {
-		case "UK": customsComputer = new UKCustomsComputer();break; // 2
+		customsComputer = selectCustomsComputer(originCountry);
 
-		case "CN": 	customsComputer = new ChinaCustomsComputer();break;
+		return customsComputer.compute(tobaccoValue, regularValue);
+	}
+
+	private CustomsComputer selectCustomsComputer(String originCountry) {
+		switch (originCountry) {
+		case "UK": return new UKCustomsComputer();// 2
+
+		case "CN": return new ChinaCustomsComputer();
 
 		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": customsComputer = new EUCustomsComputer();break;
+		case "RO": return new EUCustomsComputer();
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry); // 1
 		}
-
-		return customsComputer.compute(tobaccoValue, regularValue);
 	}
 }
 
