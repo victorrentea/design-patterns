@@ -58,17 +58,16 @@ class Drinker implements CommandLineRunner {
 
 		ExecutorService pool = Executors.newFixedThreadPool(2);
 
-		Callable<Beer> comandaDeBere = new Callable<Beer>() {
-			@Override
-			public Beer call() throws Exception {
-				return barman.pourBeer();
-			}
-		};
+		Callable<Beer> comandaDeBere = () -> barman.pourBeer();
 		Future<Beer> futureBere = pool.submit(comandaDeBere);
 
-		Beer beer = futureBere.get();
+		Future<Vodka> futureVodka = pool.submit(() -> barman.pourVodka());
+		log.debug("A plecat fata cu ambele comenzi");
+		Vodka vodka = futureVodka.get(); // apel acum al functiei 1,0
 
-		Vodka vodka = barman.pourVodka(); // apel acum al functiei
+		Beer beer = futureBere.get(); // 0,5
+
+
 		log.debug("Waiting for my drinks...");
 		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
 	}
@@ -79,13 +78,13 @@ class Drinker implements CommandLineRunner {
 class Barman {
 	public Beer pourBeer() {
 		 log.debug("Pouring Beer...");
-		 sleep(1000); // pute a REST call, sau READ FILE MARE, CRIPTEAZ-O PASTA,
+		 sleep(1500); // pute a REST call, sau READ FILE MARE, CRIPTEAZ-O PASTA,
 		 return new Beer();
 	 }
 	
 	 public Vodka pourVodka() {
 		 log.debug("Pouring Vodka...");
-		 sleep(1500);
+		 sleep(1000);
 		 return new Vodka();
 	 }
 }
