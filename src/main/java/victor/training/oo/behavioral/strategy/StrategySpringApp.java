@@ -38,27 +38,34 @@ class CustomsService {
 
 		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return new EUCustomsComputer().compute(tobaccoValue);
+		case "RO": return new EUCustomsComputer().compute(tobaccoValue, regularValue);
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		}
+
+//		customsComputer.compute(tobaccoValue, regularValue);
 	}
 }
 
-class ChinaCustomsComputer {
+interface CustomsComputer {
+	double compute(double tobaccoValue, double regularValue) ;
+}
+
+class ChinaCustomsComputer implements CustomsComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// 50 linii cod
 		return tobaccoValue + regularValue;
 	}
 }
-class UKCustomsComputer {
+class UKCustomsComputer implements CustomsComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// Gabi: las si io asta aici // 30 linii cod
 		// Maria: pun si io if-u asta, ca n-am unde sa-l las
 		return tobaccoValue/2 + regularValue;
 	}
 }
-class EUCustomsComputer {
-	public double compute(double tobaccoValue) {
+class EUCustomsComputer implements CustomsComputer { // Tirania majoritatii - UN MINUS
+	@Override
+	public double compute(double tobaccoValue, double regularValue) { // --- iau regular value degeaba param. Sa-i traiasca familia lu mentenatoru'
 		// 50 linii cod
 		return tobaccoValue/3;
 	}
