@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public class UserService {
 	@Autowired
-	private LdapServiceAdapter ldapServiceAdapter;
+	private ILdapServiceAdapter ldapServiceAdapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = ldapServiceAdapter.searchByUsername(username);
