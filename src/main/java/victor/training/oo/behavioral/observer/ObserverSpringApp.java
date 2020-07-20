@@ -35,7 +35,6 @@ public class ObserverSpringApp {
 	
 	@Autowired
 	private ObserverTransaction afterTransaction;
-
 	@EventListener
 	public void atStartup(ContextRefreshedEvent event) {
 		placeOrder(13L);
