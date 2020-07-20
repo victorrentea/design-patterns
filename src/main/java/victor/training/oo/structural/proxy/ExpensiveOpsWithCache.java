@@ -1,10 +1,17 @@
 package victor.training.oo.structural.proxy;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 // Decorator
+@Service
+@Primary
+@Profile("!local")
 public class ExpensiveOpsWithCache implements ExpensiveOps {
 	private final Map<Integer, Boolean> cache = new HashMap<>();
 	private final ExpensiveOps expensiveOps;

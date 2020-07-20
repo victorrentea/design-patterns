@@ -1,6 +1,7 @@
 package victor.training.oo.structural.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,8 +22,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
+
+	@Autowired
+	private ExpensiveOps ops;
+
+
 	public void run(String... args) throws Exception {
-		ExpensiveOpsWithCache ops = new ExpensiveOpsWithCache(new ExpensiveOpsImpl());
 
 		metodaDeBizni$$(ops);
 	}
