@@ -1,12 +1,8 @@
 package victor.training.oo.behavioral.strategy;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -36,12 +32,30 @@ public class StrategySpringApp implements CommandLineRunner {
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
+		case "UK": return computeCustomsForUK(tobaccoValue, regularValue);
+
+		case "CN": 	return computeCustomsForCN(tobaccoValue, regularValue);
+
+		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
+		case "RO": return computeCustomsForEU(tobaccoValue);
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		} 
+	}
+
+	private double computeCustomsForEU(double tobaccoValue) {
+		// 20 linii cod
+		return tobaccoValue/3;
+	}
+
+	private double computeCustomsForCN(double tobaccoValue, double regularValue) {
+		// 20 linii cod
+		return tobaccoValue + regularValue;
+	}
+
+	private double computeCustomsForUK(double tobaccoValue, double regularValue) {
+		// Gabi: las si io asta aici // 30 linii cod
+		// Maria: pun si io if-u asta, ca n-am unde sa-l las
+		return tobaccoValue/2 + regularValue;
 	}
 }
