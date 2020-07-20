@@ -67,6 +67,8 @@ class StockManagementService {
 	@EventListener
 	public void checkStock(OrderPlacedEvent event) {
 		log.debug("Checking stock for products in order " + event.getOrderId());
+		//call WS 5 min rest.geT() --> StockCheck: IN_PROGRESS
+
 		publisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
 		log.debug("If something goes wrong - throw an exception");
 		throw new IllegalArgumentException("N-am stoc");
