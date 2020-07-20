@@ -22,12 +22,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		ExpensiveOpsWithCache ops = new ExpensiveOpsWithCache(new ExpensiveOps());
+		ExpensiveOpsWithCache ops = new ExpensiveOpsWithCache(new ExpensiveOpsImpl());
 
 		metodaDeBizni$$(ops);
 	}
 
-	private void metodaDeBizni$$(IExpensiveOps ops) {
+	private void metodaDeBizni$$(ExpensiveOps ops) {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");

@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 // Decorator
-public class ExpensiveOpsWithCache implements IExpensiveOps{
+public class ExpensiveOpsWithCache implements ExpensiveOps {
 	private final Map<Integer, Boolean> cache = new HashMap<>();
-	private final IExpensiveOps expensiveOps;
+	private final ExpensiveOps expensiveOps;
 
-	public ExpensiveOpsWithCache(IExpensiveOps expensiveOps) {
+	public ExpensiveOpsWithCache(ExpensiveOps expensiveOps) {
 		this.expensiveOps = expensiveOps;
 	}
 	public Boolean isPrime(int n) {
