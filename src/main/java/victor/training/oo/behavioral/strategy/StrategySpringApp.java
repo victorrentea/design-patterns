@@ -59,7 +59,7 @@ class CustomsService {
 //	public void m() {
 //		for (randuri)
 //			for(coloane) {
-//				extractors.get(coloana).apply(data);
+//				extractors.get(coloana).apply(data); - NPE
 //				// ca sa implementezi un fel de default
 //				extractors.getOrDefault(...)
 //		}
