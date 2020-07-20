@@ -1,5 +1,6 @@
 package victor.training.oo.behavioral.observer;
 
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -43,12 +44,16 @@ public class ObserverSpringApp {
 		System.out.println("Halo!");
 		stockManagementService.checkStock(orderId);
 		// TODO call invoicing too
-		invoiceService.generateInvoice(orderId);
+		publisher.publishEvent(new OrderPlacedEvent(orderId));
 	}
 	@Autowired
 	private StockManagementService stockManagementService;
 	@Autowired
 	private InvoiceService invoiceService;
+}
+@Value
+class OrderPlacedEvent {
+	long orderId;
 }
 
 @Service
@@ -60,8 +65,9 @@ class StockManagementService {
 }
 @Service
 class InvoiceService {
-	public void generateInvoice(long orderId) {
-		System.out.println("Generating invoice for order id: " + orderId);
+	@EventListener
+	public void generateInvoice(OrderPlacedEvent orderPlacedEvent) {
+		System.out.println("Generating invoice for order id: " + orderPlacedEvent.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
