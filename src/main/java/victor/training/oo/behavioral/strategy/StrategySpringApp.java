@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -36,21 +39,24 @@ class CustomsService {
 	}
 
 	private CustomsComputer selectCustomsComputer(String originCountry) {
-		switch (originCountry) {
-		case "UK": return new UKCustomsComputer("UK");// 2
 
-		case "CN": return new ChinaCustomsComputer();
+		List<CustomsComputer> all = Arrays.asList(
+			new UKCustomsComputer(),
+			new ChinaCustomsComputer(),
+			new EUCustomsComputer());
 
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUCustomsComputer();
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry); // 1
+		for (CustomsComputer computer : all) {
+			if (computer.canHandleCountry(originCountry)) {
+				return computer;
+			}
 		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry); // 1
 	}
 }
 
 interface CustomsComputer {
-	double compute(double tobaccoValue, double regularValue) ;
+	double compute(double tobaccoValue, double regularValue);
+	boolean canHandleCountry(String originCountry); // 2
 }
 
 class ChinaCustomsComputer implements CustomsComputer {
@@ -58,12 +64,24 @@ class ChinaCustomsComputer implements CustomsComputer {
 		// 50 linii cod
 		return tobaccoValue + regularValue;
 	}
+	@Override
+	public boolean canHandleCountry(String originCountry) {
+		return "CN".equals(originCountry);
+	}
+
 }
 class UKCustomsComputer implements CustomsComputer {
+	private String originCountryCode;
+
 	public double compute(double tobaccoValue, double regularValue) {
 		// Gabi: las si io asta aici // 30 linii cod
 		// Maria: pun si io if-u asta, ca n-am unde sa-l las
 		return tobaccoValue/2 + regularValue;
+	}
+
+	@Override
+	public boolean canHandleCountry(String originCountry) {
+		return "UK".equals(originCountry);
 	}
 }
 class EUCustomsComputer implements CustomsComputer { // Tirania majoritatii - UN MINUS
@@ -71,5 +89,10 @@ class EUCustomsComputer implements CustomsComputer { // Tirania majoritatii - UN
 	public double compute(double tobaccoValue, double regularValue) { // --- iau regular value degeaba param. Sa-i traiasca familia lu mentenatoru'
 		// 50 linii cod
 		return tobaccoValue/3;
+	}
+
+	@Override
+	public boolean canHandleCountry(String originCountry) {
+		return Arrays.asList("RO","ES","FR").contains(originCountry);
 	}
 }
