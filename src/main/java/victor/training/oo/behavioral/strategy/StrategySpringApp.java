@@ -31,18 +31,20 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return new UKCustomsComputer().compute(tobaccoValue, regularValue);
+		CustomsComputer customsComputer = null;
 
-		case "CN": 	return new ChinaCustomsComputer().compute(tobaccoValue, regularValue);
+		switch (originCountry) {
+		case "UK": customsComputer = new UKCustomsComputer();
+
+		case "CN": 	customsComputer = new ChinaCustomsComputer();
 
 		case "FR":
 		case "ES": // other EU country codes...
-		case "RO": return new EUCustomsComputer().compute(tobaccoValue, regularValue);
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		case "RO": customsComputer = new EUCustomsComputer();
+//		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
 
-//		customsComputer.compute(tobaccoValue, regularValue);
+		return customsComputer.compute(tobaccoValue, regularValue);
 	}
 }
 
