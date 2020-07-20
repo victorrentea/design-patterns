@@ -50,6 +50,7 @@ public class ObserverSpringApp {
 		log.debug("Halo!");
 //		stockManagementService.checkStock(orderId);
 		publisher.publishEvent(new OrderPlacedEvent(orderId));
+//		publisher.sendCommand(new InvoiceOrderCommand(orderId));
 	}
 	@Autowired
 	private StockManagementService stockManagementService;
