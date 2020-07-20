@@ -42,14 +42,11 @@ public class ObserverSpringApp {
 	// TODO [opt] Transaction-scoped events
 	private void placeOrder(Long orderId) {
 		System.out.println("Halo!");
-		stockManagementService.checkStock(orderId);
-		// TODO call invoicing too
+//		stockManagementService.checkStock(orderId);
 		publisher.publishEvent(new OrderPlacedEvent(orderId));
 	}
 	@Autowired
 	private StockManagementService stockManagementService;
-	@Autowired
-	private InvoiceService invoiceService;
 }
 @Value
 class OrderPlacedEvent {
@@ -58,8 +55,9 @@ class OrderPlacedEvent {
 
 @Service
 class StockManagementService {
-	public void checkStock(long orderId) {
-		System.out.println("Checking stock for products in order " + orderId);
+	@EventListener
+	public void checkStock(OrderPlacedEvent event) {
+		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
 	}
 }
