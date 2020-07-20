@@ -31,16 +31,13 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		CustomsComputer customsComputer; // 3
-
-		customsComputer = selectCustomsComputer(originCountry);
-
+		CustomsComputer customsComputer = selectCustomsComputer(originCountry);
 		return customsComputer.compute(tobaccoValue, regularValue);
 	}
 
 	private CustomsComputer selectCustomsComputer(String originCountry) {
 		switch (originCountry) {
-		case "UK": return new UKCustomsComputer();// 2
+		case "UK": return new UKCustomsComputer("UK");// 2
 
 		case "CN": return new ChinaCustomsComputer();
 
@@ -50,6 +47,26 @@ class CustomsService {
 		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry); // 1
 		}
 	}
+//	Map<CsvHeader, Function<AllDataAggregate, String>> extractors;
+	{
+		// 1 put / case
+		// + pare mai structurat
+		// +++ daca incarci ceva de prin vreun fisier
+
+		// validezi ca for (enum: CsvHeader.values()) -> containsKey(enum)
+	}
+
+//	public void m() {
+//		for (randuri)
+//			for(coloane) {
+//				extractors.get(coloana).apply(data);
+//				// ca sa implementezi un fel de default
+//				extractors.getOrDefault(...)
+//		}
+//
+//	}
+
+//	20 headere --> 20 functii --> mai multe fisiere ?
 }
 
 interface CustomsComputer {
