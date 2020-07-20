@@ -18,6 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -46,6 +47,27 @@ public class CommandSpringApp {
 
 }
 
+@Service
+class A {
+	@Autowired
+	public B b;
+}
+@Service
+class B {
+	@Autowired
+	public C c;
+}
+@Service
+class C {
+	@Autowired
+	public A a;
+	@PostConstruct
+	public void init() {
+		System.out.println(a);
+//		System.out.println(a.b.c == this);
+	}
+}
+
 @Slf4j
 @Component
 class Drinker implements CommandLineRunner {
@@ -65,6 +87,16 @@ class Drinker implements CommandLineRunner {
 
 		CompletableFuture<Beer> futureBere = barman.pourBeer();
 		CompletableFuture<Vodka> futureVodka = barman.pourVodka();
+//		barman.pourBeer();
+//		barman.pourVodka();
+//		barman.pourBeer();
+//		barman.pourVodka();
+//		barman.pourBeer();
+//		barman.pourVodka();
+//		barman.pourBeer();
+//		barman.pourVodka();
+//		barman.pourBeer();
+//		barman.pourVodka();
 		log.debug("A plecat fata cu ambele comenzi");
 
 		CompletableFuture<DillyDilly> futureDilly
