@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -56,18 +55,25 @@ class OrderPlacedEvent {
 
 @Service
 class StockManagementService {
-	@Order(10)
+	@Autowired
+	private ApplicationEventPublisher publisher;
 	@EventListener
-	public void checkStock(OrderPlacedEvent event) {
+	public OrderInStockEvent checkStock(OrderPlacedEvent event) {
 		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
+		return new OrderInStockEvent(event.getOrderId());
 	}
 }
+
+@Value
+class OrderInStockEvent {
+	long orderId;
+}
+
 @Service
 class InvoiceService {
-	@Order(20)
 	@EventListener
-	public void generateInvoice(OrderPlacedEvent orderPlacedEvent) {
+	public void generateInvoice(OrderInStockEvent orderPlacedEvent) {
 		System.out.println("Generating invoice for order id: " + orderPlacedEvent.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
