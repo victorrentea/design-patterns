@@ -8,6 +8,17 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+//record Point(int a, int b) {
+//
+//}
+
+//@Value
+//class Point2 {
+//	int a;
+//	int b;
+//}
+
+
 // Decorator
 @Service
 @Primary
@@ -16,6 +27,15 @@ public class ExpensiveOpsWithCache implements ExpensiveOps {
 	private final Map<Integer, Boolean> cache = new HashMap<>();
 	private final ExpensiveOps expensiveOps;
 
+
+
+
+	class Inner { // iiner - niciodata. Foarte creepy. memory leaks, etc...
+
+	}
+	static class Nested { // nested
+
+	}
 	public ExpensiveOpsWithCache(ExpensiveOps expensiveOps) {
 		this.expensiveOps = expensiveOps;
 	}
