@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.command;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
 
@@ -73,8 +73,24 @@ class Drinker implements CommandLineRunner {
 		Beer beer = futureBere.get(); // 0,5
 
 
+
+		DillyDilly dilly = new DillyDilly(beer, vodka); //1s
+
+
 		log.debug("Waiting for my drinks...");
-		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
+		log.debug("Got my order! Thank you lad! " + dilly);
+	}
+}
+
+@ToString
+class DillyDilly {
+	private final Beer beer;
+	private final Vodka vodka;
+
+	DillyDilly(Beer beer, Vodka vodka) {
+		this.beer = beer;
+		this.vodka = vodka;
+		sleep(1000);
 	}
 }
 
