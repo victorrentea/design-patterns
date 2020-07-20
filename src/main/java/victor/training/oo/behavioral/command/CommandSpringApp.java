@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static victor.training.oo.stuff.ThreadUtils.sleep;
@@ -64,20 +63,19 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order to : " + barman.getClass());
 
-		Future<Beer> futureBere = barman.pourBeer();
-
-		Future<Vodka> futureVodka = barman.pourVodka();
+		CompletableFuture<Beer> futureBere = barman.pourBeer();
+		CompletableFuture<Vodka> futureVodka = barman.pourVodka();
 		log.debug("A plecat fata cu ambele comenzi");
-		Vodka vodka = futureVodka.get(); // apel acum al functiei 1,0
 
-		Beer beer = futureBere.get(); // 0,5
+		CompletableFuture<DillyDilly> futureDilly
+			= futureBere.thenCombine(futureVodka, (b, v) -> new DillyDilly(b, v));
 
+		futureDilly.thenAccept(dilly -> bea(dilly));
 
+		log.debug("main() pleaca acasa");
+	}
 
-		DillyDilly dilly = new DillyDilly(beer, vodka); //1s
-
-
-		log.debug("Waiting for my drinks...");
+	private void bea(DillyDilly dilly) {
 		log.debug("Got my order! Thank you lad! " + dilly);
 	}
 }
