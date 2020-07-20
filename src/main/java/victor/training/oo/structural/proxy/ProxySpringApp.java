@@ -33,6 +33,8 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	private void metodaDeBizni$$(ExpensiveOpsImpl ops) {
+
+		log.debug("Oare cu cine vorbesc eu ? " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
