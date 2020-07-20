@@ -11,27 +11,15 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @Slf4j
-public class ExpensiveOps {
+public class ExpensiveOps implements IExpensiveOps {
 
 	private static final BigDecimal TWO = new BigDecimal("2");
 
-	private final Map<Integer, Boolean> cache = new HashMap<>();
-
+	@Override
 	public Boolean isPrime(int n) {
-		if (cache.containsKey(n)) {
-			return cache.get(n);
-		}
-		Boolean response = isPrime_(n);
-		cache.put(n, response);
-		return response;
-	}
-
-	private Boolean isPrime_(int n) {
-
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -50,6 +38,7 @@ public class ExpensiveOps {
 		return true;
 	}
 
+	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
