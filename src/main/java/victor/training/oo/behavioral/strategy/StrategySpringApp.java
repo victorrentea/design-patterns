@@ -81,10 +81,10 @@ class CustomsService {
 //   public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
       List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator());
       for (TaxCalculator calculator : calculators) {
-         try {
-            return calculator.calculate(tobaccoValue, regularValue, originCountry);
-         } catch (Exception e) {
-            // swallow this
+
+         Double d = calculator.calculate(tobaccoValue, regularValue, originCountry);
+         if (d != null) {
+            return d;
          }
       }
       throw new IllegalArgumentException("Unkown country code " + originCountry);
@@ -92,13 +92,13 @@ class CustomsService {
 }
 
 interface TaxCalculator {
-   double calculate(double tobaccoValue, double regularValue, String countryCode);
+   Double calculate(double tobaccoValue, double regularValue, String countryCode);
 }
 
 class ChinaTaxCalculator implements TaxCalculator {
-   public double calculate(double tobaccoValue, double regularValue, String countryCode) {
+   public Double calculate(double tobaccoValue, double regularValue, String countryCode) {
       if (!"CN".equals(countryCode)) {
-         throw new IllegalArgumentException();
+        return null;
       }
       // mult cod
       return tobaccoValue + regularValue;
@@ -106,18 +106,18 @@ class ChinaTaxCalculator implements TaxCalculator {
 }
 
 class UKTaxCalculator implements TaxCalculator {
-   public double calculate(double tobaccoValue, double regularValue, String countryCode) {
+   public Double calculate(double tobaccoValue, double regularValue, String countryCode) {
       if (!"UK".equals(countryCode)) {
-         throw new IllegalArgumentException();
+       return null;
       }
       return tobaccoValue / 2 + regularValue;
    }
 }
 
 class EUTaxCalculator implements TaxCalculator {
-   public double calculate(double tobaccoValue, double regularValue, String countryCode) {
+   public Double calculate(double tobaccoValue, double regularValue, String countryCode) {
       if (!Arrays.asList("FR","ES","RO").contains(countryCode)) {
-         throw new IllegalArgumentException();
+       return null;
       }
       return tobaccoValue / 3;
    }
