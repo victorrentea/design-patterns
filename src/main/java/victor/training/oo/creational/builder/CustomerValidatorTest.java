@@ -5,17 +5,16 @@ import org.junit.Test;
 // Object Mother  pattern
 class DummyData {
 
-	public static CustomerBuilder aValidCustomer() {
-		return new CustomerBuilder()
-			.withName("John Doe")
-			.withAddress(aValidAddress()
-				.build());
+	public static Customer aValidCustomer() {
+		return new Customer()
+			.setName("John Doe")
+			.addLabels("label1","label2")
+			.setAddress(aValidAddress());
 	}
 
-	public static AddressBuilder aValidAddress() {
-		return new AddressBuilder()
-			.withCity("Bucharest")
-			;
+	public static Address aValidAddress() {
+		return new Address()
+			.setCity("Bucharest");
 	}
 }
 public class CustomerValidatorTest {
@@ -24,18 +23,18 @@ public class CustomerValidatorTest {
 
 	@Test
 	public void validCustomer_ok() {
-		validator.validate(DummyData.aValidCustomer().build());
+		validator.validate(DummyData.aValidCustomer());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsForEmptyName() {
-		Customer customer = DummyData.aValidCustomer().withName(null).build();
+		Customer customer = DummyData.aValidCustomer().setName(null);
 		validator.validate(customer);
 	}
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsForEmptyAdressCity() {
 		Customer customer = DummyData.aValidCustomer()
-			.withAddress(DummyData.aValidAddress().withCity(null)).build();
+			.setAddress(DummyData.aValidAddress().setCity(null));
 
 		validator.validate(customer);
 	}
