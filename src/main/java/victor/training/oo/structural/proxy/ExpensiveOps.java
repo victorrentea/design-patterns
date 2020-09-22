@@ -93,6 +93,10 @@ public class ExpensiveOps /*implements IExpensiveOps*/{
 	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
+		log.debug("10000169 is prime ? ");
+//		log.debug("Got: " + isPrime(10000169) + "\n"); // apelurile locale nu sunt interceptate?
+
+
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
@@ -108,6 +112,6 @@ public class ExpensiveOps /*implements IExpensiveOps*/{
 
 	@CacheEvict("folders")
 	public void scotDinCacheFolder(File folder) {
-		// MAGIC! Do NOT DELETE. Let the magic happen !
+//		 MAGIC! Do NOT DELETE. Let the magic happen !
 	}
 }

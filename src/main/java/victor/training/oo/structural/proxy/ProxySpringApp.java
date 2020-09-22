@@ -35,7 +35,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	@Autowired
-	private ExpensiveOps ops;
+	private ExpensiveOps ops;// = new ExpensiveOps();
 
 	private void biznissLogicZEN() {
 		log.debug("Vorbesc cu clasa {}", ops.getClass());
