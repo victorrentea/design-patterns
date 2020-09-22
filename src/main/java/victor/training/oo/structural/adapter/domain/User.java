@@ -5,7 +5,7 @@ import lombok.Data;
 
 // This would normally be placed in a 'domain model' package
 @Data // i'm sorry
-@AllArgsConstructor 
+@AllArgsConstructor
 public class User {
 	private String username;
 	private String fullName;
