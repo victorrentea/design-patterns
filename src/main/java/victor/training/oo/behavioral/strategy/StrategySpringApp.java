@@ -31,31 +31,35 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
    public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+      TaxCalculator taxCalculator = createTaxCalculator(originCountry);
+      return taxCalculator.calculate(tobaccoValue, regularValue);
+   }
+   public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
       switch (originCountry) {
          case "UK":
-            return new UKTaxCalculator().calculate(tobaccoValue, regularValue);
+            return new UKTaxCalculator();
          case "CN":
-            return new ChinaTaxCalculator().calculate(tobaccoValue, regularValue);
+            return new ChinaTaxCalculator();
          case "FR":
          case "ES": // other EU country codes...
          case "RO":
-            return new EUTaxCalculator().calculate(tobaccoValue);
+            return new EUTaxCalculator();
          default:
             throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
       }
    }
-
-
-
 }
-class ChinaTaxCalculator {
+interface TaxCalculator {
+   double calculate(double tobaccoValue, double regularValue);
+}
+class ChinaTaxCalculator implements TaxCalculator{
    public double calculate(double tobaccoValue, double regularValue) {
       // mult cod
       return tobaccoValue + regularValue;
    }
 
 }
-class UKTaxCalculator {
+class UKTaxCalculator implements TaxCalculator{
    public double calculate(double tobaccoValue, double regularValue) {
       // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
       // Maria :+5
@@ -68,14 +72,10 @@ class UKTaxCalculator {
 
       return tobaccoValue / 2 + regularValue;
    }
-
 }
 
-
-
-
-class EUTaxCalculator {
-   public double calculate(double tobaccoValue) {
+class EUTaxCalculator implements TaxCalculator{
+   public double calculate(double tobaccoValue, double regularValue) {
       return tobaccoValue / 3;
    }
 
