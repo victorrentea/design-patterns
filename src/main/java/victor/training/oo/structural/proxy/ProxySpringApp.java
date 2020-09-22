@@ -1,6 +1,7 @@
 package victor.training.oo.structural.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,16 +25,20 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-
-		ExpensiveOpsCuCache ops = new ExpensiveOpsCuCache(new ExpensiveOps());
-
-		biznissLogicZEN(ops);
-//		biznissLogicZEN(new ExpensiveOps());
-		biznissLogicZEN(new ExpensiveOpsCuCache(new ExpensiveOpsCuLog(new ExpensiveOps())));
-		biznissLogicZEN(new ExpensiveOpsCuLog(new ExpensiveOpsCuCache(new ExpensiveOps())));
+		biznissLogicZEN();
+//		ExpensiveOpsCuCache ops = new ExpensiveOpsCuCache(new ExpensiveOps());
+//
+//		biznissLogicZEN(ops);
+////		biznissLogicZEN(new ExpensiveOps());
+//		biznissLogicZEN(new ExpensiveOpsCuCache(new ExpensiveOpsCuLog(new ExpensiveOps())));
+//		biznissLogicZEN(new ExpensiveOpsCuLog(new ExpensiveOpsCuCache(new ExpensiveOps())));
 	}
 
-	private void biznissLogicZEN(IExpensiveOps ops) {
+	@Autowired
+	private ExpensiveOps ops;
+
+	private void biznissLogicZEN() {
+		log.debug("Vorbesc cu clasa {}", ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -44,6 +49,8 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+//		if (s-a schimbat ceva in foler)
+		ops.scotDinCacheFolder(new File("."));
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}

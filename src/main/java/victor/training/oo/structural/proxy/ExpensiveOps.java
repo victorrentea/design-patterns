@@ -4,6 +4,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -61,10 +64,13 @@ class ExpensiveOpsCuCache implements  IExpensiveOps{
 		return hash;
 	}
 }
+@Service
 @Slf4j
-public class ExpensiveOps implements IExpensiveOps{
+public class ExpensiveOps /*implements IExpensiveOps*/{
 
 	private static final BigDecimal TWO = new BigDecimal("2");
+
+	@Cacheable("primes")
 	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
@@ -84,7 +90,7 @@ public class ExpensiveOps implements IExpensiveOps{
 		return true;
 	}
 
-	@Override
+	@Cacheable("folders")
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
@@ -100,4 +106,8 @@ public class ExpensiveOps implements IExpensiveOps{
 		return DatatypeConverter.printHexBinary(digest).toUpperCase();
 	}
 
+	@CacheEvict("folders")
+	public void scotDinCacheFolder(File folder) {
+		// MAGIC! Do NOT DELETE. Let the magic happen !
+	}
 }
