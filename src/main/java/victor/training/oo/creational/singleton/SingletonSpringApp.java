@@ -2,6 +2,8 @@ package victor.training.oo.creational.singleton;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -24,6 +26,7 @@ import java.util.Map;
 @EnableCaching
 @SpringBootApplication
 public class SingletonSpringApp implements CommandLineRunner{
+	private static final Logger log = LoggerFactory.getLogger(SingletonSpringApp.class);
 	@Bean
 	public static CustomScopeConfigurer defineThreadScope() {
 		CustomScopeConfigurer configurer = new CustomScopeConfigurer();
@@ -63,16 +66,37 @@ class OrderExporter  {
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 		invoiceExporter.exportInvoice();
+
+//		SELECT x,y,z
+//		jpql += " GROUP BY " + Type1;
+
+
+//		Map<String>
 	}
 }
+
+//@Entity class MyEnt{
+//	enum Type1{
+//		A("aaaa"),
+//		B("bbbb");
+//
+//		Type1(String aaaa) {
+//
+//		}
+//	}
+//	enum Type2{A2,B2}
+//	enum Type3{A3,B3}
+//	}
+
+
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class InvoiceExporter {
-	private final LabelService labelService;
+//	private final LabelService labelService;
 	public void exportInvoice() {
-		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
+//		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
