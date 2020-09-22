@@ -57,7 +57,6 @@ class ChinaTaxCalculator implements TaxCalculator{
       // mult cod
       return tobaccoValue + regularValue;
    }
-
 }
 class UKTaxCalculator implements TaxCalculator{
    public double calculate(double tobaccoValue, double regularValue) {
