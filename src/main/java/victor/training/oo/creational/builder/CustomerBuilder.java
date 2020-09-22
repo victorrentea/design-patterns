@@ -11,4 +11,13 @@ public class CustomerBuilder {
 	public Customer build() {
 		return customer;
 	}
+
+	public CustomerBuilder withAddress(Address address) {
+		customer.setAddress(address);
+		return this;
+	}
+
+	public CustomerBuilder withAddress(AddressBuilder addressBuilder) {
+		return withAddress(addressBuilder.build());
+	}
 }
