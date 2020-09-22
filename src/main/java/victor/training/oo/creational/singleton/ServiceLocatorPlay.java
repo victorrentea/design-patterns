@@ -19,6 +19,7 @@ class A {
         int x = b.met();
     }
 }
+@Service
 class B {
     private C c;
 
