@@ -5,9 +5,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import java.util.*;
-
-import static java.util.Optional.of;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -72,18 +73,15 @@ class CustomsService {
    }
 
    public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-//      TaxCalculator taxCalculator = createTaxCalculator(originCountry);
-//      return taxCalculator.calculate(tobaccoValue, regularValue);
-//   }
-//
-//   @SneakyThrows
-//   public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
+      TaxCalculator taxCalculator = createTaxCalculator(originCountry);
+      return taxCalculator.calculate(tobaccoValue, regularValue);
+   }
+
+   public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
       List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator());
       for (TaxCalculator calculator : calculators) {
-
-         Optional<Double> d = calculator.calculate(tobaccoValue, regularValue, originCountry);
-         if (d.isPresent()) {
-            return d.get();
+         if (calculator.accepts(originCountry)) {
+            return calculator;
          }
       }
       throw new IllegalArgumentException("Unkown country code " + originCountry);
@@ -91,34 +89,41 @@ class CustomsService {
 }
 
 interface TaxCalculator {
-   Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode);
+   boolean accepts(String countryCode);
+
+   Double calculate(double tobaccoValue, double regularValue);
 }
 
 class ChinaTaxCalculator implements TaxCalculator {
-   public Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode) {
-      if (!"CN".equals(countryCode)) {
-        return Optional.empty();
-      }
+   @Override
+   public boolean accepts(String countryCode) {
+      return "CN".equals(countryCode);
+   }
+   public Double calculate(double tobaccoValue, double regularValue) {
       // mult cod
-      return of(tobaccoValue + regularValue);
+      return tobaccoValue + regularValue;
    }
 }
 
 class UKTaxCalculator implements TaxCalculator {
-   public Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode) {
-      if (!"UK".equals(countryCode)) {
-       return Optional.empty();
-      }
-      return of(tobaccoValue / 2 + regularValue);
+   @Override
+   public boolean accepts(String countryCode) {
+      return "UK".equals(countryCode);
+   }
+
+   public Double calculate(double tobaccoValue, double regularValue) {
+      return tobaccoValue / 2 + regularValue;
    }
 }
 
 class EUTaxCalculator implements TaxCalculator {
-   public Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode) {
-      if (!Arrays.asList("FR","ES","RO").contains(countryCode)) {
-       return Optional.empty();
-      }
-      return of(tobaccoValue / 3);
+   @Override
+   public boolean accepts(String countryCode) {
+      return Arrays.asList("FR","ES","RO").contains(countryCode);
+   }
+
+   public Double calculate(double tobaccoValue, double regularValue) {
+      return tobaccoValue / 3;
    }
 
 }
