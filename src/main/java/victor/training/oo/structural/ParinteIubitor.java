@@ -1,5 +1,6 @@
 package victor.training.oo.structural;
 
+import lombok.RequiredArgsConstructor;
 import victor.training.oo.stuff.ThreadUtils;
 
 public class ParinteIubitor {
@@ -9,50 +10,67 @@ public class ParinteIubitor {
       parinte.vineAcasaObosit(MagazinDeJucarii.obtineJucarie(true));
 
 //      Connection connection = DriverManager.getConnection("");
+      Block block1 = new LegoFactory().getBlock();
+      Board board = new MegaBlocksFactory().getBoard();
+      block1.stickIntoBoard(board);
+
    }
 
 }
+
 class MagazinDeJucarii {
 
-   public static Jucarie obtineJucarie(boolean safe) {
-      if (safe) {
-         return new Consola();
-//         return new Papusa();
+   public static BlockFactory obtineJucarie(boolean ieftin) {
+      if (ieftin) {
+         return new MegaBlocksFactory(); // de 3 ori mai eftin
       } else {
-         return new Ciocan();
+         return new LegoFactory();
       }
    }
 }
 
-interface Jucarie {
+interface BlockFactory {
+   Block getBlock();
+   Board getBoard();
+}
+class LegoFactory implements BlockFactory{
+   @Override
+   public Block getBlock() {
+      return new LegoBlock();
+   }
+   @Override
+   public Board getBoard() {
+      return new LegoBoard();
+   }
+}
+class MegaBlocksFactory implements BlockFactory{
+   @Override
+   public Block getBlock() {
+      return new MegaBlocksBlock();
+   }
+   @Override
+   public Board getBoard() {
+      return new MegaBlocksBoard();
+   }
+}
 
-}
-class Consola implements Jucarie{
-}
-class Ciocan implements Jucarie{
-}
-
-class Papusa implements Jucarie {
-
-}
- class Parinte {
+@RequiredArgsConstructor
+class Parinte {
    private final Copil copil;
-
-   public Parinte(Copil copil) {
-      this.copil = copil;
+   public void vineAcasaObosit(BlockFactory blockFactory) {
+      copil.daJucarie(blockFactory);
    }
-
-   public void vineAcasaObosit(Jucarie jucarie) {
-       copil.daJucarie(jucarie);
-   }
-
-
 }
 
 class Copil {
+   public void daJucarie(BlockFactory blockFactory) {
+      System.out.println("Ma joc cu " + blockFactory);
+      Block block = blockFactory.getBlock();
+      Board board = blockFactory.getBoard();
+      block.stickIntoBoard(board);
 
-   public void daJucarie(Jucarie jucarie) {
-      System.out.println("Ma joc cu " + jucarie);
+      Block block2 = blockFactory.getBlock();
+      block2.stickIntoBoard(board);
       ThreadUtils.sleep(5000);
 
    }
