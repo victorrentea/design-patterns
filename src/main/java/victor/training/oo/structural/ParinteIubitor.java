@@ -21,6 +21,13 @@ public class ParinteIubitor {
 class MagazinDeJucarii {
 
    public static BlockFactory obtineJucarie(boolean ieftin) {
+
+//      DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+//      DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
+//      Document doc = db.newDocument();
+//      doc.createElement().setAttribute(doc.createAttribute("id"));
+
+
       if (ieftin) {
          return new MegaBlocksFactory(); // de 3 ori mai eftin
       } else {
@@ -33,6 +40,9 @@ interface BlockFactory {
    Block getBlock();
    Board getBoard();
 }
+
+
+
 class LegoFactory implements BlockFactory{
    @Override
    public Block getBlock() {
