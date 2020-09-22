@@ -68,6 +68,8 @@ class MegaBlocksFactory implements BlockFactory{
 class Parinte {
    private final Copil copil;
    public void vineAcasaObosit(BlockFactory blockFactory) {
+
+
       copil.daJucarie(blockFactory);
    }
 }
