@@ -1,8 +1,14 @@
 package victor.training.oo.behavioral.strategy;
 
+import lombok.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -29,52 +35,90 @@ public class StrategySpringApp implements CommandLineRunner {
    }
 }
 
+//enum CountryCode {
+//      UK(new UKTaxCalculator());
+//      RO(new EUTaxCalculator());
+//      ES(new EUTaxCalculator());
+//      FR(new EUTaxCalculator());
+//
+//      private final UKTaxCalculator ukTaxCalculator;
+//
+//      CountryCode(UKTaxCalculator ukTaxCalculator) {
+//
+//         this.ukTaxCalculator = ukTaxCalculator;
+//      }
+//}
+
+@Value
+class Country {
+   String countryCode;
+   TaxCalculator calculator;
+}
+
 class CustomsService {
+
+   public static final Map<String, Class<? extends TaxCalculator>> MAP = new HashMap<>();
+
+   static {
+      new Country("UK", new UKTaxCalculator());
+      new Country("FR", new EUTaxCalculator());
+      new Country("ES", new EUTaxCalculator());
+      new Country("RO", new EUTaxCalculator());
+      // indiscutabil mai bine Map daca incarci asocierea dintre ISO cod si implementation class full name din .properties
+//      MAP.put("UK", UKTaxCalculator.class);
+//      MAP.put("CN", ChinaTaxCalculator.class);
+//      MAP.put("FR", EUTaxCalculator.class);
+//      MAP.put("ES", EUTaxCalculator.class);
+//      MAP.put("RO", EUTaxCalculator.class);
+   }
+
    public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-      TaxCalculator taxCalculator = createTaxCalculator(originCountry);
-      return taxCalculator.calculate(tobaccoValue, regularValue);
-   }
-   public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
-      switch (originCountry) {
-         case "UK":
-            return new UKTaxCalculator();
-         case "CN":
-            return new ChinaTaxCalculator();
-         case "FR":
-         case "ES": // other EU country codes...
-         case "RO":
-            return new EUTaxCalculator();
-         default:
-            throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//      TaxCalculator taxCalculator = createTaxCalculator(originCountry);
+//      return taxCalculator.calculate(tobaccoValue, regularValue);
+//   }
+//
+//   @SneakyThrows
+//   public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
+      List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator());
+      for (TaxCalculator calculator : calculators) {
+         try {
+            return calculator.calculate(tobaccoValue, regularValue, originCountry);
+         } catch (Exception e) {
+            // swallow this
+         }
       }
+      throw new IllegalArgumentException("Unkown country code " + originCountry);
    }
 }
+
 interface TaxCalculator {
-   double calculate(double tobaccoValue, double regularValue);
+   double calculate(double tobaccoValue, double regularValue, String countryCode);
 }
-class ChinaTaxCalculator implements TaxCalculator{
-   public double calculate(double tobaccoValue, double regularValue) {
+
+class ChinaTaxCalculator implements TaxCalculator {
+   public double calculate(double tobaccoValue, double regularValue, String countryCode) {
+      if (!"CN".equals(countryCode)) {
+         throw new IllegalArgumentException();
+      }
       // mult cod
       return tobaccoValue + regularValue;
    }
 }
-class UKTaxCalculator implements TaxCalculator{
-   public double calculate(double tobaccoValue, double regularValue) {
-      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
-      // Maria :+5
-      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
-      // Maria :+5
-      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
-      // Maria :+5
-      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
-      // Maria :+5
 
+class UKTaxCalculator implements TaxCalculator {
+   public double calculate(double tobaccoValue, double regularValue, String countryCode) {
+      if (!"UK".equals(countryCode)) {
+         throw new IllegalArgumentException();
+      }
       return tobaccoValue / 2 + regularValue;
    }
 }
 
-class EUTaxCalculator implements TaxCalculator{
-   public double calculate(double tobaccoValue, double regularValue) {
+class EUTaxCalculator implements TaxCalculator {
+   public double calculate(double tobaccoValue, double regularValue, String countryCode) {
+      if (!Arrays.asList("FR","ES","RO").contains(countryCode)) {
+         throw new IllegalArgumentException();
+      }
       return tobaccoValue / 3;
    }
 
