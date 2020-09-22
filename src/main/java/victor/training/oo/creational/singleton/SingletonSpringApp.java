@@ -91,7 +91,10 @@ class LabelService {
 		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
-	
+//	@Cacheable("countryNames")
+//	public String getAllCountryName() {
+//
+//	}
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
