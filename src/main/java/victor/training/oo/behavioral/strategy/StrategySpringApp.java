@@ -5,10 +5,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Optional.of;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -82,9 +81,9 @@ class CustomsService {
       List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator());
       for (TaxCalculator calculator : calculators) {
 
-         Double d = calculator.calculate(tobaccoValue, regularValue, originCountry);
-         if (d != null) {
-            return d;
+         Optional<Double> d = calculator.calculate(tobaccoValue, regularValue, originCountry);
+         if (d.isPresent()) {
+            return d.get();
          }
       }
       throw new IllegalArgumentException("Unkown country code " + originCountry);
@@ -92,34 +91,34 @@ class CustomsService {
 }
 
 interface TaxCalculator {
-   Double calculate(double tobaccoValue, double regularValue, String countryCode);
+   Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode);
 }
 
 class ChinaTaxCalculator implements TaxCalculator {
-   public Double calculate(double tobaccoValue, double regularValue, String countryCode) {
+   public Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode) {
       if (!"CN".equals(countryCode)) {
-        return null;
+        return Optional.empty();
       }
       // mult cod
-      return tobaccoValue + regularValue;
+      return of(tobaccoValue + regularValue);
    }
 }
 
 class UKTaxCalculator implements TaxCalculator {
-   public Double calculate(double tobaccoValue, double regularValue, String countryCode) {
+   public Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode) {
       if (!"UK".equals(countryCode)) {
-       return null;
+       return Optional.empty();
       }
-      return tobaccoValue / 2 + regularValue;
+      return of(tobaccoValue / 2 + regularValue);
    }
 }
 
 class EUTaxCalculator implements TaxCalculator {
-   public Double calculate(double tobaccoValue, double regularValue, String countryCode) {
+   public Optional<Double> calculate(double tobaccoValue, double regularValue, String countryCode) {
       if (!Arrays.asList("FR","ES","RO").contains(countryCode)) {
-       return null;
+       return Optional.empty();
       }
-      return tobaccoValue / 3;
+      return of(tobaccoValue / 3);
    }
 
 }
