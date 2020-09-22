@@ -11,7 +11,9 @@ class Parent {
          throw new IllegalArgumentException();
       }
    }
-   public boolean intreabaMama() {
+//   public abstract boolean intreabaMama();
+//   public final boolean intreabaMama() {
+   private boolean intreabaMama() {
       return false;
    }
 }
@@ -21,7 +23,7 @@ class Child extends  Parent {
        portofel();
    }
 
-   @Override
+//   @Override
    public boolean intreabaMama() {
       return true;
    }
