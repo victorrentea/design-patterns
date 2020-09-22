@@ -11,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 // Suntem in cel mai sacru loc din app noastra: in Domain Service, Unde ar trebui sa fie cea mai pura si frumoasa logica posibila
 public class UserService {
-   private final ILdapUserServiceAdapter ldapUserServiceAdapter;
+   private final LdapUserServiceAdapter ldapUserServiceAdapter;
 
    // viata-i grea, n-o poate toti
    public void importUserFromLdap(String username) {

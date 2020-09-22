@@ -2,7 +2,7 @@ package victor.training.oo.structural.adapter.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import victor.training.oo.structural.adapter.domain.ILdapUserServiceAdapter;
+import victor.training.oo.structural.adapter.domain.LdapUserServiceAdapter;
 import victor.training.oo.structural.adapter.domain.User;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LdapUserServiceAdapter implements ILdapUserServiceAdapter {
+public class LdapUserServiceAdapterImpl implements LdapUserServiceAdapter {
    //infern: tu cel ce intri, abandoneaza orice speranta
    private final LdapUserWebserviceClient wsClient;
 
