@@ -33,31 +33,50 @@ class CustomsService {
    public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
       switch (originCountry) {
          case "UK":
-            return computeUKTax(tobaccoValue, regularValue);
+            return new UKTaxCalculator().calculate(tobaccoValue, regularValue);
          case "CN":
-            return computeChinaTax(tobaccoValue, regularValue);
+            return new ChinaTaxCalculator().calculate(tobaccoValue, regularValue);
          case "FR":
          case "ES": // other EU country codes...
          case "RO":
-            return computeEUTax(tobaccoValue);
+            return new EUTaxCalculator().calculate(tobaccoValue);
          default:
             throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
       }
    }
 
-   private double computeEUTax(double tobaccoValue) {
-      return tobaccoValue / 3;
-   }
 
-   private double computeChinaTax(double tobaccoValue, double regularValue) {
+
+}
+class ChinaTaxCalculator {
+   public double calculate(double tobaccoValue, double regularValue) {
       // mult cod
       return tobaccoValue + regularValue;
    }
 
-   private double computeUKTax(double tobaccoValue, double regularValue) {
+}
+class UKTaxCalculator {
+   public double calculate(double tobaccoValue, double regularValue) {
+      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
+      // Maria :+5
+      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
+      // Maria :+5
+      // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
+      // Maria :+5
       // Gigel las si io aicea 10 linii de cod ca n-am un sa le pun si mi-a zis unu ca nu e bine sa pun tot in Util
       // Maria :+5
 
       return tobaccoValue / 2 + regularValue;
    }
+
+}
+
+
+
+
+class EUTaxCalculator {
+   public double calculate(double tobaccoValue) {
+      return tobaccoValue / 3;
+   }
+
 }
