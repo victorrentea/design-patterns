@@ -1,7 +1,7 @@
-package victor.training.oo.creational.abstractfactory.blocks;
+package victor.training.oo.creational.abstractfactory;
 
-import victor.training.oo.creational.abstractfactory.blocks.lego.LegoFactory;
-import victor.training.oo.creational.abstractfactory.blocks.spi.BlockFactory;
+import victor.training.oo.creational.abstractfactory.lego.LegoFactory;
+import victor.training.oo.creational.abstractfactory.spi.BlockFactory;
 
 public class LovingParent {
 

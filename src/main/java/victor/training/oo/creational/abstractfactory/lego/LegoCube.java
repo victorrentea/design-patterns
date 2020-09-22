@@ -1,7 +1,7 @@
-package victor.training.oo.creational.abstractfactory.blocks.lego;
+package victor.training.oo.creational.abstractfactory.lego;
 
-import victor.training.oo.creational.abstractfactory.blocks.spi.Board;
-import victor.training.oo.creational.abstractfactory.blocks.spi.Cube;
+import victor.training.oo.creational.abstractfactory.spi.Board;
+import victor.training.oo.creational.abstractfactory.spi.Cube;
 
 public class LegoCube implements Cube {
 

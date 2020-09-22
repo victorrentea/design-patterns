@@ -1,4 +1,4 @@
-package victor.training.oo.creational.abstractfactory.blocks.spi;
+package victor.training.oo.creational.abstractfactory.spi;
 
 public interface Cube {
 	void stackOnto(Cube anotherCube);

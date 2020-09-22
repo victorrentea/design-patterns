@@ -1,8 +1,8 @@
-package victor.training.oo.creational.abstractfactory.blocks;
+package victor.training.oo.creational.abstractfactory;
 
-import victor.training.oo.creational.abstractfactory.blocks.spi.BlockFactory;
-import victor.training.oo.creational.abstractfactory.blocks.spi.Board;
-import victor.training.oo.creational.abstractfactory.blocks.spi.Cube;
+import victor.training.oo.creational.abstractfactory.spi.BlockFactory;
+import victor.training.oo.creational.abstractfactory.spi.Board;
+import victor.training.oo.creational.abstractfactory.spi.Cube;
 
 public class Child {
 	public void playWith(BlockFactory cutie) {

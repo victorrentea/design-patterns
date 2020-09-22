@@ -1,5 +1,7 @@
 package victor.training.oo.behavioral.command;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,11 +15,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-
 import static java.util.Arrays.asList;
-import static victor.training.oo.stuff.ThreadUtils.sleep;
+import static victor.training.oo.stuff.ThreadUtils.sleepq;
 
 @EnableAsync
 @SpringBootApplication
@@ -66,13 +65,13 @@ class Drinker implements CommandLineRunner {
 class Barman {
 	public Beer pourBeer() {
 		 log.debug("Pouring Beer...");
-		 sleep(1000);
+		 sleepq(1000);
 		 return new Beer();
 	 }
 	
 	 public Vodka pourVodka() {
 		 log.debug("Pouring Vodka...");
-		 sleep(1000);
+		 sleepq(1000);
 		 return new Vodka();
 	 }
 }
