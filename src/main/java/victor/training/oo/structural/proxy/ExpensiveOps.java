@@ -14,21 +14,58 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
-public class ExpensiveOps {
+interface IExpensiveOps {
+	Boolean isPrime(int n);
+	String hashAllFiles(File folder);
+}
+//Decorator Pattern:
+class ExpensiveOpsCuLog implements  IExpensiveOps{
+	private final IExpensiveOps ops;
 
-	private static final BigDecimal TWO = new BigDecimal("2");
+	ExpensiveOpsCuLog(IExpensiveOps ops) {
+		this.ops = ops;
+	}
+
+	@Override
+	public Boolean isPrime(int n) {
+		return null;
+	}
+	@Override
+	public String hashAllFiles(File folder) {
+		return null;
+	}
+}
+class ExpensiveOpsCuCache implements  IExpensiveOps{
+	private final IExpensiveOps delegate;
 	private final Map<Integer, Boolean> cache = new HashMap<>();
+	private final Map<File, String> cache2 = new HashMap<>();
 
+	ExpensiveOpsCuCache(IExpensiveOps delegate) {
+		this.delegate = delegate;
+	}
 	public Boolean isPrime(int n) {
 		if (cache.containsKey(n)){
 			return cache.get(n);
 		}
-		Boolean prime = isPrime_(n);
+		Boolean prime = delegate.isPrime(n);
 		cache.put(n, prime);
 		return prime;
 	}
-	private Boolean isPrime_(int n) {
+	@Override
+	public String hashAllFiles(File folder) {
+		if (cache2.containsKey(folder)){
+			return cache2.get(folder);
+		}
+		String hash = delegate.hashAllFiles(folder);
+		cache2.put(folder, hash);
+		return hash;
+	}
+}
+@Slf4j
+public class ExpensiveOps implements IExpensiveOps{
+
+	private static final BigDecimal TWO = new BigDecimal("2");
+	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -47,8 +84,7 @@ public class ExpensiveOps {
 		return true;
 	}
 
-
-
+	@Override
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("Computing hashAllFiles({})", folder);
