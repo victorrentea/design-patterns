@@ -1,19 +1,20 @@
-package victor.training.oo.structural.adapter.domain;
+package victor.training.oo.structural.adapter.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import victor.training.oo.structural.adapter.infra.LdapUser;
-import victor.training.oo.structural.adapter.infra.LdapUserWebserviceClient;
+import victor.training.oo.structural.adapter.domain.ILdapUserServiceAdapter;
+import victor.training.oo.structural.adapter.domain.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LdapUserServiceAdapter {
+public class LdapUserServiceAdapter implements ILdapUserServiceAdapter {
    //infern: tu cel ce intri, abandoneaza orice speranta
    private final LdapUserWebserviceClient wsClient;
 
+   @Override
    public List<User> searchByUsername(String username) {
       return wsClient.search(username.toUpperCase(), null, null).stream()
           .map(this::convert)
