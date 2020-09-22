@@ -2,6 +2,6 @@ package victor.training.oo.structural.adapter.domain;
 
 import java.util.List;
 
-public interface LdapUserServiceAdapter {
+public interface ExternalUserService {
    List<User> searchByUsername(String username);
 }
