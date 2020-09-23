@@ -1,9 +1,11 @@
 package victor.training.oo.behavioral.strategy;
 
 import lombok.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,8 +27,9 @@ public class StrategySpringApp implements CommandLineRunner {
    // TODO [2] Convert it to Chain Of Responsibility
    // TODO [3] Wire with Spring
    // TODO [4] ConfigProvider: selected based on environment props, with Spring
+   @Autowired
+   CustomsService service;
    public void run(String... args) {
-      CustomsService service = new CustomsService();
       System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
       System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
       System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -55,6 +58,7 @@ class Country {
    TaxCalculator calculator;
 }
 
+@Service
 class CustomsService {
 
    public static final Map<String, Class<? extends TaxCalculator>> MAP = new HashMap<>();
@@ -77,8 +81,10 @@ class CustomsService {
       return taxCalculator.calculate(tobaccoValue, regularValue);
    }
 
+   @Autowired
+   List<TaxCalculator> calculators;
+
    public TaxCalculator createTaxCalculator(String originCountry) { // UGLY API we CANNOT change
-      List<TaxCalculator> calculators = Arrays.asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator());
       for (TaxCalculator calculator : calculators) {
          if (calculator.accepts(originCountry)) {
             return calculator;
@@ -93,8 +99,8 @@ interface TaxCalculator {
 
    Double calculate(double tobaccoValue, double regularValue);
 }
-
-class ChinaTaxCalculator implements TaxCalculator {
+@Service
+class ChinaTaxCalculator implements TaxCalculator  {
    @Override
    public boolean accepts(String countryCode) {
       return "CN".equals(countryCode);
@@ -104,7 +110,7 @@ class ChinaTaxCalculator implements TaxCalculator {
       return tobaccoValue + regularValue;
    }
 }
-
+@Service
 class UKTaxCalculator implements TaxCalculator {
    @Override
    public boolean accepts(String countryCode) {
@@ -115,7 +121,7 @@ class UKTaxCalculator implements TaxCalculator {
       return tobaccoValue / 2 + regularValue;
    }
 }
-
+@Service
 class EUTaxCalculator implements TaxCalculator {
    @Override
    public boolean accepts(String countryCode) {

@@ -8,60 +8,50 @@ import victor.training.oo.structural.facade.facade.dto.CustomerDto;
 import victor.training.oo.structural.facade.infra.EmailClient;
 import victor.training.oo.structural.facade.repo.CustomerRepository;
 import victor.training.oo.structural.facade.repo.EmailRepository;
-import victor.training.oo.structural.facade.repo.SiteRepository;
-
-import java.text.SimpleDateFormat;
+import victor.training.oo.structural.facade.service.CustomerService;
 
 @Facade
 @RequiredArgsConstructor
 public class CustomerFacade {
-	private final CustomerRepository customerRepo;
-	private final EmailClient emailClient;
-	private final EmailRepository emailRepo;
-	private final SiteRepository siteRepo;
+   private final CustomerRepository customerRepo;
+   private final EmailClient emailClient;
+   private final EmailRepository emailRepo;
+   private final CustomerService customerService;
+   private final CustomerMapper mapper;
 
-	public CustomerDto findById(long customerId) {
-		Customer customer = customerRepo.findById(customerId);
-		CustomerDto dto = new CustomerDto();
-		dto.name = customer.getName();
-		dto.email = customer.getEmail();
-		dto.creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
-		dto.id = customer.getId();
-		return dto;
-	}
+   public CustomerDto findById(long customerId) {
+      Customer customer = customerRepo.findById(customerId);
+      return new CustomerDto(customer);
+   }
 
-	public void registerCustomer(CustomerDto dto) {
-		Customer customer = new Customer();
-		customer.setEmail(dto.email);
-		customer.setName(dto.name);
-		customer.setSite(siteRepo.getReference(dto.countryId));
+   public void registerCustomer(CustomerDto dto) {
+      Customer customer = mapper.mapToEntity(dto);
 
-		if (customer.getName().trim().length() <= 5) {
-			throw new IllegalArgumentException("Name too short");
-		}
-		
-		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
-			throw new IllegalArgumentException("Email already registered");
-		}
-		// Heavy logic
-		// Heavy logic
-		customerRepo.save(customer);
-		// Heavy logic
+      // extract CustomerValidator class
+      if (customer.getName().trim().length() <= 5) {
+         throw new IllegalArgumentException("Name too short");
+      }
+      if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
+         throw new IllegalArgumentException("Email already registered");
+      }
 
-		sendRegistrationEmail(customer.getEmail());
-	}
 
-	private void sendRegistrationEmail(String emailAddress) {
-		System.out.println("Sending activation link via email to "+ emailAddress);
-		Email email = new Email();
-		email.setFrom("noreply");
-		email.setTo(emailAddress);
-		email.setSubject("Welcome!");
-		email.setBody("You'll like it! Sincerely, Team");
-		
-		if (!emailRepo.emailWasSentBefore(email.hashCode())) {
-			emailClient.sendEmail(email.getFrom(), email.getTo(), email.getSubject(), email.getBody());
-			emailRepo.saveSentEmail(email);
-		}
-	}
+      customerService.registerCustomer(customer);
+
+      sendRegistrationEmail(customer.getEmail());
+   }
+
+   private void sendRegistrationEmail(String emailAddress) {
+      System.out.println("Sending activation link via email to " + emailAddress);
+      Email email = new Email();
+      email.setFrom("noreply");
+      email.setTo(emailAddress);
+      email.setSubject("Welcome!");
+      email.setBody("You'll like it! Sincerely, Team");
+
+      if (!emailRepo.emailWasSentBefore(email.hashCode())) {
+         emailClient.sendEmail(email.getFrom(), email.getTo(), email.getSubject(), email.getBody());
+         emailRepo.saveSentEmail(email);
+      }
+   }
 }
