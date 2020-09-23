@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
+import java.io.Writer;
 import java.util.Random;
 
 @SpringBootApplication
@@ -28,10 +29,14 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 
    private void shipOrder() {
-      EmailComposer c = email -> System.out.println("Orice");
+//      EmailComposer c = email -> System.out.println("Orice");
       // other logic
       // TODO send order shipped email 'similar to how send "order received" was implemented'
       sender.sendEmail("a@b.com",Emails::composeEmailShipped);
+//      genericExporter.export(this::writeBody);
+   }
+   public void writeBody(Writer writer) {
+
    }
 }
 
