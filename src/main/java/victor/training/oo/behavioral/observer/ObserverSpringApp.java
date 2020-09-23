@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @SpringBootApplication
@@ -18,12 +21,12 @@ public class ObserverSpringApp {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
 	
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
+	@Bean
+    public ApplicationEventMulticaster applicationEventMulticaster() {
+        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
+        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return eventMulticaster;
+    }
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -45,7 +48,7 @@ public class ObserverSpringApp {
 	// TODO [2] control the order
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
-	@Transactional
+//	@Transactional
 	public void placeOrder(Long orderId) {
 		log.debug("Halo!");
 
