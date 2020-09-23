@@ -35,6 +35,8 @@ public class ObserverSpringApp {
 		// afterTransaction.runInTransaction();
 	}
 
+	// order package =======
+
 	// TODO [1] also generate invoice
 	// TODO [2] control the order
 	// TODO [3] chain events
@@ -42,12 +44,15 @@ public class ObserverSpringApp {
 	private void placeOrder(Long orderId) {
 		System.out.println("Halo!");
 		stockManagementService.checkStock(orderId);
-		// TODO call invoicing too
+		invoiceService.generateInvoice(orderId);
 	}
 	@Autowired
 	private StockManagementService stockManagementService;
+	@Autowired
+	private InvoiceService invoiceService;
 }
 
+/// ---- stock package
 @Service
 class StockManagementService {
 	public void checkStock(long orderId) {
@@ -55,6 +60,7 @@ class StockManagementService {
 		System.out.println("If something goes wrong - throw an exception");
 	}
 }
+/// ---- invoice package
 @Service
 class InvoiceService {
 	public void generateInvoice(long orderId) {
