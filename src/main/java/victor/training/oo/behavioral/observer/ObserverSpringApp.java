@@ -1,5 +1,6 @@
 package victor.training.oo.behavioral.observer;
 
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -36,6 +37,8 @@ public class ObserverSpringApp {
 	}
 
 	// order package =======
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 
 	// TODO [1] also generate invoice
 	// TODO [2] control the order
@@ -43,28 +46,33 @@ public class ObserverSpringApp {
 	// TODO [opt] Transaction-scoped events
 	private void placeOrder(Long orderId) {
 		System.out.println("Halo!");
-		stockManagementService.checkStock(orderId);
-		invoiceService.generateInvoice(orderId);
+
+		OrderPlacedEvent event = new OrderPlacedEvent(orderId);
+		eventPublisher.publishEvent(event);
 	}
-	@Autowired
-	private StockManagementService stockManagementService;
-	@Autowired
-	private InvoiceService invoiceService;
+}
+
+// --- event package
+@Value
+class OrderPlacedEvent {
+	long orderId;
 }
 
 /// ---- stock package
 @Service
 class StockManagementService {
-	public void checkStock(long orderId) {
-		System.out.println("Checking stock for products in order " + orderId);
+	@EventListener
+	public void checkStock(OrderPlacedEvent event) {
+		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
 	}
 }
 /// ---- invoice package
 @Service
 class InvoiceService {
-	public void generateInvoice(long orderId) {
-		System.out.println("Generating invoice for order id: " + orderId);
+	@EventListener
+	public void generateInvoice(OrderPlacedEvent event) {
+		System.out.println("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
