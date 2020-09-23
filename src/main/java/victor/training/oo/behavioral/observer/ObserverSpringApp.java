@@ -45,7 +45,7 @@ public class ObserverSpringApp {
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
 	private void placeOrder(Long orderId) {
-		System.out.println("Halo!");
+		log.debug("Halo!");
 
 		OrderPlacedEvent event = new OrderPlacedEvent(orderId);
 		eventPublisher.publishEvent(event);
@@ -64,22 +64,22 @@ class OrderInStockEvent {
 
 /// ---- stock package
 @Service
+@Slf4j
 class StockManagementService {
-	@Autowired
-	private ApplicationEventPublisher eventPublisher;
 	@EventListener
-	public void checkStock(OrderPlacedEvent event) {
-		System.out.println("Checking stock for products in order " + event.getOrderId());
-		System.out.println("If something goes wrong - throw an exception");
-		eventPublisher.publishEvent(new OrderInStockEvent(event.getOrderId()));
+	public OrderInStockEvent checkStock(OrderPlacedEvent event) {
+		log.debug("Checking stock for products in order " + event.getOrderId());
+		log.debug("If something goes wrong - throw an exception");
+		return new OrderInStockEvent(event.getOrderId());
 	}
 }
 /// ---- invoice package
 @Service
+@Slf4j
 class InvoiceService {
 	@EventListener
 	public void generateInvoice(OrderInStockEvent event) {
-		System.out.println("Generating invoice for order id: " + event.getOrderId());
+		log.debug("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
