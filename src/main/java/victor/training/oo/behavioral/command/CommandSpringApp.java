@@ -11,6 +11,9 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.integration.annotation.MessageEndpoint;
+import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -28,74 +31,93 @@ import static victor.training.oo.stuff.ThreadUtils.sleep;
 @SpringBootApplication
 @EnableBinding({Sink.class, Source.class})
 public class CommandSpringApp {
-	public static void main(String[] args) {
-		SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
-	}
+   public static void main(String[] args) {
+      SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
+   }
 
-	@Bean
-	public ThreadPoolTaskExecutor executor(@Value("${barman.count:2}")int threadCount) {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(threadCount);
-		executor.setMaxPoolSize(threadCount);
-		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("barman-");
-		executor.initialize();
-		executor.setWaitForTasksToCompleteOnShutdown(true);
-		return executor;
-	}
+   @Bean
+   public ThreadPoolTaskExecutor executor(@Value("${barman.count:2}") int threadCount) {
+      ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+      executor.setCorePoolSize(threadCount);
+      executor.setMaxPoolSize(threadCount);
+      executor.setQueueCapacity(500);
+      executor.setThreadNamePrefix("barman-");
+      executor.initialize();
+      executor.setWaitForTasksToCompleteOnShutdown(true);
+      return executor;
+   }
 
 }
 
 @Slf4j
 @Component
 class Drinker implements CommandLineRunner {
-	@Autowired
-	private Barman barman;
+   @Autowired
+   private Barman barman;
 
-	@Autowired
-	private ThreadPoolTaskExecutor pool;
+   @Autowired
+   private ThreadPoolTaskExecutor pool;
 
-	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
-	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
-    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) throws ExecutionException, InterruptedException {
-		log.debug("Submitting my order");
+   // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
+   // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
+   // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
+   public void run(String... args) throws ExecutionException, InterruptedException {
+      log.debug("Submitting my order");
 
-		Future<Beer> futureBeer = barman.pourBeer();
-		Future<Vodka> futureVodka = barman.pourVodka();
-		log.debug("A plecat chelnerul cu comanda mea " );
+      Future<Beer> futureBeer = barman.pourBeer();
+      Future<Vodka> futureVodka = barman.pourVodka();
+      log.debug("A plecat chelnerul cu comanda mea ");
 
-		Beer beer = futureBeer.get();
-		Vodka vodka = futureVodka.get();
-		log.debug("Waiting for my drinks...");
-		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
-		barman.injura("^&$#^!&$(!(*$");
-		log.debug("Ajung acasa in siguranta si ma bag in patutz");
-	}
+      Beer beer = futureBeer.get();
+      Vodka vodka = futureVodka.get();
+      log.debug("Waiting for my drinks...");
+      source.output().send(MessageBuilder.withPayload("BEER").build());
+      log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
+   }
+
+   @Autowired
+   Source source;
 }
 
+
 @Slf4j
+@MessageEndpoint
+class CunoscutDinBar {
+
+   @ServiceActivator(inputChannel = Sink.INPUT)
+   public void handleCinste(String drinkType) {
+      switch (drinkType) {
+         case "BEER":
+            Beer beer = new Beer();
+            log.debug("Ma cintesc cu o {}", beer);
+            break;
+         case "VODKA":
+            Vodka vodka = new Vodka();
+            log.debug("Ma cintesc cu o {}", vodka);
+            break;
+         default:
+            throw new IllegalStateException("Unexpected value: " + drinkType);
+      }
+   }
+}
+
 @Service
+@Slf4j
 class Barman {
+   @Async()
+   public CompletableFuture<Beer> pourBeer() {
+      log.debug("Pouring Beer...");
 
-	@Async
-	public void injura(String uratura) {
-			throw new IllegalArgumentException("Nu mai e bere !");
-	}
-	@Async()
-	public CompletableFuture<Beer> pourBeer() {
-		 log.debug("Pouring Beer...");
+      sleep(1000); // REST catre alt secrivie
+      return CompletableFuture.completedFuture(new Beer());
+   }
 
-		 sleep(1000); // REST catre alt secrivie
-		 return CompletableFuture.completedFuture(new Beer());
-	 }
-
-	 @Async
-	 public CompletableFuture<Vodka> pourVodka() {
-		 log.debug("Pouring Vodka...");
-		 sleep(1000); // CALL IN DB (Proceduri)
-		 return CompletableFuture.completedFuture(new Vodka());
-	 }
+   @Async
+   public CompletableFuture<Vodka> pourVodka() {
+      log.debug("Pouring Vodka...");
+      sleep(1000); // CALL IN DB (Proceduri)
+      return CompletableFuture.completedFuture(new Vodka());
+   }
 }
 
 @Data
