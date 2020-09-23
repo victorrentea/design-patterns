@@ -15,12 +15,6 @@ public class Circle implements Shape {
 		visitor.visit(this);
 	}
 
-	@Override
-	public double getPerimeter() {
-		return
-			getRadius() * 2 *Math.PI;
-	}
-
 	public int getRadius() {
 		return radius;
 	}

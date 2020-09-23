@@ -15,11 +15,6 @@ public class Square implements Shape {
 		visitor.visit(this);
 	}
 
-	@Override
-	public double getPerimeter() {
-		return edge * 4;
-	}
-
 	public int getEdge() {
 		return edge;
 	}
