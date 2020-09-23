@@ -22,58 +22,60 @@ import static victor.training.oo.stuff.ThreadUtils.sleepq;
 @SpringBootApplication
 @EnableBinding({Sink.class, Source.class})
 public class CommandSpringApp {
-	public static void main(String[] args) {
-		SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
-	}
+   public static void main(String[] args) {
+      SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
+   }
 
-	@Bean
-	public ThreadPoolTaskExecutor executor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(1);
-		executor.setMaxPoolSize(1);
-		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("barman-");
-		executor.initialize();
-		executor.setWaitForTasksToCompleteOnShutdown(true);
-		return executor;
-	}
+   @Bean
+   public ThreadPoolTaskExecutor executor() {
+      ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+      executor.setCorePoolSize(1);
+      executor.setMaxPoolSize(1);
+      executor.setQueueCapacity(500);
+      executor.setThreadNamePrefix("barman-");
+      executor.initialize();
+      executor.setWaitForTasksToCompleteOnShutdown(true);
+      return executor;
+   }
 
 }
 
 @Slf4j
 @Component
 class Drinker implements CommandLineRunner {
-	@Autowired
-	private Barman barman;
-	@Autowired
-	private ServiceActivatorPattern serviceActivatorPattern;
+   @Autowired
+   private Barman barman;
+   @Autowired
+   private ServiceActivatorPattern serviceActivatorPattern;
 
-	// TODO [1] inject and use a ThreadPoolTaskExecutor.submit
-	// TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
-    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-	public void run(String... args) {
-		log.debug("Submitting my order");
-		Beer beer = barman.pourBeer();
-		Vodka vodka = barman.pourVodka();
-		log.debug("Waiting for my drinks...");
-		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
-	}
+   // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
+   // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
+   // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
+   public void run(String... args) {
+      log.debug("Submitting my order");
+      long t0 = System.currentTimeMillis();
+      log.debug("Waiting for my drinks...");
+      Beer beer = barman.pourBeer();
+      Vodka vodka = barman.pourVodka();
+      long t1 = System.currentTimeMillis();
+      log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
+   }
 }
 
 @Slf4j
 @Service
 class Barman {
-	public Beer pourBeer() {
-		 log.debug("Pouring Beer...");
-		 sleepq(1000);
-		 return new Beer();
-	 }
-	
-	 public Vodka pourVodka() {
-		 log.debug("Pouring Vodka...");
-		 sleepq(1000);
-		 return new Vodka();
-	 }
+   public Beer pourBeer() {
+      log.debug("Pouring Beer...");
+      sleepq(1000);
+      return new Beer();
+   }
+
+   public Vodka pourVodka() {
+      log.debug("Pouring Vodka...");
+      sleepq(1000);
+      return new Vodka();
+   }
 }
 
 @Data
