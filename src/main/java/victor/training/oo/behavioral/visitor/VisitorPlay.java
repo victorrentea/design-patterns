@@ -18,21 +18,14 @@ public class VisitorPlay {
 		double totalPerimeter = 0;
 
 		for (Shape shape : shapes) {
-			if (shape instanceof Square) {
-				Square s = (Square) shape;
-				totalPerimeter += s.getEdge() * 4;
-			}
-			if (shape instanceof Circle) {
-				Circle s = (Circle) shape;
-				totalPerimeter += s.getRadius() * 2 *Math.PI;
-			}
+			totalPerimeter+=shape.getPerimeter();
 		}
 
 //		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
 //		for (Shape shape : shapes) {
 //			shape.accept(perimeterCalculator);
 //		}
-		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
+//		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
 
 		System.out.println("Total area: " + 0); // TODO
