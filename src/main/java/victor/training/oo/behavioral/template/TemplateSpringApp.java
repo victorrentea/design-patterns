@@ -20,18 +20,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com", true);
 	}
 
 	private void shipOrder() {
 		// other logic
-		// TODO send order shipped email 'similar to how send order received was implemented'
+		// TODO send order shipped email 'similar to how send "order received" was implemented'
+		new EmailService().sendOrderReceivedEmail("a@b.com", false);
 	}
 }
 
 class EmailService {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendOrderReceivedEmail(String emailAddress, boolean receivedEmail) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -39,8 +40,13 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			email.setSubject("Order Received");
-			email.setBody("Thank you for your order");
+			if (receivedEmail) {
+				email.setSubject("Order Received");
+				email.setBody("Thank you for your order");
+			} else {
+				email.setSubject("Order Shipped");
+				email.setBody("Ti-am trimis. Speram sa ajunga (de data asta).");
+			}
 			boolean success = context.send(email);
 			if (success) break;
 		}
