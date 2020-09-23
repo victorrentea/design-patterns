@@ -1,6 +1,7 @@
 package victor.training.oo.behavioral.visitor;
 
 import victor.training.oo.behavioral.visitor.model.Circle;
+import victor.training.oo.behavioral.visitor.model.Rectangle;
 import victor.training.oo.behavioral.visitor.model.Square;
 
 public class AreaVisitor implements ShapeVisitor {
@@ -15,6 +16,11 @@ public class AreaVisitor implements ShapeVisitor {
    public void visit(Circle circle) {
       sum += circle.getRadius() * circle.getRadius() * Math.PI;
 
+   }
+
+   @Override
+   public void visit(Rectangle rectangle) {
+      sum += rectangle.getHeight() * rectangle.getWidth();
    }
 
    public double getSum() {
