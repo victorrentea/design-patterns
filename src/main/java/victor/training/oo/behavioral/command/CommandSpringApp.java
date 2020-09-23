@@ -69,15 +69,23 @@ class Drinker implements CommandLineRunner {
 		Vodka vodka = futureVodka.get();
 		log.debug("Waiting for my drinks...");
 		log.debug("Got my order! Thank you lad! " + asList(beer, vodka));
+		barman.injura("^&$#^!&$(!(*$");
+		log.debug("Ajung acasa in siguranta si ma bag in patutz");
 	}
 }
 
 @Slf4j
 @Service
 class Barman {
+
+	@Async
+	public void injura(String uratura) {
+			throw new IllegalArgumentException("Nu mai e bere !");
+	}
 	@Async()
 	public CompletableFuture<Beer> pourBeer() {
 		 log.debug("Pouring Beer...");
+
 		 sleep(1000); // REST catre alt secrivie
 		 return CompletableFuture.completedFuture(new Beer());
 	 }
