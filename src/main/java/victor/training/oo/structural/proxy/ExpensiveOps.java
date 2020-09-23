@@ -71,7 +71,9 @@ public class ExpensiveOps /*implements IExpensiveOps*/{
 	private static final BigDecimal TWO = new BigDecimal("2");
 
 	@Cacheable("primes")
+	@LoggedMethod
 	public Boolean isPrime(int n) {
+		new RuntimeException().printStackTrace();
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
@@ -94,8 +96,7 @@ public class ExpensiveOps /*implements IExpensiveOps*/{
 	@SneakyThrows
 	public String hashAllFiles(File folder) {
 		log.debug("10000169 is prime ? ");
-//		log.debug("Got: " + isPrime(10000169) + "\n"); // apelurile locale nu sunt interceptate?
-
+		log.debug("Got: " + isPrime(10000169) + "\n"); // apelurile locale nu sunt interceptate?
 
 		log.debug("Computing hashAllFiles({})", folder);
 		MessageDigest md = MessageDigest.getInstance("MD5");

@@ -1,13 +1,19 @@
 package victor.training.oo.structural.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 @Slf4j
 @EnableCaching
@@ -55,4 +61,24 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 
+}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LoggedMethod {
+}
+
+@Slf4j
+@Aspect
+@Component
+class LoggingInterceptor {
+//	@Around("execution(* victor..*.*(..))")
+	@Around("execution(* *(..)) && @annotation(victor.training.oo.structural.proxy.LoggedMethod)")
+	public Object m(ProceedingJoinPoint pjp) throws Throwable {
+		log.info("Calling method {}({})...", pjp.getSignature().getName(), pjp.getArgs());
+		long t0 = System.currentTimeMillis();
+		Object result = pjp.proceed();
+
+		long t1 = System.currentTimeMillis();
+		log.info("Took {} ms", t1 - t0);
+		return result;
+	}
 }
