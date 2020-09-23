@@ -11,11 +11,13 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -49,8 +51,6 @@ public class CommandSpringApp {
 class Drinker implements CommandLineRunner {
 	@Autowired
 	private Barman barman;
-	@Autowired
-	private ServiceActivatorPattern serviceActivatorPattern;
 
 	@Autowired
 	private ThreadPoolTaskExecutor pool;
@@ -61,8 +61,8 @@ class Drinker implements CommandLineRunner {
 	public void run(String... args) throws ExecutionException, InterruptedException {
 		log.debug("Submitting my order");
 
-		Future<Beer> futureBeer = pool.submit(() -> barman.pourBeer());
-		Future<Vodka> futureVodka = pool.submit(() -> barman.pourVodka());
+		Future<Beer> futureBeer = barman.pourBeer();
+		Future<Vodka> futureVodka = barman.pourVodka();
 		log.debug("A plecat chelnerul cu comanda mea " );
 
 		Beer beer = futureBeer.get();
@@ -75,16 +75,18 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-	public Beer pourBeer() {
+	@Async()
+	public CompletableFuture<Beer> pourBeer() {
 		 log.debug("Pouring Beer...");
 		 sleep(1000); // REST catre alt secrivie
-		 return new Beer();
+		 return CompletableFuture.completedFuture(new Beer());
 	 }
-	
-	 public Vodka pourVodka() {
+
+	 @Async
+	 public CompletableFuture<Vodka> pourVodka() {
 		 log.debug("Pouring Vodka...");
 		 sleep(1000); // CALL IN DB (Proceduri)
-		 return new Vodka();
+		 return CompletableFuture.completedFuture(new Vodka());
 	 }
 }
 
