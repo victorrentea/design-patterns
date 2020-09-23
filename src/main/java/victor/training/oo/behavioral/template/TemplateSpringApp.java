@@ -35,9 +35,6 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 }
 
-interface EmailComposer {
-   void compose(Email email);
-}
 class Emails {
    public static void composeEmailReceived(Email email) {
       email.setSubject("Order Received");
@@ -50,6 +47,10 @@ class Emails {
 }
 @Service
 class EmailSender {
+   @FunctionalInterface
+   interface EmailComposer {
+      void compose(Email email);
+   }
    public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
