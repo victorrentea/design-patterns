@@ -7,7 +7,7 @@ import victor.training.oo.structural.facade.repo.CustomerRepository;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerService {
+public class RegisterCustomerService {
 
    private final CustomerRepository customerRepo;
 
@@ -29,4 +29,4 @@ public class CustomerService {
       customerRepo.save(customer);
       // Heavy logic
    }
-}
+  }
