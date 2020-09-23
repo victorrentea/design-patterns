@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @SpringBootApplication
@@ -44,11 +45,13 @@ public class ObserverSpringApp {
 	// TODO [2] control the order
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
-	private void placeOrder(Long orderId) {
+	@Transactional
+	public void placeOrder(Long orderId) {
 		log.debug("Halo!");
 
 		OrderPlacedEvent event = new OrderPlacedEvent(orderId);
 		eventPublisher.publishEvent(event);
+		log.debug("S-a terminatflowul");
 	}
 }
 
