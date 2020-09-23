@@ -20,23 +20,37 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // other logic
-      new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
+      new EmailSender(Emails::composeEmailReceived).sendEmail("a@b.com");
    }
 
    private void shipOrder() {
+      EmailComposer c = email -> System.out.println("Orice");
       // other logic
       // TODO send order shipped email 'similar to how send "order received" was implemented'
-      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
+      new EmailSender(Emails::composeEmailShipped).sendEmail("a@b.com");
    }
 }
 
+interface EmailComposer {
+   void compose(Email email);
+}
+class Emails {
+   public static void composeEmailReceived(Email email) {
+      email.setSubject("Order Received");
+      email.setBody("Thank you for your order");
+   }
+   public static void composeEmailShipped(Email email) {
+      email.setSubject("Order Shipped");
+      email.setBody("Ti-am trimis. Speram sa ajunga (de data asta).");
+   }
+}
 class EmailSender {
+
    private final EmailComposer composer;
 
    public EmailSender(EmailComposer composer) {
       this.composer = composer;
    }
-
    public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
@@ -50,23 +64,7 @@ class EmailSender {
          if (success) break;
       }
    }
-}
 
-interface EmailComposer {
-   void compose(Email email);
-}
-class OrderReceivedEmailComposer implements EmailComposer {
-   public void compose(Email email) {
-      email.setSubject("Order Received");
-      email.setBody("Thank you for your order");
-   }
-}
-
-class OrderShippedEmailComposer implements EmailComposer {
-   public void compose(Email email) {
-      email.setSubject("Order Shipped");
-      email.setBody("Ti-am trimis. Speram sa ajunga (de data asta).");
-   }
 }
 
 class EmailContext {
