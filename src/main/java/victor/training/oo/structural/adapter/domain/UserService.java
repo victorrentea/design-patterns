@@ -11,7 +11,7 @@ import java.util.List;
 // DOMENIUL MEU. AL MEU. My Preciousssss!
 public class UserService {
    @Autowired
-   private LdapServiceAdapter adapter;
+   private ILdapServiceAdapter adapter;
 
    public void importUserFromLdap(String username) {
       List<User> list = adapter.searchByUsername(username);
