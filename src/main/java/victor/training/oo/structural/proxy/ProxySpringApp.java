@@ -1,6 +1,7 @@
 package victor.training.oo.structural.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,14 +24,16 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [4] Spring aspect 
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
+	@Autowired
+	private ExpensiveOps ops;
 	public void run(String... args) throws Exception {
 
-		businessMethod(new ExpensiveOpsWithCache(new ExpensiveOps()));
+		businessMethod();
 
 //		businessMethod(new ExpensiveOps());
 	}
 
-	private void businessMethod(IExpensiveOps ops) {
+	private void businessMethod() {
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
