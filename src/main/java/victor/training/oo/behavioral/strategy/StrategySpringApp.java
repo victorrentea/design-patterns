@@ -35,6 +35,7 @@ class CustomsService {
 		return taxComputer.compute(tobaccoValue, regularValue);
 	}
 
+	//factory method:
 	private TaxComputer findTaxComputerByOriginCountry(String originCountry) {
 		switch (originCountry) {
 			case "UK": return new UKTaxComputer();
