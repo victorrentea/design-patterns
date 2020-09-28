@@ -3,34 +3,23 @@ package victor.training.oo.creational.singleton;
 public class ServiceLocatorPlay {
     public static void main(String[] args) {
 
-        // from test code
-//        ServiceLocator.setTestImplem(B.class, mockB);
+        // pana aici, nu s-a chemat inca constr Unica()
+        System.out.println("----");
+        Unica unica = Unica.getInstance();
     }
 }
 
-class A {
-    private final B b;
+class Unica {
+    private static Unica INSTANCE;
 
-    public A(B b) {
-        this.b = b;
+    private Unica() {
+        System.out.println("NEW INSTANCE");
     }
 
-    public void m() {
-//        B b = ServiceLocator.getObject(B.class);
-        String c = b.getConfig();
-
+    public static Unica getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Unica();
+        }
+        return INSTANCE;
     }
-}
-class B {
-    Repo c = new Repo();
-    public B() {
-    }
-
-    public String getConfig() {
-        return null;
-    }
-}
-class Repo {
-
-
 }
