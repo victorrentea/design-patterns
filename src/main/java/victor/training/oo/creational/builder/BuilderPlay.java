@@ -3,23 +3,21 @@ package victor.training.oo.creational.builder;
 //import java.util.ArrayList; // INITIAL
 //import java.util.List; // INITIAL
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BuilderPlay {
 
 	public static void main(String[] args) {
-		
-		Customer customer = new Customer();
-		customer.setName("John Doe");
-		List<String> labels = new ArrayList<>();
-		labels.add("Label1");
-		customer.setLabels(labels);
-		Address address = new Address();
-		address.setStreetName("Viorele");
-		address.setStreetNumber(4);
-		address.setCity("Bucharest");
-		customer.setAddress(address);
+
+		Customer customer = new CustomerBuilder()
+			.withName("John Doe")
+			.withLabels("Label1")
+			.withAddress(new AddressBuilder()
+				.withCity("Chisinau")
+				.withStreetName("Stefan cel Mare"))
+//			.persist()
+//			.withInvalidAddress()
+			.build();
+
+
 
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
