@@ -52,36 +52,31 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final InvoiceExporter invoiceExporter;
-	private final LabelService labelService;
+	private final CountryRepo countryRepo;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
+	public OrderExporter(InvoiceExporter invoiceExporter, CountryRepo countryRepo) {
 		this.invoiceExporter = invoiceExporter;
-		this.labelService = labelService;
+		this.countryRepo = countryRepo;
 	}
 
 	public void export(Locale locale) {
+		LabelService labelService = new LabelService(countryRepo);
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
 @Service
 class InvoiceExporter {
 	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
-	private final LabelService labelService;
 
-	public InvoiceExporter(LabelService labelService) {
-		this.labelService = labelService;
-	}
-
-	public void exportInvoice() {
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
-@Service
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private CountryRepo countryRepo;
@@ -90,7 +85,7 @@ class LabelService {
 	}
 
 	private Map<String, String> countryNames;
-	
+
 	public void load(Locale locale) {
 		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
