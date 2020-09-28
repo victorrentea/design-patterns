@@ -31,22 +31,26 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return new UKTaxComputer().compute(tobaccoValue, regularValue);
-		case "CN": return new ChinaTaxComputer().compute(tobaccoValue, regularValue);
-		case "FR":
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxComputer().compute(tobaccoValue);
-		default: throw new IllegalArgumentException("JDD: Hope-Driven:Not a valid country ISO2 code: " + originCountry);
-		} 
+		TaxComputer taxComputer = findTaxComputerByOriginCountry(originCountry);
+		return taxComputer.compute(tobaccoValue, regularValue);
 	}
 
-
-
-
-
+	private TaxComputer findTaxComputerByOriginCountry(String originCountry) {
+		switch (originCountry) {
+			case "UK": return new UKTaxComputer();
+			case "CN": return new ChinaTaxComputer();
+			case "FR":
+			case "ES": // other EU country codes...
+			case "RO": return new EUTaxComputer();
+			default: throw new IllegalArgumentException("JDD: Hope-Driven:Not a valid country ISO2 code: " + originCountry);
+		}
+	}
 }
-class ChinaTaxComputer {
+interface TaxComputer {
+	double compute(double tobaccoValue, double regularValue);
+}
+
+class ChinaTaxComputer implements TaxComputer {
 		public double compute(double tobaccoValue, double regularValue) {
 		// + 20 linii
 		// + 20 linii
@@ -54,7 +58,7 @@ class ChinaTaxComputer {
 		return tobaccoValue + regularValue;
 	}
 }
-class UKTaxComputer {
+class UKTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// gigel las si eu aici 10 linii de cod
 		// maria: si eu + 15
@@ -62,8 +66,11 @@ class UKTaxComputer {
 		return tobaccoValue/2 + regularValue;
 	}
 }
-class EUTaxComputer {
-	public double compute(double tobaccoValue) {
+class EUTaxComputer implements TaxComputer {
+//	public double compute(double... array) {       compute(1);   compute(1,2), compute(1,2,3,4,5,6,7,9)
+//	public double compute(double[] dinCareAmNevoieDe2_ghiciCare) {
+//	public double compute(OClasaMareCu10Campuri dinCareAmNevoieDe2_ghiciCare) {
+	public double compute(double tobaccoValue, double regularValue) {
 		// multa logica
 		return tobaccoValue/3;
 	}
