@@ -9,41 +9,39 @@ import static victor.training.oo.creational.builder.DummyTestData.aValidCustomer
 // cand prea multe teste depind de clasa asta, tai-o in bucati.
 class DummyTestData {
 
-	public static CustomerBuilder aValidCustomer() {
-		return new CustomerBuilder()
-			.withName("John Doe")
-			.withAddress(aValidAddress());
+	public static Customer aValidCustomer() {
+		return new Customer()
+			.setName("John Doe")
+			.setAddress(aValidAddress());
 	}
 
-	public static AddressBuilder aValidAddress() {
-		return new AddressBuilder()
-			.withCity("Chisinau")
-			.withStreetName(""); // colegu modifica instanta dummy folosita de 100 de teste.
+	public static Address aValidAddress() {
+		return new Address()
+			.setCity("Chisinau")
+			.setStreetName(""); // colegu modifica instanta dummy folosita de 100 de teste.
 	}
 }
-
 public class CustomerValidatorTest {
 
 	private CustomerValidator validator = new CustomerValidator();
 
-
 	@Test
 	public void validCustomer_ok() {
-		Customer customer = aValidCustomer().build();
+		Customer customer = aValidCustomer();
 		validator.validate(customer);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsForNullCustomerName() {
-		Customer customer = aValidCustomer().withName(null).build();
+		Customer customer = aValidCustomer().setName(null)
+			.addLabels("Label");
 		validator.validate(customer);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsForNullAddressCity() {
 		Customer customer = aValidCustomer()
-			.withAddress(aValidAddress().withCity(null))
-			.build();
+			.setAddress(aValidAddress().setCity(null));
 		validator.validate(customer);
 	}
 

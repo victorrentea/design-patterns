@@ -1,6 +1,7 @@
 package victor.training.oo.creational.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -16,16 +17,18 @@ public class Customer {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public Customer setAddress(Address address) {
 		this.address = address;
+		return this;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public Customer setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public String getPhone() {
@@ -52,4 +55,8 @@ public class Customer {
 		this.createDate = createDate;
 	}
 
+	public Customer addLabels(String... labels) {
+		this.labels.addAll(Arrays.asList(labels));
+		return this;
+	}
 }
