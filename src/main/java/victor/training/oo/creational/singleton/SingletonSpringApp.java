@@ -10,8 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -55,44 +53,62 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final InvoiceExporter invoiceExporter;
-	private final LabelService labelService;
+	private final LabelServiceFactory labelServiceFactory;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
+	public OrderExporter(InvoiceExporter invoiceExporter, LabelServiceFactory labelServiceFactory) {
 		this.invoiceExporter = invoiceExporter;
-		this.labelService = labelService;
+		this.labelServiceFactory = labelServiceFactory;
 	}
 
 	public void export(Locale locale) {
+		LabelService labelService = labelServiceFactory.createLabelService(locale);
 		log.debug("Oare ce mi-a injectat Springul: " + labelService.getClass());
 		log.debug("Running export in " + locale);
-		labelService.load(locale);
+
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
 @Service
 class InvoiceExporter {
 	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
-	private final LabelService labelService;
 
-	InvoiceExporter(LabelService labelService) {
-		this.labelService = labelService;
-	}
-
-	public void exportInvoice() {
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
-// NOT Thread safe!
 @Service
-@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+class LabelServiceFactory {
+	private final CountryRepo countryRepo;
+
+	LabelServiceFactory(CountryRepo countryRepo) {
+		this.countryRepo = countryRepo;
+	}
+
+	public LabelService createLabelService(Locale locale) {
+		LabelService labelService = new LabelService();
+		labelService.setCountryRepo(countryRepo);
+		labelService.init();
+		labelService.load(locale);
+		return labelService;
+	}
+}
+
+// NOT Thread safe!
+//@Service
+//@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private CountryRepo countryRepo;
-	public LabelService(CountryRepo countryRepo) {
+
+	public void setCountryRepo(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
+	}
+
+	public void init() {
+		System.out.println("TREBUIE CHEMATA INAINTE CA INSTANTA SA FIE USABLE");
 	}
 
 	private Map<String, String> countryNames;
