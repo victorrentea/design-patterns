@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -52,15 +53,14 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final InvoiceExporter invoiceExporter;
-	private final CountryRepo countryRepo;
+	private final LabelService labelService;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, CountryRepo countryRepo) {
+	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
 		this.invoiceExporter = invoiceExporter;
-		this.countryRepo = countryRepo;
+		this.labelService = labelService;
 	}
 
 	public void export(Locale locale) {
-		LabelService labelService = new LabelService(countryRepo);
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
@@ -78,6 +78,8 @@ class InvoiceExporter {
 }
 
 // NOT Thread safe!
+@Service
+@Scope("prototype")
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private CountryRepo countryRepo;
