@@ -49,7 +49,6 @@ class ExpensiveOpsWithCache implements IExpensiveOps{
          System.out.println("Took " + dt + " millis");
       }
    }
-
 }
 
 @Slf4j
