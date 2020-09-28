@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -35,16 +38,24 @@ class CustomsService {
 		return taxComputer.compute(tobaccoValue, regularValue);
 	}
 
+	private static final Map<String, TaxComputer> computerPerCountry = new HashMap<>();
+	static {
+		// Mapa ar fi singura varianta daca asocierea intre tara si clasa o iei
+		// din fisier de proprietati/yaml
+		// UK: victor.training.oo.behavioral.strategy.UKTaxComputer
+		computerPerCountry.put("UK", new UKTaxComputer());
+		computerPerCountry.put("CN", new ChinaTaxComputer());
+		computerPerCountry.put("RO", new EUTaxComputer());
+		computerPerCountry.put("ES", new EUTaxComputer());
+		computerPerCountry.put("FR", new EUTaxComputer());
+	}
+
 	//factory method:
 	private TaxComputer findTaxComputerByOriginCountry(String originCountry) {
-		switch (originCountry) {
-			case "UK": return new UKTaxComputer();
-			case "CN": return new ChinaTaxComputer();
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO": return new EUTaxComputer();
-			default: throw new IllegalArgumentException("JDD: Hope-Driven:Not a valid country ISO2 code: " + originCountry);
-		}
+		// List<TaxComputer> toate =
+		// for
+		return computerPerCountry.get(originCountry);
+//			default: throw new IllegalArgumentException("JDD: Hope-Driven:Not a valid country ISO2 code: " + originCountry);
 	}
 }
 interface TaxComputer {
