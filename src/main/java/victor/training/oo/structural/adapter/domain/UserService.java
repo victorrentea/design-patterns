@@ -6,6 +6,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+//abstract class AbstC {
+//   int x= 2;
+//    int sum(int b, int a) {
+//      return a + b + ++ x;
+//   }
+//}
+//interface I2 {
+//   int x= 2;
+//   default int sum(int b, int a) {
+//      return a + b + ++x;
+//   }
+//}
+//class P implements I2 {
+//
+//}
+
 @Slf4j
 @Service
 // DOMENIUL MEU. AL MEU. My Preciousssss!
