@@ -4,6 +4,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -18,17 +21,19 @@ import java.util.Map;
 
 interface IExpensiveOps {
    Boolean isPrime(int n);
+
    String hashAllFiles(File folder);
 }
 
 //Decorator
-class ExpensiveOpsWithCache implements IExpensiveOps{
+class ExpensiveOpsWithCache implements IExpensiveOps {
    private Map<Integer, Boolean> cache = new HashMap<>();
    private final IExpensiveOps expensiveOps;
 
    public ExpensiveOpsWithCache(IExpensiveOps expensiveOps) {
       this.expensiveOps = expensiveOps;
    }
+
    public Boolean isPrime(int n) {
       if (cache.containsKey(n)) {
          return cache.get(n);
@@ -54,9 +59,14 @@ class ExpensiveOpsWithCache implements IExpensiveOps{
 
 @Service
 @Slf4j
-public class ExpensiveOps /*implements IExpensiveOps*/{
+public class ExpensiveOps /*implements IExpensiveOps*/ {
    private static final BigDecimal TWO = new BigDecimal("2");
+
+//   @Transactional
+   @Cacheable("primes")
+   // undeva Spring tine un HashMap<Integer, Boolean> primes =
    public Boolean isPrime(int n) {
+      new RuntimeException().printStackTrace();
       log.debug("Computing isPrime({})", n);
       BigDecimal number = new BigDecimal(n);
       if (number.compareTo(TWO) <= 0) {
@@ -75,9 +85,17 @@ public class ExpensiveOps /*implements IExpensiveOps*/{
       return true;
    }
 
+   @Autowired
+   private ExpensiveOps myselfProxied;
 
+   @Cacheable("folders")
    @SneakyThrows
    public String hashAllFiles(File folder) {
+
+      log.debug("10000169 is prime ? ");
+      log.debug("Got: " + myselfProxied.isPrime(10_000_169) + "\n");
+
+
       log.debug("Computing hashAllFiles({})", folder);
       MessageDigest md = MessageDigest.getInstance("MD5");
       for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
@@ -91,4 +109,8 @@ public class ExpensiveOps /*implements IExpensiveOps*/{
       return DatatypeConverter.printHexBinary(digest).toUpperCase();
    }
 
+   @CacheEvict("folders")
+   public void clearFolderCache(File folders) {
+      // EMpty method. Do not delete. Let the magic happen.
+   }
 }

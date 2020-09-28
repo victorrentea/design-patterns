@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 
 import java.io.File;
@@ -34,6 +35,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 
 	private void businessMethod() {
+		log.debug("Spring mi-a injectat " + ops.getClass());
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -44,8 +46,18 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
+		// cand gasesti modificarea
+
+		System.out.println(cacheManager.getCache("folders").get(new File(".")));
+
+		ops.clearFolderCache(new File("."));
+
+		System.out.println(cacheManager.getCache("folders").get(new File(".")));
 		log.debug("Folder MD5: ");
 		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
+
+	@Autowired
+	CacheManager cacheManager;
 
 }
