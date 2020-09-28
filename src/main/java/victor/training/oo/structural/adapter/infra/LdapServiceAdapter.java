@@ -2,7 +2,7 @@ package victor.training.oo.structural.adapter.infra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import victor.training.oo.structural.adapter.domain.ILdapServiceAdapter;
+import victor.training.oo.structural.adapter.domain.ExternalUserService;
 import victor.training.oo.structural.adapter.domain.User;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class LdapServiceAdapter implements ILdapServiceAdapter {
+public class LdapServiceAdapter implements ExternalUserService {
    @Autowired
    private LdapUserWebserviceClient wsClient;
 
