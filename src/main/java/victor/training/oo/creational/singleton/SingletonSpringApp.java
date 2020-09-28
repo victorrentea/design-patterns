@@ -3,7 +3,6 @@ package victor.training.oo.creational.singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +47,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
 		new Thread(() -> exporter.export(Locale.FRENCH)).start();
+		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
 	}
 }
 
@@ -54,34 +55,39 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final InvoiceExporter invoiceExporter;
-	private final ObjectFactory<LabelService> labelServiceFactory;
+	private final LabelService labelService;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, ObjectFactory<LabelService> labelServiceFactory) {
+	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
 		this.invoiceExporter = invoiceExporter;
-		this.labelServiceFactory = labelServiceFactory;
+		this.labelService = labelService;
 	}
 
 	public void export(Locale locale) {
-		LabelService labelService = labelServiceFactory.getObject();
+		log.debug("Oare ce mi-a injectat Springul: " + labelService.getClass());
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
-		invoiceExporter.exportInvoice(labelService);
+		invoiceExporter.exportInvoice();
 	}
 }
 
 @Service
 class InvoiceExporter {
 	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
+	private final LabelService labelService;
 
-	public void exportInvoice(LabelService labelService) {
+	InvoiceExporter(LabelService labelService) {
+		this.labelService = labelService;
+	}
+
+	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 // NOT Thread safe!
 @Service
-@Scope("prototype")
+@Scope(scopeName = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private CountryRepo countryRepo;
