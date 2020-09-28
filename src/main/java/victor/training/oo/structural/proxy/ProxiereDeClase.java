@@ -8,7 +8,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class ProxiereDeInterfete {
+public class ProxiereDeClase {
 
    public static void main(String[] args) {
 
