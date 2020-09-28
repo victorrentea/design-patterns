@@ -2,22 +2,30 @@ package victor.training.oo.creational.builder;
 
 import org.junit.Test;
 
-public class CustomerValidatorTest {
+import static victor.training.oo.creational.builder.DummyTestData.aValidAddress;
+import static victor.training.oo.creational.builder.DummyTestData.aValidCustomer;
 
-	private CustomerValidator validator = new CustomerValidator();
+// Object Mother F..
+// cand prea multe teste depind de clasa asta, tai-o in bucati.
+class DummyTestData {
 
-	private CustomerBuilder aValidCustomer() {
+	public static CustomerBuilder aValidCustomer() {
 		return new CustomerBuilder()
 			.withName("John Doe")
 			.withAddress(aValidAddress());
 	}
 
-	private AddressBuilder aValidAddress() {
+	public static AddressBuilder aValidAddress() {
 		return new AddressBuilder()
 			.withCity("Chisinau")
-			.withStreetName("St mare")
-			.withCity("Chisinau");
+			.withStreetName(""); // colegu modifica instanta dummy folosita de 100 de teste.
 	}
+}
+
+public class CustomerValidatorTest {
+
+	private CustomerValidator validator = new CustomerValidator();
+
 
 	@Test
 	public void validCustomer_ok() {
@@ -30,6 +38,7 @@ public class CustomerValidatorTest {
 		Customer customer = aValidCustomer().withName(null).build();
 		validator.validate(customer);
 	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsForNullAddressCity() {
 		Customer customer = aValidCustomer()
