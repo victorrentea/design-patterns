@@ -1,10 +1,14 @@
 package victor.training.oo.behavioral.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
@@ -22,8 +26,9 @@ public class StrategySpringApp implements CommandLineRunner {
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
+	@Autowired
+	CustomsService service;
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
@@ -32,36 +37,39 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 }
 
+@Service
 class CustomsService {
+	private Map<String, TaxComputer> computerMap = new HashMap<>();
+
+	public CustomsService(List<TaxComputer> allComputers) {
+		if (allComputers.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		for (TaxComputer computer : allComputers) {
+			for (String country : computer.getApplicableCountries()) {
+				computerMap.put(country, computer);
+			}
+		}
+	}
+
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxComputer taxComputer = findTaxComputerByOriginCountry(originCountry);
 		return taxComputer.compute(tobaccoValue, regularValue);
 	}
 
-	private static final Map<String, TaxComputer> computerPerCountry = new HashMap<>();
-	static {
-		// Mapa ar fi singura varianta daca asocierea intre tara si clasa o iei
-		// din fisier de proprietati/yaml
-		// UK: victor.training.oo.behavioral.strategy.UKTaxComputer
-		computerPerCountry.put("UK", new UKTaxComputer());
-		computerPerCountry.put("CN", new ChinaTaxComputer());
-		computerPerCountry.put("RO", new EUTaxComputer());
-		computerPerCountry.put("ES", new EUTaxComputer());
-		computerPerCountry.put("FR", new EUTaxComputer());
-	}
-
-	//factory method:
 	private TaxComputer findTaxComputerByOriginCountry(String originCountry) {
-		// List<TaxComputer> toate =
-		// for
-		return computerPerCountry.get(originCountry);
-//			default: throw new IllegalArgumentException("JDD: Hope-Driven:Not a valid country ISO2 code: " + originCountry);
+		if (!computerMap.containsKey(originCountry)) {
+			throw new IllegalArgumentException("Unkown country:  " + originCountry);
+		}
+		return computerMap.get(originCountry);
 	}
 }
 interface TaxComputer {
 	double compute(double tobaccoValue, double regularValue);
+	List<String> getApplicableCountries();
 }
 
+@Service
 class ChinaTaxComputer implements TaxComputer {
 		public double compute(double tobaccoValue, double regularValue) {
 		// + 20 linii
@@ -69,7 +77,13 @@ class ChinaTaxComputer implements TaxComputer {
 		// + 20 linii
 		return tobaccoValue + regularValue;
 	}
+
+	@Override
+	public List<String> getApplicableCountries() {
+		return Arrays.asList("CN");
+	}
 }
+@Service
 class UKTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// gigel las si eu aici 10 linii de cod
@@ -77,7 +91,13 @@ class UKTaxComputer implements TaxComputer {
 		// Oleg: + 25
 		return tobaccoValue/2 + regularValue;
 	}
+
+	@Override
+	public List<String> getApplicableCountries() {
+		return Arrays.asList("UK");
+	}
 }
+@Service
 class EUTaxComputer implements TaxComputer {
 //	public double compute(double... array) {       compute(1);   compute(1,2), compute(1,2,3,4,5,6,7,9)
 //	public double compute(double[] dinCareAmNevoieDe2_ghiciCare) {
@@ -85,5 +105,10 @@ class EUTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
 		// multa logica
 		return tobaccoValue/3;
+	}
+
+	@Override
+	public List<String> getApplicableCountries() {
+		return Arrays.asList("FR","ES","RO");
 	}
 }
