@@ -77,6 +77,7 @@ class InvoiceExporter {
 	}
 }
 
+// NOT Thread safe!
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private CountryRepo countryRepo;
@@ -90,7 +91,7 @@ class LabelService {
 		log.debug("load() in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
-	
+
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		return countryNames.get(iso2Code.toUpperCase());
