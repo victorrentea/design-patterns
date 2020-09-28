@@ -3,13 +3,13 @@ package victor.training.oo.creational.singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
@@ -54,15 +54,15 @@ public class SingletonSpringApp implements CommandLineRunner{
 class OrderExporter  {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final InvoiceExporter invoiceExporter;
-	private final ApplicationContext totSpringu;
+	private final ObjectFactory<LabelService> labelServiceFactory;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, ApplicationContext totSpringu) {
+	public OrderExporter(InvoiceExporter invoiceExporter, ObjectFactory<LabelService> labelServiceFactory) {
 		this.invoiceExporter = invoiceExporter;
-		this.totSpringu = totSpringu;
+		this.labelServiceFactory = labelServiceFactory;
 	}
 
 	public void export(Locale locale) {
-		LabelService labelService = totSpringu.getBean(LabelService.class);
+		LabelService labelService = labelServiceFactory.getObject();
 		log.debug("Running export in " + locale);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
