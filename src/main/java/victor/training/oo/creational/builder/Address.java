@@ -1,17 +1,16 @@
 package victor.training.oo.creational.builder;
 
 public class Address {
-	private String streetName;
-	private Integer streetNumber;
+	private String streetAddress;
 	private String city;
 	private String country;
 
-	public String getStreetName() {
-		return streetName;
+	public String getStreetAddress() {
+		return streetAddress;
 	}
 
-	public void setStreetName(String streetName) {
-		this.streetName = streetName;
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
 	}
 
 	public String getCity() {
@@ -30,12 +29,4 @@ public class Address {
 		this.country = country;
 	}
 
-	public final Integer getStreetNumber() {
-		return streetNumber;
-	}
-
-	public final void setStreetNumber(Integer streetNumber) {
-		this.streetNumber = streetNumber;
-	}
-	
 }

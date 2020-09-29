@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Customer {
-
+	private Long id;
 	private String name;
 	private String phone;
 	private List<String> labels = new ArrayList<>();
