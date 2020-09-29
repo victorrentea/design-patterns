@@ -12,10 +12,13 @@ public class ArchUnitTest {
       JavaClasses importedClasses = new ClassFileImporter().importPackages("victor");
 
       ArchRule rule = ArchRuleDefinition.classes().that().resideInAPackage("..repo..")
-          .should().onlyBeAccessed().byAnyPackage("..facade..");
+          .should().onlyBeAccessed().byAnyPackage("..facade..", "..service..");
+
 
       rule.evaluate(importedClasses).handleViolations((collection, s) -> System.out.printf(collection + ""));
 //      rule.check(importedClasses);
 
+      ArchRule rule2 = ArchRuleDefinition.classes().that().resideInAPackage("..service..")
+          .should().onlyBeAccessed().byAnyPackage("..service..","..controller..");
    }
 }
