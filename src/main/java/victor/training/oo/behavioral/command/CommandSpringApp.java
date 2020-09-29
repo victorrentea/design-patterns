@@ -82,7 +82,7 @@ class Beutor implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-   @Async
+   @Async ("executor")
    public Future<Beer> pourBeer() {
 //      if (true) {
 //         throw new IllegalStateException("Nu mai e bere!");
