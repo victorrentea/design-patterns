@@ -1,10 +1,8 @@
 package victor.training.oo.creational.singleton;
 
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.PostConstruct;
+import java.util.Locale;
+import java.util.Map;
 
 @Slf4j // if this doesn't compile:
 // IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
@@ -49,9 +49,9 @@ public class SingletonSpringApp implements CommandLineRunner{
 	}
 }
 
-@Slf4j
 @Service
 class OrderExporter  {
+	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	@Autowired
 	private InvoiceExporter invoiceExporter;
 	@Autowired
@@ -64,9 +64,9 @@ class OrderExporter  {
 	}
 }
 
-@Slf4j
-@Service 
+@Service
 class InvoiceExporter {
+	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
 	@Autowired
 	private LabelService labelService;
 	
@@ -75,9 +75,10 @@ class InvoiceExporter {
 	}
 }
 
-@Slf4j
 @Service
 class LabelService {
+	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
+
 	private CountryRepo countryRepo;
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
@@ -87,7 +88,7 @@ class LabelService {
 	
 	@PostConstruct
 	public void load() {
-		log.debug("load() in instance: " + this.hashCode());
+		log.debug("load() map in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
 	}
 	
