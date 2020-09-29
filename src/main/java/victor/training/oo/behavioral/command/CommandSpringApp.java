@@ -73,6 +73,9 @@ class Beutor implements CommandLineRunner {
 
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
+
+      barman.injura("*@!*&*&*#&");
+      log.info("Ma bag in patutzul caldutz");
    }
 }
 
@@ -81,6 +84,9 @@ class Beutor implements CommandLineRunner {
 class Barman {
    @Async
    public Future<Beer> pourBeer() {
+//      if (true) {
+//         throw new IllegalStateException("Nu mai e bere!");
+//      }
       log.debug("Pouring Beer...");
       sleepq(1000); // apel de WEbService peste REST
       return CompletableFuture.completedFuture(new Beer());
@@ -91,6 +97,11 @@ class Barman {
       log.debug("Pouring Vodka...");
       sleepq(1000); // DB Query
       return CompletableFuture.completedFuture(new Vodka());
+   }
+
+   @Async
+   public void injura(String uratura) {
+      throw new IllegalArgumentException(uratura + uratura);
    }
 }
 
