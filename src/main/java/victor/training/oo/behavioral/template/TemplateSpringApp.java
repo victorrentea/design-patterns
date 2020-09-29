@@ -38,11 +38,30 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 
 }
-
+//@Entity
+//class User /*implements Validatable */{
+//
+//}
+//interface Validatable {
+//   private void privMethod() {
+//      // logica comuna intre met default
+//   }
+//   default void validate() {
+//      // obtine cumva magic un
+//      Validator validator = null;
+//      validator.validate(this);
+//      privMethod();
+//   }
+//   default void validate() {
+//      // obtine cumva magic un
+//      Validator validator = null;
+//      validator.validate(this);
+//      privMethod();
+//   }
+//}
 @Service
 class EmailSender {
 
-   @FunctionalInterface
    interface EmailComposer {
       void compose(Email email);
    }
