@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -23,21 +22,30 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    @Autowired
    private EmailSender emailSender;
+
+   @Autowired
+   private AllEmails emails;
+
    private void placeOrder() {
       // other logic
-      emailSender.sendEmail("a@b.com",new OrderReceivedEmailComposer());
+      emailSender.sendEmail("a@b.com", emails::composeOrderReceived);
    }
 
    private void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
-      emailSender.sendEmail("a@b.com",new OrderShippedEmailComposer());
+      emailSender.sendEmail("a@b.com", emails::composeOrderShipped);
    }
 
 }
 
 @Service
 class EmailSender {
+
+   @FunctionalInterface
+   interface EmailComposer {
+      void compose(Email email);
+   }
 
    public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -54,22 +62,15 @@ class EmailSender {
    }
 }
 
-interface EmailComposer {
-   void compose(Email email);
-}
 
-@Primary
 @Service
-class OrderReceivedEmailComposer implements  EmailComposer {
-   public void compose(Email email) {
+class AllEmails {
+   public void composeOrderReceived(Email email) {
       email.setSubject("Order Received");
       email.setBody("Thank you for your order");
    }
-}
 
-@Service
-class OrderShippedEmailComposer implements  EmailComposer {
-   public void compose(Email email) {
+   public void composeOrderShipped(Email email) {
       email.setSubject("Order Shipped");
       email.setBody("We've sent you your order. Hope it gets in one piece (this time).");
    }
