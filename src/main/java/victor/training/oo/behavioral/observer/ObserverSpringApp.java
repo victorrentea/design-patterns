@@ -63,7 +63,19 @@ class GenerateInvoiceCommand { //Command Pattern
 //class OrderInStockEvent { // Observer Pattern
 	private final long orderId;
 }
+@Data
+class GenerateInvoiceCommand2 { //Command Pattern
+//class OrderInStockEvent { // Observer Pattern
+	private final long orderId;
+}
 // ================= stock. management ==================
+@Service
+class OrderAuditService {
+	@EventListener
+	public void checkStock(OrderPlacedEvent event) {
+		System.out.println("Logging order  " + event.getOrderId());
+	}
+}
 @Service
 class StockManagementService {
 	@Autowired
@@ -73,6 +85,7 @@ class StockManagementService {
 		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
 		eventPublisher.publishEvent(new GenerateInvoiceCommand(event.getOrderId()));
+		eventPublisher.publishEvent(new GenerateInvoiceCommand2(event.getOrderId()));
 	}
 }
 // =============== invoicing. ======================
@@ -84,4 +97,13 @@ class InvoiceService {
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
+}
+@Service
+class InvoiceService2 {
+	@EventListener
+	public void generateInvoice(GenerateInvoiceCommand event) {
+		System.out.println("Generating invoice for order id: " + event.getOrderId());
+		// TODO what if...
+		// throw new RuntimeException("thrown from generate invoice");
+	}
 }
