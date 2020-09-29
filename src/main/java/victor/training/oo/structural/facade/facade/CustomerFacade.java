@@ -8,7 +8,7 @@ import victor.training.oo.structural.facade.facade.dto.CustomerDto;
 import victor.training.oo.structural.facade.infra.EmailClient;
 import victor.training.oo.structural.facade.repo.CustomerRepository;
 import victor.training.oo.structural.facade.repo.EmailRepository;
-import victor.training.oo.structural.facade.repo.SiteRepository;
+import victor.training.oo.structural.facade.service.CustomerService;
 
 @Facade
 @RequiredArgsConstructor
@@ -16,8 +16,8 @@ public class CustomerFacade {
 	private final CustomerRepository customerRepo;
 	private final EmailClient emailClient;
 	private final EmailRepository emailRepo;
-	private final SiteRepository siteRepo;
 	private final CustomerMapper customerMapper;
+	private final CustomerService customerService;
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
@@ -26,25 +26,24 @@ public class CustomerFacade {
 
 
 	public void registerCustomer(CustomerDto dto) {
-		Customer customer = new Customer();
-		customer.setEmail(dto.email);
-		customer.setName(dto.name);
-		customer.setSite(siteRepo.getReference(dto.countryId));
+		Customer customer = customerMapper.convertToEntity(dto);
+		validateCustomer(customer);
+		customerService.registerCustomer(customer);
+		sendRegistrationEmail(customer.getEmail());
+	}
 
+
+	private void validateCustomer(Customer customer) {
+		//TODO extract to CustomerValidator daca mai creste
 		if (customer.getName().trim().length() <= 5) {
 			throw new IllegalArgumentException("Name too short");
 		}
-		
+
 		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
 			throw new IllegalArgumentException("Email already registered");
 		}
-		// Heavy logic
-		// Heavy logic
-		customerRepo.save(customer);
-		// Heavy logic
-
-		sendRegistrationEmail(customer.getEmail());
 	}
+
 
 	private void sendRegistrationEmail(String emailAddress) {
 		System.out.println("Sending activation link via email to "+ emailAddress);
