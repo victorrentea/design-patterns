@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -23,40 +22,24 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 
    @Autowired
-   private EmailSender orderShippedEmailSender;
-   @Autowired
-   private EmailSender orderReceivedEmailSender;
+   private EmailSender emailSender;
    private void placeOrder() {
       // other logic
-//      new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
-      orderReceivedEmailSender.sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com",new OrderReceivedEmailComposer());
    }
 
    private void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
-//      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
-      orderShippedEmailSender.sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com",new OrderShippedEmailComposer());
    }
 
-   @Bean
-   public EmailSender orderShippedEmailSender(OrderShippedEmailComposer composer) {
-      return new EmailSender(composer);
-   }
-   @Bean
-   public EmailSender orderReceivedEmailSender(OrderReceivedEmailComposer composer) {
-      return new EmailSender(composer);
-   }
 }
 
+@Service
 class EmailSender {
-   private final EmailComposer composer;
 
-   public EmailSender(EmailComposer composer) {
-      this.composer = composer;
-   }
-
-   public void sendEmail(String emailAddress) {
+   public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       for (int i = 0; i < MAX_RETRIES; i++) {
