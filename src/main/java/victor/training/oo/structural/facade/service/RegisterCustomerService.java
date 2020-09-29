@@ -6,7 +6,7 @@ import victor.training.oo.structural.facade.entity.Customer;
 import victor.training.oo.structural.facade.repo.CustomerRepository;
 
 @Service
-public class CustomerService {
+public class RegisterCustomerService {
 
    @Autowired
    private CustomerRepository customerRepo;

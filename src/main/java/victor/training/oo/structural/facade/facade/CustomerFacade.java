@@ -8,7 +8,7 @@ import victor.training.oo.structural.facade.facade.dto.CustomerDto;
 import victor.training.oo.structural.facade.infra.EmailClient;
 import victor.training.oo.structural.facade.repo.CustomerRepository;
 import victor.training.oo.structural.facade.repo.EmailRepository;
-import victor.training.oo.structural.facade.service.CustomerService;
+import victor.training.oo.structural.facade.service.RegisterCustomerService;
 
 @Facade
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class CustomerFacade {
 	private final EmailClient emailClient;
 	private final EmailRepository emailRepo;
 	private final CustomerMapper customerMapper;
-	private final CustomerService customerService;
+	private final RegisterCustomerService customerService;
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
