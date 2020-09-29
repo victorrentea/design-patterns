@@ -1,5 +1,6 @@
 package victor.training.oo.behavioral.observer;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -39,26 +40,47 @@ public class ObserverSpringApp {
 	// TODO [2] control the order
 	// TODO [3] chain events
 	// TODO [opt] Transaction-scoped events
+	// ====== orders. ==========
 	private void placeOrder(Long orderId) {
 		System.out.println("Halo!");
-		stockManagementService.checkStock(orderId);
-		// TODO call invoicing too
+//		invoiceService.generateInvoice(orderId); <---
+		eventPublisher.publishEvent(new OrderPlacedEvent(orderId));
+//		eventPublisher.publishEvent(new InvoiceEvent(orderId));
 	}
 	@Autowired
-	private StockManagementService stockManagementService;
+	ApplicationEventPublisher eventPublisher;
+	@Autowired
+	private InvoiceService invoiceService;
 }
 
+// ==================== events.
+@Data
+class OrderPlacedEvent {
+	private final long orderId;
+}
+@Data
+class GenerateInvoiceCommand { //Command Pattern
+//class OrderInStockEvent { // Observer Pattern
+	private final long orderId;
+}
+// ================= stock. management ==================
 @Service
 class StockManagementService {
-	public void checkStock(long orderId) {
-		System.out.println("Checking stock for products in order " + orderId);
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	@EventListener
+	public void checkStock(OrderPlacedEvent event) {
+		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
+		eventPublisher.publishEvent(new GenerateInvoiceCommand(event.getOrderId()));
 	}
 }
+// =============== invoicing. ======================
 @Service
 class InvoiceService {
-	public void generateInvoice(long orderId) {
-		System.out.println("Generating invoice for order id: " + orderId);
+	@EventListener
+	public void generateInvoice(GenerateInvoiceCommand event) {
+		System.out.println("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
 	} 
