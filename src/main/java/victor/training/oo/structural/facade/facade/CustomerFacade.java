@@ -3,19 +3,16 @@ package victor.training.oo.structural.facade.facade;
 import lombok.RequiredArgsConstructor;
 import victor.training.oo.structural.facade.Facade;
 import victor.training.oo.structural.facade.entity.Customer;
-import victor.training.oo.structural.facade.entity.Email;
 import victor.training.oo.structural.facade.facade.dto.CustomerDto;
-import victor.training.oo.structural.facade.infra.EmailClient;
 import victor.training.oo.structural.facade.repo.CustomerRepository;
-import victor.training.oo.structural.facade.repo.EmailRepository;
+import victor.training.oo.structural.facade.service.EmailService;
 import victor.training.oo.structural.facade.service.RegisterCustomerService;
 
 @Facade
 @RequiredArgsConstructor
 public class CustomerFacade {
 	private final CustomerRepository customerRepo;
-	private final EmailClient emailClient;
-	private final EmailRepository emailRepo;
+	private final EmailService emailService;
 	private final CustomerMapper customerMapper;
 	private final RegisterCustomerService customerService;
 
@@ -29,7 +26,7 @@ public class CustomerFacade {
 		Customer customer = customerMapper.convertToEntity(dto);
 		validateCustomer(customer);
 		customerService.registerCustomer(customer);
-		sendRegistrationEmail(customer.getEmail());
+		emailService.sendRegistrationEmail(customer.getEmail());
 	}
 
 
@@ -45,17 +42,4 @@ public class CustomerFacade {
 	}
 
 
-	private void sendRegistrationEmail(String emailAddress) {
-		System.out.println("Sending activation link via email to "+ emailAddress);
-		Email email = new Email();
-		email.setFrom("noreply");
-		email.setTo(emailAddress);
-		email.setSubject("Welcome!");
-		email.setBody("You'll like it! Sincerely, Team");
-		
-		if (!emailRepo.emailWasSentBefore(email.hashCode())) {
-			emailClient.sendEmail(email.getFrom(), email.getTo(), email.getSubject(), email.getBody());
-			emailRepo.saveSentEmail(email);
-		}
-	}
 }
