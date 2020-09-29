@@ -9,18 +9,14 @@ import java.text.SimpleDateFormat;
 
 @Component
 public class CustomerMapper {
-
-   private SimpleDateFormat simpleDateFormat;
-
-   public void setDatePattern(@Value("${simple.date.pattern}") String datePattern) {
-      simpleDateFormat = new SimpleDateFormat(datePattern);
-   }
+   @Value("${simple.date.pattern}")
+   private String datePattern;
 
    public CustomerDto convertToDto(Customer customer) {
       CustomerDto dto = new CustomerDto();
       dto.name = customer.getName();
       dto.email = customer.getEmail();
-      dto.creationDateStr = simpleDateFormat.format(customer.getCreationDate());
+      dto.creationDateStr = new SimpleDateFormat(datePattern).format(customer.getCreationDate());
       dto.id = customer.getId();
       return dto;
    }
