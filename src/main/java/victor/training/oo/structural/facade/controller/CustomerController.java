@@ -2,7 +2,6 @@ package victor.training.oo.structural.facade.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import victor.training.oo.structural.facade.facade.CustomerFacade;
 import victor.training.oo.structural.facade.facade.dto.CustomerDto;
 
@@ -11,13 +10,20 @@ import victor.training.oo.structural.facade.facade.dto.CustomerDto;
 public class CustomerController {
     private final CustomerFacade customerFacade;
 
-    // @GetMapping
+//        @GetMapping
     public CustomerDto getById(long customerId) {
         return customerFacade.findById(customerId);
     }
 
     // @PostMapping
     public void register(CustomerDto customerDto) {
+//        Customer customer = builder.convertAndValidate(customerDto);
+
+//        Customer customer = new CustomerBuilder() // e builder
+//            .setName(customerDto.name)
+//            .setAddressStreet(customerDto.street)
+//            .buildAndPersistIfValid(); // ok sa validezi. nu ok sa faci .persist()
+
         customerFacade.registerCustomer(customerDto);
     }
 }
