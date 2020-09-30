@@ -3,6 +3,7 @@ package victor.training.oo.creational.constructors;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ImmutableClean {
@@ -35,24 +36,25 @@ class AEntity { //mutable, getters and setters
 
 //@Embeddable
 class A {
-   private /*final*/ String s;
-   private /*final*/ B b;
-   private /*final*/ List<String> strings;
-   protected A() {} // pt ochii lui Hibernate
+   private final String s;
+   private final B b;
+   private final List<String> strings;
+//   protected A() {} // pt ochii lui Hibernate
    public A(String s, B b, List<String> strings) {
       this.s = s;
       this.b = b;
       this.strings = new ArrayList<>(strings);
+      // destept ar fi sa faci validari aici : constrangeri de business
    }
 
-   public List<? extends String> getStrings() {
-      return strings;
-   }
-   //riscant: afli de exceptie la Runtime (prea tarziu)
-//   public List<String> getStrings() {
-//      return Collections.unmodifiableList(strings);
-
+//   public List<? extends String> getStrings() {
+//      return strings;
 //   }
+
+   //riscant: afli de exceptie la Runtime (prea tarziu)
+   public List<String> getStrings() {
+      return Collections.unmodifiableList(strings);
+   }
    // permite doar for
 //   public Iterable<String> getStrings() {
 //      return strings;
