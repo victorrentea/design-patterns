@@ -18,6 +18,7 @@ class BizService {
       // TODO reuse B instance (performance)
       // TODO push life mgmt to B (getInstance)
       // TODO Test it
+      // TODO Introduce ServiceLocator
       ConfigManager configManager = new ConfigManager();
       String config = configManager.getConfig();
       if (config.equals("NOOP")) {
