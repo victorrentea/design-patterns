@@ -9,14 +9,12 @@ import org.springframework.cache.annotation.EnableCaching;
 import java.io.File;
 
 @Slf4j
-@EnableCaching
-@SpringBootApplication
 public class ProxySpringApp implements CommandLineRunner {
-	public static void main(String[] args) {
-		SpringApplication.run(ProxySpringApp.class, args);
+	public static void main(String[] args) throws Exception {
+		new ProxySpringApp().run();
 	}
 
-	
+	 
 	// TODO [1] implement decorator 
 	// TODO [2] apply decorator via Spring
 	// TODO [3] generic java.lang.reflect.Proxy 
@@ -33,11 +31,6 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("10000169 is prime ? ");
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 		
-		log.debug("---- I/O Intensive ~ \"There are only two things hard in programming...\"");
-		log.debug("Folder MD5: ");
-		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
-		log.debug("Folder MD5: ");
-		log.debug("Got: " + ops.hashAllFiles(new File(".")) + "\n");
 	}
 	
 }
