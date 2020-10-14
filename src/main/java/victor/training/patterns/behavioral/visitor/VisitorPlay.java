@@ -22,7 +22,13 @@ public class VisitorPlay {
 		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
 
-		System.out.println("Total area: " + 0); // TODO
+		double totalArea = 0;
+		for (Shape shape : shapes) {
+			totalArea += shape.getArea();
+		}
+
+
+		System.out.println("Total area: " + totalArea); // TODO
 
 	}
 

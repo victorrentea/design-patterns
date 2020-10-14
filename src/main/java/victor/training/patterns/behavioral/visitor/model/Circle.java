@@ -14,7 +14,12 @@ public class Circle implements Shape {
 	public void accept(ShapeVisitor visitor) {
 		visitor.visit(this);
 	}
-	
+
+	@Override
+	public double getArea() {
+		return Math.PI * radius * radius;
+	}
+
 	public int getRadius() {
 		return radius;
 	}
