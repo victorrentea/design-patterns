@@ -1,5 +1,9 @@
 package victor.training.patterns.behavioral.strategy;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -19,16 +23,29 @@ class CustomsService {
 		TaxComputer computer = selectTaxComputer(originCountry); 
 		return computer.compute(tobaccoValue, regularValue);
 	} 
+	
+	private static final Map<String, TaxComputer> COMPUTERS = new HashMap<>();
+	static {
+		COMPUTERS.put("UK", new UKTaxComputer());
+		COMPUTERS.put("CN", new ChinaTaxComputer());
+		COMPUTERS.put("ES", new EUTaxComputer());
+		COMPUTERS.put("RO", new EUTaxComputer());
+		COMPUTERS.put("FR", new EUTaxComputer());
+	}
 
 	private TaxComputer selectTaxComputer(String originCountry) {
-		switch (originCountry) { 
-		case "UK": return new UKTaxComputer(); 
-		case "CN": return new ChinaTaxComputer();
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return new EUTaxComputer();
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
+		return Objects.requireNonNull(COMPUTERS.get(originCountry));
+		
+		 
+		
+//		switch (originCountry) { 
+//		case "UK": return new UKTaxComputer(); 
+//		case "CN": return new ChinaTaxComputer();
+//		case "FR": 
+//		case "ES": // other EU country codes...
+//		case "RO": return new EUTaxComputer();
+//		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//		}
 	}
 }
 interface TaxComputer {
