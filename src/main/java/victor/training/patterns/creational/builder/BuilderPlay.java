@@ -11,18 +11,16 @@ public class BuilderPlay {
 	public static void main(String[] args) {
 
 		
-		Customer customer = new CustomerBuilder()
-				.withName("John Doe")
-				.addLabel("Label1")
-				.withAddress(new AddressBuilder()
-						.withCity("Limassol")
-						.withStreetName("Dristor"))
-				.build();
-		
+		Customer customer = new Customer()
+				.setFullName("John Doe")
+				.addLabels("Label1")
+				.setAddress(new Address()
+						.setCity("Limassol")
+						.setStreetAddress("Dristor"));
 		
 		
 
-		System.out.println("Customer name: " + customer.getName());
+		System.out.println("Customer name: " + customer.getFullName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetAddress());
 	}
 }

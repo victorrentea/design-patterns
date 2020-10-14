@@ -9,7 +9,7 @@ public class CustomerValidatorTest {
 	@Test
 	public void validCustomer_ok() {
 		Customer customer = new Customer();
-		customer.setName("John Doe");
+		customer.setFullName("John Doe");
 		Address address = new Address();
 		address.setCity("Bucharest");
 		address.setStreetAddress("Dristor 91");

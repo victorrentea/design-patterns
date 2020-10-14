@@ -6,7 +6,7 @@ public class CustomerBuilder {
 	private final Customer customer = new Customer();
 
 	public CustomerBuilder withName(String name) {
-		customer.setName(name);
+		customer.setFullName(name);
 		return this;
 	}
 

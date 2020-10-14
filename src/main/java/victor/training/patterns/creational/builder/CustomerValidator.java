@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 public class CustomerValidator {
 
 	public void validate(Customer customer) {
-		if (StringUtils.isBlank(customer.getName())) {
+		if (StringUtils.isBlank(customer.getFullName())) {
 			throw new IllegalArgumentException("Missing customer name");
 		}
 		validateAddress(customer.getAddress());
