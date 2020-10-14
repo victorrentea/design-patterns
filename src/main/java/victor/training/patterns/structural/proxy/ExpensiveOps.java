@@ -14,23 +14,37 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
-public class ExpensiveOps {
+interface IExpensiveOps {
+	Boolean isPrime(int n);
+}
+
+// DECORATOR PATTERN
+class ExpensiveOpsWithCache implements IExpensiveOps{
+	private final IExpensiveOps delegate;
 	
-	private static final BigDecimal TWO = new BigDecimal("2");
 	
+	public ExpensiveOpsWithCache(IExpensiveOps delegate) {
+		this.delegate = delegate;
+	}
+
 	private Map<Integer, Boolean> cache = new HashMap<>(); 
 	
 	public Boolean isPrime(int n) {
 		if (cache.containsKey(n)) {
 			return cache.get(n);
 		} 
-		Boolean result = isPrime_(n);
+		Boolean result = delegate.isPrime(n);
 		cache.put(n, result);
 		return result;
 	}
+}
+
+@Slf4j
+public class ExpensiveOps implements IExpensiveOps{
+	private static final BigDecimal TWO = new BigDecimal("2");
 	
-	private Boolean isPrime_(int n) {
+	
+	public Boolean isPrime(int n) {
 		log.debug("Computing isPrime({})", n);
 		BigDecimal number = new BigDecimal(n);
 		if (number.compareTo(TWO) <= 0) {
