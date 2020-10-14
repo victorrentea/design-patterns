@@ -16,7 +16,7 @@ public class Customer {
 	
 	
 	
-
+public Customer() {}
 	public Customer(String fullName, String phone, Address address) {
 		this.fullName = fullName;
 		this.phone = phone;
