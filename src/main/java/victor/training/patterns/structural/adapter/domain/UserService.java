@@ -1,16 +1,11 @@
 package victor.training.patterns.structural.adapter.domain;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // ZEN
 // ZEN
@@ -22,7 +17,7 @@ import java.util.List;
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	@Autowired
-	private LdapServiceAdapter adapter;
+	private ILdapServiceAdapter adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUserName(username);
