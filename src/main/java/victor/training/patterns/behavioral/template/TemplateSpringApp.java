@@ -47,7 +47,7 @@ class EmailService {
 		}
 	}
 
-	protected void f(Email email) {
+	public void f(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
@@ -61,7 +61,7 @@ class EmailService {
 
 class HackingTime extends EmailService {
 	@Override
-	protected void f(Email email) {
+	public void f(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
 	}
