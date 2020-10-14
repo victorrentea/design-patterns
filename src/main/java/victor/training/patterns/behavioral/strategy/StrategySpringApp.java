@@ -1,8 +1,12 @@
 package victor.training.patterns.behavioral.strategy;
 
+import static java.util.Arrays.asList;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,46 +23,29 @@ public class StrategySpringApp  {
 }
 
 class CustomsService {
+	private static final List<TaxComputer> COMPUTERS = asList(new UKTaxComputer(), new ChinaTaxComputer(), new EUTaxComputer());
+
 	public double computeCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxComputer computer = selectTaxComputer(originCountry); 
 		return computer.compute(tobaccoValue, regularValue);
 	} 
 	
-	private static final Map<String, TaxComputer> COMPUTERS = new HashMap<>();
-	
-	// Map is the BEST if you load the mapping from a properties file (in case they are many)
-	//tax.country.UK=victor.training.patterns.behavioral.strategy.UKTaxComputer.UKTaxComputer()
-	static {
-		// load the map from file here
-		COMPUTERS.put("UK", new UKTaxComputer());
-		COMPUTERS.put("CN", new ChinaTaxComputer());
-		COMPUTERS.put("ES", new EUTaxComputer());
-		COMPUTERS.put("RO", new EUTaxComputer());
-		COMPUTERS.put("FR", new EUTaxComputer());
-	}
-
 	private TaxComputer selectTaxComputer(String originCountry) {
-		return Objects.requireNonNull(COMPUTERS.get(originCountry));
-		
-		 
-		
-//		switch (originCountry) { 
-//		case "UK": return new UKTaxComputer(); 
-//		case "CN": return new ChinaTaxComputer();
-//		case "FR": 
-//		case "ES": // other EU country codes...
-//		case "RO": return new EUTaxComputer();
-//		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-//		}
+		return COMPUTERS.stream()
+				.filter(c->c.canCompute(originCountry)).findAny()
+				.orElseThrow(() -> new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry));
 	}
 }
 interface TaxComputer {
+	boolean canCompute(String originCountry);
 	double compute(double tobaccoValue, double regularValue);	
 }
 class ChinaTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
-		// many lines  30
 		return tobaccoValue + regularValue;
+	}
+	public boolean canCompute(String originCountry) {
+		return "CN".equals(originCountry);
 	}
 }
 
@@ -67,10 +54,16 @@ class UKTaxComputer implements TaxComputer {
 		// lots of code 
 		return tobaccoValue/2 + regularValue;
 	}
+	public boolean canCompute(String originCountry) {
+		return "UK".contentEquals(originCountry);
+	}
 }
 class EUTaxComputer implements TaxComputer  {
 	public double compute(double tobaccoValue, double regularValueUnusedDamnitHustBecauseIWantToIplement__ThePriceToPayForStrategyPattern) {
 		return tobaccoValue/3;
+	}
+	public boolean canCompute(String originCountry) {
+		return asList("FR","RO","ES").contains(originCountry);
 	}
 	
 }
