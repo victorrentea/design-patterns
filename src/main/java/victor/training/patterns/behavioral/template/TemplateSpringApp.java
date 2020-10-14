@@ -18,19 +18,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new EmailSender().sendEmail("a@b.com",new OrderReceivedEmailComposer());
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was
 		// implemented'
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender().sendEmail("a@b.com", new OrderShippedEmailComposer());
 	}
 }
 
-abstract class EmailSender {
-	public void sendEmail(String emailAddress) {
+class EmailSender {
+	public void sendEmail(String emailAddress, EmailComposer composer) {
 		// Open files
 		// get DB connections
 		// establish driver connection
@@ -41,7 +41,7 @@ abstract class EmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composeEmail(email);
+			composer.compose(email);
 			boolean success = context.send(email);
 			if (success)
 				break;
@@ -51,19 +51,21 @@ abstract class EmailSender {
 		// send OK messages to EventBus
 	}
 
-	protected abstract void composeEmail(Email email);
 }
 
-class OrderReceivedEmailSender extends EmailSender {
-	@Override
-	protected void composeEmail(Email email) {
+interface EmailComposer {
+	void compose(Email email);
+}
+
+class OrderReceivedEmailComposer implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends EmailSender {
-	protected void composeEmail(Email email) {
+class OrderShippedEmailComposer implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
 	}
