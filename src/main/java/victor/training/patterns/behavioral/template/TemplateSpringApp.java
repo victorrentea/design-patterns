@@ -2,7 +2,8 @@
 package victor.training.patterns.behavioral.template;
 
 import org.springframework.boot.CommandLineRunner;
-
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.Random;
 
 public class TemplateSpringApp implements CommandLineRunner {
@@ -10,6 +11,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 		new TemplateSpringApp().run();
 	}
 
+	private AllEmails emails = new AllEmails();
+	private EmailSender sender = new EmailSender();
 	public void run(String... args) {
 		placeOrder();
 		shipOrder();
@@ -17,19 +20,26 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		sender.sendEmail("a@b.com", emails::composeOrderReceived);
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was
 		// implemented'
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		sender.sendEmail("a@b.com", emails::composeOrderShipped);
 	}
 }
 
-abstract class EmailSender {
-	public void sendEmail(String emailAddress) {
+class EmailSender {
+	@FunctionalInterface
+	interface EmailComposer {
+		void compose(Email email);
+	}
+	public void sendEmail(String emailAddress, EmailComposer composer) {
+		// Open files
+		// get DB connections
+		// establish driver connection
 		EmailContext context = new EmailContext();
 		/* smtpConfig,etc */int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++) {
@@ -37,36 +47,26 @@ abstract class EmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composeEmail(email);
+			composer.compose(email);
 			boolean success = context.send(email);
 			if (success)
 				break;
 		}
+		// close resources
+		// handle errors
+		// send OK messages to EventBus
 	}
 
-	protected abstract void composeEmail(Email email);
-
-	public void encryty(String password) {
-		//heavy
-	}
 }
 
-class OrderReceivedEmailSender extends EmailSender {
-	@Override
-	protected void composeEmail(Email email) {
+class AllEmails {
+	public void composeOrderReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
-		encryty("aa");
 	}
-
-}
-
-class OrderShippedEmailSender extends EmailSender {
-	protected void composeEmail(Email email) {
+	public void composeOrderShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
-		encryty("bb");
-
 	}
 }
 
