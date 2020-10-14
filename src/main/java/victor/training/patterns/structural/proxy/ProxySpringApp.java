@@ -28,7 +28,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		IExpensiveOps ops = new ExpensiveOps(); 
 		ops = new ExpensiveOpsWithCache(ops);
 		bizMethod(ops);
-		
+				
 		Writer w = new FileWriter("a.txt");
 		w = new BufferedWriter(w); // decorater in JDK
 			
