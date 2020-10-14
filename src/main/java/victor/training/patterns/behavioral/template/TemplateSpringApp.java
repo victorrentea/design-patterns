@@ -31,6 +31,9 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 abstract class EmailSender {
 	public void sendEmail(String emailAddress) {
+		// Open files
+		// get DB connections
+		// establish driver connection
 		EmailContext context = new EmailContext();
 		/* smtpConfig,etc */int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++) {
@@ -43,6 +46,9 @@ abstract class EmailSender {
 			if (success)
 				break;
 		}
+		// close resources
+		// handle errors
+		// send OK messages to EventBus
 	}
 
 	protected abstract void composeEmail(Email email);
