@@ -32,7 +32,7 @@ MyService service;
 
 @Service
 class MyService {
-private static final Logger log = LoggerFactory.getLogger(MyService.class);
+	private static final Logger log = LoggerFactory.getLogger(MyService.class);
 	private String currentUserName;
 	
 	public void me(String currentUser) {
