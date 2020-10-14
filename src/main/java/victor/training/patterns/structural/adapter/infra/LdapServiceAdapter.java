@@ -7,11 +7,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import victor.training.patterns.structural.adapter.domain.ILdapServiceAdapter;
+import victor.training.patterns.structural.adapter.domain.ExternalUserService;
 import victor.training.patterns.structural.adapter.domain.User;
 
 @Component
-public class LdapServiceAdapter implements ILdapServiceAdapter {
+public class LdapServiceAdapter implements ExternalUserService {
 	@Autowired
 	private LdapUserWebserviceClient wsClient;
 

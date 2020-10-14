@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	@Autowired
-	private ILdapServiceAdapter adapter;
+	private ExternalUserService adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUserName(username);
