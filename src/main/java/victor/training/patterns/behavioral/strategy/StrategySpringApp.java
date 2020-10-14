@@ -18,8 +18,22 @@ public class StrategySpringApp  {
 		System.out.println("Tax for (RO,100,100) = " + service.computeCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.computeCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.computeCustomsTax("UK", 100, 100));
-		
-	}
+
+
+		System.out.println("HOHOHOHOHOHOH");
+
+		System.out.println("a".hashCode());
+		String s=null;
+		switch (s)
+		{
+		case "a": System.out.println();
+		case "b": System.out.println();
+		case "c": System.out.println();
+			default:
+				System.out.println("ERROR");
+		}
+ 
+	}  
 }
 
 class CustomsService {
