@@ -2,8 +2,7 @@
 package victor.training.patterns.behavioral.template;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import java.util.Random;
 
 public class TemplateSpringApp implements CommandLineRunner {
@@ -11,8 +10,6 @@ public class TemplateSpringApp implements CommandLineRunner {
 		new TemplateSpringApp().run();
 	}
 
-	private AllEmails emails = new AllEmails();
-	private EmailSender sender = new EmailSender();
 	public void run(String... args) {
 		placeOrder();
 		shipOrder();
@@ -20,26 +17,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		sender.sendEmail("a@b.com", emails::composeOrderReceived);
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was
 		// implemented'
-		sender.sendEmail("a@b.com", emails::composeOrderShipped);
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-class EmailSender {
-	@FunctionalInterface
-	interface EmailComposer {
-		void compose(Email email);
-	}
-	public void sendEmail(String emailAddress, EmailComposer composer) {
-		// Open files
-		// get DB connections
-		// establish driver connection
+abstract class EmailSender {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext();
 		/* smtpConfig,etc */int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++) {
@@ -47,26 +37,36 @@ class EmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composer.compose(email);
+			composeEmail(email);
 			boolean success = context.send(email);
 			if (success)
 				break;
 		}
-		// close resources
-		// handle errors
-		// send OK messages to EventBus
+	}
+
+	protected abstract void composeEmail(Email email);
+
+	public void encryty(String password) {
+		//heavy
+	}
+}
+
+class OrderReceivedEmailSender extends EmailSender {
+	@Override
+	protected void composeEmail(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+		encryty("aa");
 	}
 
 }
 
-class AllEmails {
-	public void composeOrderReceived(Email email) {
-		email.setSubject("Order Received");
-		email.setBody("Thank you for your order");
-	}
-	public void composeOrderShipped(Email email) {
+class OrderShippedEmailSender extends EmailSender {
+	protected void composeEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
+		encryty("bb");
+
 	}
 }
 
@@ -213,6 +213,6 @@ class Email {
 	@java.lang.SuppressWarnings("all")
 	public java.lang.String toString() {
 		return "Email(subject=" + this.getSubject() + ", body=" + this.getBody() + ", id=" + this.getId() + ", sender="
-				+ this.getSender() + ", replyTo=" + this.getReplyTo() + ", to=" + this.getTo() + ")";
+				 + this.getSender() + ", replyTo=" + this.getReplyTo() + ", to=" + this.getTo() + ")";
 	}
 }
