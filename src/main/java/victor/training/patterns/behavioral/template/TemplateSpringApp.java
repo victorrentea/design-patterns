@@ -18,22 +18,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com", true);
-		new EmailService().sendOrderReceivedEmail("a@b.com", true);
-		new EmailService().sendOrderReceivedEmail("a@b.com", true);
-		new EmailService().sendOrderReceivedEmail("a@b.com", true);
-		new EmailService().sendOrderReceivedEmail("a@b.com", true);
+		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new EmailService().sendOrderReceivedEmail("a@b.com", false);
+		new EmailService().sendOrderReceivedEmail("a@b.com");
 	}
 }
 
 class EmailService {
-	public void sendOrderReceivedEmail(String emailAddress, boolean orderReceived) {
+	public void sendOrderReceivedEmail(String emailAddress) {
 		EmailContext context = new EmailContext();
 		/*smtpConfig,etc*/int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++) {
@@ -41,18 +41,30 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			if (orderReceived) {
-				email.setSubject("Order Received");
-				email.setBody("Thank you for your order");
-			} else {
-				email.setSubject("Order Shipped");
-				email.setBody("We've shipped your order. Hope it gets to you (this time)");
-			}
+			f(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-	
+
+	protected void f(Email email) {
+		email.setSubject("Order Received");
+		email.setBody("Thank you for your order");
+	}
+}
+
+
+
+
+
+
+
+class HackingTime extends EmailService {
+	@Override
+	protected void f(Email email) {
+		email.setSubject("Order Shipped");
+		email.setBody("We've shipped your order. Hope it gets to you (this time)");
+	}
 }
 
 class EmailContext {
