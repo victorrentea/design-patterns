@@ -9,7 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-@SpringBootApplication
+@SpringBootApplication 
 public class ObserverSpringApp {
 	@java.lang.SuppressWarnings("all")
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ObserverSpringApp.class);
