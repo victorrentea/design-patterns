@@ -14,8 +14,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import static java.util.Arrays.asList;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,8 +27,9 @@ import java.util.concurrent.Future;
 @SpringBootApplication
 @EnableBinding({Sink.class, Source.class})
 public class CommandSpringApp {
-   public static void main(String[] args) {
+   public static void main(String[] args) throws InterruptedException {
       SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
+      Thread.sleep(4000);
    }
 
    @Bean
@@ -55,24 +58,42 @@ class Drinker implements CommandLineRunner {
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
    public void run(String... args) throws InterruptedException, ExecutionException {
       log.debug("Submitting my order");
-      long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
       
-      ExecutorService pool = Executors.newFixedThreadPool(2);
-      Future<Beer> futureBeer = pool.submit(barman::pourBeer);
-      Future<Vodka> futureVodka = pool.submit(barman::pourVodka);
+      CompletableFuture<Beer> futureBeer = supplyAsync(barman::pourBeer);
+      CompletableFuture<Vodka> futureVodka = supplyAsync(barman::pourVodka);
+//      invokeLater()
+
+      futureBeer.thenCombineAsync(futureVodka, (b,v) -> new DillyDilly(b, v))
+      .thenAcceptAsync(dilly -> {
+    	  log.debug("Got my order in ms ! Enjoying {}", dilly);
+				}/* , AWTEventQueue */);
       
       
-      log.debug("My waiter leaves with my commands");
+      log.debug("My waiter leaves with my commands"); 
       
-      Beer beer = futureBeer.get(); // 1 sec
-      Vodka vodka = futureVodka.get(); // 0 sec
-      
-//      Beer beer = barman.pourBeer();
-//      Vodka vodka = barman.pourVodka();
-      long t1 = System.currentTimeMillis();
-      log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
    }
+}
+
+class DillyDilly {
+	private final Beer beer;
+	private final Vodka vodka;
+	public DillyDilly(Beer beer, Vodka vodka) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.beer = beer;
+		this.vodka = vodka;
+	}
+	public Beer getBeer() {
+		return beer;
+	}
+	public Vodka getVodka() {
+		return vodka;
+	}
 }
 
 @Service
