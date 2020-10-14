@@ -18,50 +18,46 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com");
-		new EmailService().sendOrderReceivedEmail("a@b.com");
-		new EmailService().sendOrderReceivedEmail("a@b.com");
-		new EmailService().sendOrderReceivedEmail("a@b.com");
-		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
-		// TODO send order shipped email 'similar to how send order received was implemented'
-		new EmailService().sendOrderReceivedEmail("a@b.com");
+		// TODO send order shipped email 'similar to how send order received was
+		// implemented'
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-class EmailService {
-	public void sendOrderReceivedEmail(String emailAddress) {
+abstract class EmailSender {
+	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext();
-		/*smtpConfig,etc*/int MAX_RETRIES = 3;
+		/* smtpConfig,etc */int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++) {
 			Email email = new Email(); // constructor generates new unique ID
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			f(email);
+			composeEmail(email);
 			boolean success = context.send(email);
-			if (success) break;
+			if (success)
+				break;
 		}
 	}
 
-	public void f(Email email) {
+	protected abstract void composeEmail(Email email);
+}
+
+class OrderReceivedEmailSender extends EmailSender {
+	@Override
+	protected void composeEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-
-
-
-
-
-
-class HackingTime extends EmailService {
-	@Override
-	public void f(Email email) {
+class OrderShippedEmailSender extends EmailSender {
+	protected void composeEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
 	}
@@ -149,26 +145,35 @@ class Email {
 	@java.lang.Override
 	@java.lang.SuppressWarnings("all")
 	public boolean equals(final java.lang.Object o) {
-		if (o == this) return true;
-		if (!(o instanceof Email)) return false;
+		if (o == this)
+			return true;
+		if (!(o instanceof Email))
+			return false;
 		final Email other = (Email) o;
-		if (!other.canEqual((java.lang.Object) this)) return false;
+		if (!other.canEqual((java.lang.Object) this))
+			return false;
 		final java.lang.Object this$subject = this.getSubject();
 		final java.lang.Object other$subject = other.getSubject();
-		if (this$subject == null ? other$subject != null : !this$subject.equals(other$subject)) return false;
+		if (this$subject == null ? other$subject != null : !this$subject.equals(other$subject))
+			return false;
 		final java.lang.Object this$body = this.getBody();
 		final java.lang.Object other$body = other.getBody();
-		if (this$body == null ? other$body != null : !this$body.equals(other$body)) return false;
-		if (this.getId() != other.getId()) return false;
+		if (this$body == null ? other$body != null : !this$body.equals(other$body))
+			return false;
+		if (this.getId() != other.getId())
+			return false;
 		final java.lang.Object this$sender = this.getSender();
 		final java.lang.Object other$sender = other.getSender();
-		if (this$sender == null ? other$sender != null : !this$sender.equals(other$sender)) return false;
+		if (this$sender == null ? other$sender != null : !this$sender.equals(other$sender))
+			return false;
 		final java.lang.Object this$replyTo = this.getReplyTo();
 		final java.lang.Object other$replyTo = other.getReplyTo();
-		if (this$replyTo == null ? other$replyTo != null : !this$replyTo.equals(other$replyTo)) return false;
+		if (this$replyTo == null ? other$replyTo != null : !this$replyTo.equals(other$replyTo))
+			return false;
 		final java.lang.Object this$to = this.getTo();
 		final java.lang.Object other$to = other.getTo();
-		if (this$to == null ? other$to != null : !this$to.equals(other$to)) return false;
+		if (this$to == null ? other$to != null : !this$to.equals(other$to))
+			return false;
 		return true;
 	}
 
@@ -200,6 +205,7 @@ class Email {
 	@java.lang.Override
 	@java.lang.SuppressWarnings("all")
 	public java.lang.String toString() {
-		return "Email(subject=" + this.getSubject() + ", body=" + this.getBody() + ", id=" + this.getId() + ", sender=" + this.getSender() + ", replyTo=" + this.getReplyTo() + ", to=" + this.getTo() + ")";
+		return "Email(subject=" + this.getSubject() + ", body=" + this.getBody() + ", id=" + this.getId() + ", sender="
+				+ this.getSender() + ", replyTo=" + this.getReplyTo() + ", to=" + this.getTo() + ")";
 	}
 }
