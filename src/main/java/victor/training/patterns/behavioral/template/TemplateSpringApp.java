@@ -32,6 +32,10 @@ public class TemplateSpringApp implements CommandLineRunner {
 }
 
 class EmailSender {
+	@FunctionalInterface
+	interface EmailComposer {
+		void compose(Email email);
+	}
 	public void sendEmail(String emailAddress, EmailComposer composer) {
 		// Open files
 		// get DB connections
@@ -53,9 +57,6 @@ class EmailSender {
 		// send OK messages to EventBus
 	}
 
-}
-interface EmailComposer {
-	void compose(Email email);
 }
 
 class AllEmails {
