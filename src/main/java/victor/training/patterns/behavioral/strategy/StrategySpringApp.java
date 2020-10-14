@@ -25,7 +25,11 @@ class CustomsService {
 	} 
 	
 	private static final Map<String, TaxComputer> COMPUTERS = new HashMap<>();
+	
+	// Map is the BEST if you load the mapping from a properties file (in case they are many)
+	//tax.country.UK=victor.training.patterns.behavioral.strategy.UKTaxComputer.UKTaxComputer()
 	static {
+		// load the map from file here
 		COMPUTERS.put("UK", new UKTaxComputer());
 		COMPUTERS.put("CN", new ChinaTaxComputer());
 		COMPUTERS.put("ES", new EUTaxComputer());
