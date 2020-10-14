@@ -11,6 +11,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 		new TemplateSpringApp().run();
 	}
 
+	private AllEmails emails = new AllEmails();
+	private EmailSender sender = new EmailSender();
 	public void run(String... args) {
 		placeOrder();
 		shipOrder();
@@ -18,14 +20,14 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailSender().sendEmail("a@b.com",new OrderReceivedEmailComposer());
+		sender.sendEmail("a@b.com", emails::composeOrderReceived);
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was
 		// implemented'
-		new EmailSender().sendEmail("a@b.com", new OrderShippedEmailComposer());
+		sender.sendEmail("a@b.com", emails::composeOrderShipped);
 	}
 }
 
@@ -52,20 +54,16 @@ class EmailSender {
 	}
 
 }
-
 interface EmailComposer {
 	void compose(Email email);
 }
 
-class OrderReceivedEmailComposer implements EmailComposer {
-	public void compose(Email email) {
+class AllEmails {
+	public void composeOrderReceived(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
-}
-
-class OrderShippedEmailComposer implements EmailComposer {
-	public void compose(Email email) {
+	public void composeOrderShipped(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("We've shipped your order. Hope it gets to you (this time)");
 	}
