@@ -24,11 +24,18 @@ public class VisitorPlay {
 
 		double totalArea = 0;
 		for (Shape shape : shapes) {
-			totalArea += shape.getArea();
+			if (shape instanceof Square) {
+				Square square = (Square) shape;
+
+
+				totalArea += square.getEdge() * square.getEdge();
+			} else {
+				// DANGER forget a type or tomorrow: an extra type
+			}
 		}
 
 
-		System.out.println("Total area: " + totalArea); // TODO
+		System.out.println("Total area: " + totalArea);
 
 	}
 

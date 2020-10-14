@@ -15,10 +15,10 @@ public class Square implements Shape {
 		visitor.visit(this);
 	}
 
-	@Override
-	public double getArea() {
-		return edge *edge;
-	}
+//	@Override
+//	public double getArea() {
+//		return edge *edge;
+//	}
 
 	public int getEdge() {
 		return edge;

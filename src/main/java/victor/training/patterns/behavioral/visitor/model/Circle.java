@@ -15,10 +15,10 @@ public class Circle implements Shape {
 		visitor.visit(this);
 	}
 
-	@Override
-	public double getArea() {
-		return Math.PI * radius * radius;
-	}
+//	@Override
+//	public double getArea() {
+//		return Math.PI * radius * radius;
+//	}
 
 	public int getRadius() {
 		return radius;
