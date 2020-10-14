@@ -5,25 +5,28 @@ public class Play {
 }
 
 
-interface Interface {
-	String met();
-	int metInt(); // returns met.parseInt
-}
-
-abstract class InterfaceBase implements Interface {
+class BetterInterface {
+	private Interface interf;
+	
+	public String met() {
+		return interf.met();
+	}
 	public int metInt() {
-		return Integer.parseInt(met());
+		return Integer.parseInt(interf.met());
 	}
 }
+interface Interface {
+	String met();
+}
 
 
-class Impl1 extends InterfaceBase implements Interface {
+class Impl1  implements Interface {
 	public String met() {
 		return "99999";
 	}
 	
 }
-class Impl2 extends InterfaceBase implements Interface {
+class Impl2 implements Interface {
 	public String met() {
 		return "132131";
 	}
