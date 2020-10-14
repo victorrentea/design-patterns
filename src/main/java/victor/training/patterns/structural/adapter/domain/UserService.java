@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import victor.training.patterns.structural.adapter.infra.LdapUser;
 import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +31,11 @@ public class UserService {
 	}
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = searchByUserName(username);
+		List<User> list = searchByUserName(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		User user = convertFromLdap(ldapUser);
+		User user = list.get(0);
 				
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -44,23 +45,23 @@ public class UserService {
 	// 200 lines below:
 	
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = searchByUserName(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			User user = convertFromLdap(ldapUser);
-			results.add(user);
-		}
-		return results;
+		return searchByUserName(username);
 	}
 
+	// ZEN ABOVE
+	/// ----------------------- CAREFUL. GARBAGE BELOW ---------------------
+	// You who enter, abandon all hope
+
+
+	private List<User> searchByUserName(String username) {
+		return wsClient.search(username.toUpperCase(), null, null).stream()
+				.map(this::convertFromLdap)
+				.collect(toList());
+	}
+	
 	private User convertFromLdap(LdapUser ldapUser) {
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-		return user;
-	}
-
-	private List<LdapUser> searchByUserName(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
+		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 	}
 	
 }
