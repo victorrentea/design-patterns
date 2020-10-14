@@ -13,6 +13,15 @@ public class Customer {
 	private List<String> labels = new ArrayList<>();
 	private Address address;
 	private Date createDate;
+	
+	
+	
+
+	public Customer(String fullName, String phone, Address address) {
+		this.fullName = fullName;
+		this.phone = phone;
+		this.address = address;
+	}
 
 	public Address getAddress() {
 		return address;
@@ -28,10 +37,13 @@ public class Customer {
 	}
 	
 	
+	// REQUIRED FIELDS vs OPTIONAL FIELS
 
-	public Customer setFullName(String name) {
-		this.fullName = name;
-		return this;
+	public Customer setFullName(String newFullName) {
+		this.fullName = newFullName;
+		return new Customer(newFullName, phone, address)
+				.addLabels(labels.toArray(new String[0]));
+//		this;
 	}
 
 	public String getPhone() {

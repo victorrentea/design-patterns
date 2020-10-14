@@ -11,12 +11,7 @@ public class BuilderPlay {
 	public static void main(String[] args) {
 
 		
-		Customer customer = new Customer()
-				.setFullName("John Doe")
-				.addLabels("Label1")
-				.setAddress(new Address()
-						.setCity("Limassol")
-						.setStreetAddress("Dristor"));
+		Customer customer = TestData.aValidCustomer();
 		
 		
 
