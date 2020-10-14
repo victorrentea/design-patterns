@@ -1,6 +1,7 @@
 package victor.training.patterns.behavioral.visitor;
 
 import victor.training.patterns.behavioral.visitor.model.Circle;
+import victor.training.patterns.behavioral.visitor.model.Rectangle;
 import victor.training.patterns.behavioral.visitor.model.Square;
 
 public class PerimeterCalculatorVisitor implements ShapeVisitor {
@@ -16,7 +17,12 @@ public class PerimeterCalculatorVisitor implements ShapeVisitor {
 	public void visit(Circle circle) {
 		total += circle.getRadius() * 2 * Math.PI;
 	}
-	
+
+	@Override
+	public void visit(Rectangle rectangle) {
+
+	}
+
 	public double getTotal() {
 		return total;
 	}
