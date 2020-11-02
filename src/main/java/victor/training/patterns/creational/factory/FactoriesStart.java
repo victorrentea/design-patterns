@@ -2,6 +2,8 @@ package victor.training.patterns.creational.factory;
 
 import victor.training.patterns.stuff.ThreadUtils;
 
+import java.util.Objects;
+
 import static java.lang.System.exit;
 
 public class FactoriesStart {
@@ -21,22 +23,25 @@ class LovingParent {
    }
 
    public void finishWorkExhausted() {
-      child.noticeAndKillParent();
+      // TODO buy time to take a shower
+      child.noticeAndDrainParent();
    }
 }
-class ToyShop {
+
+class ToyShop { // close by
 
 }
 
 class Child {
 
-   public void noticeAndKillParent() {
-      System.err.println("Drain parent blood");
+   public void noticeAndDrainParent() {
+      System.err.println("Drain parent energy");
       exit(-1);
    }
 
    public void play() {
+      Object toy = null;
+      Objects.requireNonNull(toy, "Kid too young, unable to play alone. Try a toy!");
       ThreadUtils.sleepq(100);
-      System.out.println("Kid to young, unable to play by himself. Try a toy!");
    }
 }
