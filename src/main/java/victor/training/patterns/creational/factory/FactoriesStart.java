@@ -35,7 +35,7 @@ class ToyShop { // close by
 class Child {
 
    public void noticeAndDrainParent() {
-      System.err.println("Drain parent energy");
+      System.out.println("Drain parent energy");
       exit(-1);
    }
 
