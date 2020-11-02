@@ -42,6 +42,8 @@ class Child {
    public void play() {
       Object toy = null;
       Objects.requireNonNull(toy, "Kid too young, unable to play alone. Try a toy!");
-      ThreadUtils.sleepq(100);
+      System.out.println("Playing with " + toy + " ...");
+      ThreadUtils.sleepq(1000);
+      System.out.println("Done Playing");
    }
 }
