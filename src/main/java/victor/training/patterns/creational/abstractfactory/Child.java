@@ -3,18 +3,21 @@ package victor.training.patterns.creational.abstractfactory;
 import victor.training.patterns.creational.abstractfactory.spi.BlockFactory;
 import victor.training.patterns.creational.abstractfactory.spi.Board;
 import victor.training.patterns.creational.abstractfactory.spi.Cube;
+import victor.training.patterns.stuff.ThreadUtils;
 
 public class Child {
-	public void playWith(BlockFactory cutie) {
-		Board board = cutie.createBoard();
-		Cube lastCube = cutie.createCube();
-		System.out.println("\"Pun primul cub " + lastCube.getClass().getSimpleName() + " pe tabla " + board.getClass().getSimpleName());
-		for (int i = 2; i <= 10; i++) {
-			Cube cube = cutie.createCube();
-			System.out.println("\"Iau cubul " + i + ": " + cube.getClass().getSimpleName() + " si il pun peste " + lastCube.getClass().getSimpleName());
+	public void playWith(BlockFactory blockFactory) {
+		Board board = blockFactory.createBoard();
+		Cube lastCube = blockFactory.createCube();
+		System.out.println("Placing first " + lastCube + " on " + board);
+		lastCube.putOn(board);
+		for (int i = 1; i < 10; i++) {
+			Cube cube = blockFactory.createCube();
+			System.out.println("Stacking cube " + (i+1) + " " + cube + " onto  " + lastCube);
+			ThreadUtils.sleepq(200);
 			cube.stackOnto(lastCube);
 			lastCube = cube;
 		}
-		System.out.println("Gata. Asta voi face inca 6 luni de acum inainte... ;p");
+		System.out.println("Done");
 	}
 }
