@@ -28,7 +28,7 @@ class LovingParent {
 }
 
 class ToyShop { // close by
-   public static ToyHammer createToyHammer() {
+   public static ToyHammer buyToy() {
       return new ToyHammer();
    }
 }
