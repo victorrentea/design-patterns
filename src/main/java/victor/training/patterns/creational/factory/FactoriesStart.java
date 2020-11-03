@@ -9,7 +9,6 @@ import static java.lang.System.exit;
 public class FactoriesStart {
    public static void main(String[] args) {
       LovingParent parent = new LovingParent(new Child());
-
       parent.finishWorkExhausted();
    }
 }
@@ -29,7 +28,9 @@ class LovingParent {
 }
 
 class ToyShop { // close by
-
+   public static ToyHammer createToyHammer() {
+      return new ToyHammer();
+   }
 }
 
 class Child {
@@ -45,5 +46,10 @@ class Child {
       System.out.println("Playing with " + toy + " ...");
       ThreadUtils.sleepq(1000);
       System.out.println("Done Playing");
+   }
+}
+class ToyHammer {
+   public void use() {
+      System.out.println("Bang-Bang!");
    }
 }
