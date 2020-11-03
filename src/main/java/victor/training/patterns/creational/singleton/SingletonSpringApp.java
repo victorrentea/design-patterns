@@ -94,6 +94,7 @@ class LabelService {
 	
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
+		sleepr();
 		return countryNames.get(iso2Code.toUpperCase());
 	}
 }
