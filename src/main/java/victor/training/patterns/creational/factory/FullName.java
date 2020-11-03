@@ -5,6 +5,7 @@ import victor.training.patterns.creational.factory.FullName.Prefix;
 class ClientCode {
    public void method() {
       FullName fullName = new FullName(Prefix.MR, "Emma", "Rentea");
+      System.out.println(fullName.toFullName());
    }
 }
 
@@ -22,7 +23,6 @@ public class FullName {
       this.lastName = lastName;
    }
 
-
    public String getLastName() {
       return lastName;
    }
@@ -33,5 +33,10 @@ public class FullName {
 
    public Prefix getPrefix() {
       return prefix;
+   }
+
+   public String toFullName() {
+      return prefix + " " + firstName + " " + lastName.toUpperCase();
+
    }
 }

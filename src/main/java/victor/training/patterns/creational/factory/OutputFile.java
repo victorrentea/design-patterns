@@ -8,4 +8,8 @@ public class OutputFile {
    public OutputFile(String fileName) {
       this.fileName = fileName;
    }
+
+   public void writeStuff(String stuff) {
+      System.out.println("Writing stuff using " + delimiter + " in the file " + fileName + fileExt);
+   }
 }
