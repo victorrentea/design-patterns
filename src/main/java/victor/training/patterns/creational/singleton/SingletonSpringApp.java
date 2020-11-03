@@ -41,12 +41,12 @@ public class SingletonSpringApp implements CommandLineRunner{
 	@Autowired 
 	private OrderExporter exporter;
 	
-	// TODO [1] make singleton; test multi-thread: state is [ | | | ]
+	// TODO [1] state in a singleton is DANGEROUS https://rules.sonarsource.com/java/RSPEC-3749?search=injected
 	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
-	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you said "Factory"? ...
+	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you say "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	// TODO [5] (after AOP): RequestContext, @Cacheable. on thread?! @ThreadLocal
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		exporter.export(Locale.ENGLISH);
 //		exporter.export(Locale.FRENCH);
 	}
@@ -88,13 +88,12 @@ class InvoiceExporter {
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private final CountryRepo countryRepo;
+	private Map<String, String> countryNames;
 
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
 
-	private Map<String, String> countryNames;
-	
 	@PostConstruct
 	public void load() {
 		log.debug("load() map in instance: " + this.hashCode());
