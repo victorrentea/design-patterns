@@ -22,8 +22,8 @@ public class SingletonIntro {
 class BizService {
    public int bizMethod() {
       // Think about testing
-      // TODO reuse B instance (performance)
-      // TODO push life mgmt to B (getInstance)
+      // TODO reuse ConfigManager instance in field (performance)
+      // TODO push life mgmt to ConfigManager (getInstance)
       // TODO Test it
       // TODO Introduce ServiceLocator
       ConfigManager configManager = new ConfigManager();
