@@ -14,8 +14,11 @@ import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
 import java.util.Locale;
 import java.util.Map;
+
+import static victor.training.patterns.stuff.ThreadUtils.sleepr;
 
 @Slf4j // if this doesn't compile:
 // IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
@@ -52,10 +55,13 @@ public class SingletonSpringApp implements CommandLineRunner{
 @Service
 class OrderExporter  {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
-	@Autowired
-	private InvoiceExporter invoiceExporter;
-	@Autowired
-	private LabelService labelService;
+	private final InvoiceExporter invoiceExporter;
+	private final LabelService labelService;
+
+	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
+		this.invoiceExporter = invoiceExporter;
+		this.labelService = labelService;
+	}
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
@@ -67,9 +73,12 @@ class OrderExporter  {
 @Service
 class InvoiceExporter {
 	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
-	@Autowired
-	private LabelService labelService;
-	
+	private final LabelService labelService;
+
+	public InvoiceExporter(LabelService labelService) {
+		this.labelService = labelService;
+	}
+
 	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
@@ -78,8 +87,8 @@ class InvoiceExporter {
 @Service
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
+	private final CountryRepo countryRepo;
 
-	private CountryRepo countryRepo;
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
