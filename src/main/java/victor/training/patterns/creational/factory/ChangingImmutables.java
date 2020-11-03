@@ -2,14 +2,14 @@ package victor.training.patterns.creational.factory;
 
 import victor.training.patterns.creational.factory.FullName.Prefix;
 
-class ClientCode {
+public class ChangingImmutables {
    public void method() {
-      FullName fullName = new FullName(Prefix.MR, "Emma", "Rentea");
+      FullName fullName = new FullName(Prefix.MR, "Maria", "Rentea");
       System.out.println(fullName.toFullName());
    }
 }
 
-public class FullName {
+class FullName {
    enum Prefix {
       MR, MS, MRS
    }
@@ -40,3 +40,4 @@ public class FullName {
 
    }
 }
+

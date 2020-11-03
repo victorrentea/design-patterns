@@ -1,6 +1,13 @@
 package victor.training.patterns.creational.factory;
 
-public class OutputFile {
+public class NamedConstructors {
+   public static void main(String[] args) {
+      OutputFile outputFile = new OutputFile("irs");
+   }
+}
+
+
+class OutputFile {
    private String delimiter = ";";
    private String fileExt = ".csv";
    private final String fileName;
