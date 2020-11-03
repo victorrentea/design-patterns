@@ -39,14 +39,18 @@ class BizService {
 
 class ConfigManager {
 
-   public String getConfig() {
-      String config;
+   private final String config;
+
+   public ConfigManager() {
       try (Reader reader = new FileReader("f.txt")) {
          config = IOUtils.toString(reader); // takes time
          sleepq(1000);
       } catch (IOException e) {
          throw new RuntimeException(e);
       }
+   }
+
+   public String getConfig() {
       return config;
    }
 }
