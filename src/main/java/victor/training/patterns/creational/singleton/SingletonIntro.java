@@ -22,6 +22,7 @@ public class SingletonIntro {
 class BizService {
    public int bizMethod() {
       // Think about testing
+      // TODO keep loaded config in ConfigManager field
       // TODO reuse ConfigManager instance in field (performance)
       // TODO push life mgmt to ConfigManager (getInstance)
       // TODO Test it
