@@ -82,9 +82,10 @@ class InvoiceExporter {
 @Component
 @RequiredArgsConstructor
 class LabelServiceFactory {
-	private final ObjectFactory<LabelService> labelServiceObjectFactory;
+	private final CountryRepo countryRepo;
+
 	public LabelService getLabelServiceForLocale(Locale locale) {
-		LabelService labelService = labelServiceObjectFactory.getObject();
+		LabelService labelService = new LabelService(countryRepo);
 		labelService.load(locale);
 		return labelService;
 	}
@@ -93,8 +94,6 @@ class LabelServiceFactory {
 
 @Slf4j
 @RequiredArgsConstructor
-@Service
-@Scope("prototype")
 class LabelService {
 	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames;

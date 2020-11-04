@@ -22,7 +22,7 @@ class MemberCard {
 }
 
 class Customer {
-    private MemberCard memberCard;
+    private MemberCard memberCard = new MemberCard(0, 1); // or not
 
     public Customer setMemberCard(MemberCard memberCard) {
         this.memberCard = memberCard;
@@ -48,7 +48,8 @@ public class NullObject {
         // TODO default state, eg parseInts(emptyList)
         // Imagine price being used in many places
         // TODO Fix Feature Envy + dummy behavior (Null Object Pattern)
-        Customer customer = new Customer().setMemberCard(new MemberCard(10, .95));
+//        Customer customer = new Customer().setMemberCard(new MemberCard(10, .95));
+        Customer customer = new Customer();
         double price = new PriceService().computePrice(100, customer);
         System.out.println(price);
     }
