@@ -2,8 +2,6 @@ package victor.training.patterns.creational.singleton;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
@@ -13,8 +11,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import java.util.Locale;
 import java.util.Map;
@@ -58,13 +54,16 @@ public class SingletonSpringApp implements CommandLineRunner{
 @RequiredArgsConstructor
 class OrderExporter  {
 	private final InvoiceExporter invoiceExporter;
-	private final LabelService labelService;
+	private final CountryRepo countryRepo;
+
+//	private final LabelService labelService;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
+		LabelService labelService = new LabelService(countryRepo);
 		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
@@ -72,16 +71,16 @@ class OrderExporter  {
 @Service
 @RequiredArgsConstructor
 class InvoiceExporter {
-	private final LabelService labelService;
+//	private final LabelService labelService;
 
-	public void exportInvoice() {
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
 @Slf4j
 @RequiredArgsConstructor
-@Service
+//@Service
 class LabelService {
 	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames;
