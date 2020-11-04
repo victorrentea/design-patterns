@@ -42,7 +42,7 @@ class BizService {
 
 class ConfigManager {
    private final String config;
-   public ConfigManager() {
+   public ConfigManager(String s) {
       try (Reader reader = new FileReader("f.txt")) {
          config = IOUtils.toString(reader);
          sleepq(1000); // takes time
