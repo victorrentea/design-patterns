@@ -2,12 +2,11 @@ package victor.training.patterns.creational.builder;
 
 import lombok.Getter;
 import lombok.Setter;
+import victor.training.patterns.stuff.pretend.Entity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-
+@Entity
 public class Customer {
 	@Getter @Setter
 	private Long id;
@@ -19,4 +18,14 @@ public class Customer {
 	@Getter @Setter
 	private Address address;
 	private Date createDate;
+
+	public List<String> getLabels() {
+		return Collections.unmodifiableList(labels);
+	}
+
+	// test-friendlied mutator in my sacred entity
+	public Customer addLabel(String... labels) {
+		this.labels.addAll(Arrays.asList(labels));
+		return this;
+	}
 }
