@@ -27,8 +27,9 @@ class BizService {
       // TODO push life mgmt to ConfigManager (getInstance)
       // TODO Test it
       // TODO Introduce ServiceLocator
-      ConfigManager configManager = new ConfigManager();
+      ConfigManager configManager = ConfigManager.getInstance();
       String config = configManager.getConfig();
+      /// horrible 500 lines of logic depending on config
       if (config.equals("NOOP")) {
          return -1;
       }
@@ -36,15 +37,20 @@ class BizService {
    }
 }
 
-
 class ConfigManager {
+   private static ConfigManager INSTANCE;
+   public static ConfigManager getInstance() {
+      if (INSTANCE == null) {
+         INSTANCE = new ConfigManager();
+      }
+      return INSTANCE;
+   }
 
    private final String config;
-
-   public ConfigManager() {
+   private ConfigManager() {
       try (Reader reader = new FileReader("f.txt")) {
-         config = IOUtils.toString(reader); // takes time
-         sleepq(1000);
+         config = IOUtils.toString(reader);
+         sleepq(1000); // takes time
       } catch (IOException e) {
          throw new RuntimeException(e);
       }
