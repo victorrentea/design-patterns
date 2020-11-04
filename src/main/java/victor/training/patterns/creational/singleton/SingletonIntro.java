@@ -37,6 +37,18 @@ class BizService {
    }
 }
 
+class BizService2 {
+   public int bizMethod() {
+      ConfigManager configManager = ConfigManager.getInstance();
+      String config = configManager.getConfig();
+      /// horrible 500 lines of logic depending on config
+      if (config.equals("NOOP")) {
+         return -1;
+      }
+      return 0;
+   }
+}
+
 class ConfigManager {
    private static ConfigManager INSTANCE;
    public static ConfigManager getInstance() {
