@@ -1,5 +1,6 @@
 package victor.training.patterns.creational.singleton;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,57 +48,47 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you say "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	public void run(String... args) {
-		exporter.export(Locale.ENGLISH);
-//		exporter.export(Locale.FRENCH);
+		new Thread(()->exporter.export(Locale.ENGLISH)).start();
+		new Thread(()->exporter.export(Locale.FRENCH)).start();
 	}
 }
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 class OrderExporter  {
-	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final InvoiceExporter invoiceExporter;
 	private final LabelService labelService;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
-		this.invoiceExporter = invoiceExporter;
-		this.labelService = labelService;
-	}
-
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
+		labelService.load(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
 		invoiceExporter.exportInvoice();
 	}
 }
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 class InvoiceExporter {
-	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
 	private final LabelService labelService;
-
-	public InvoiceExporter(LabelService labelService) {
-		this.labelService = labelService;
-	}
 
 	public void exportInvoice() {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 class LabelService {
-	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames;
 
-	public LabelService(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
-
-	@PostConstruct
-	public void load() {
+	public void load(Locale locale) {
 		log.debug("load() map in instance: " + this.hashCode());
-		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
+		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 	
 	public String getCountryName(String iso2Code) {
