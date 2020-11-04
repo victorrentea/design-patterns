@@ -9,28 +9,27 @@ public class CustomerValidatorTest {
 
 	private CustomerValidator validator = new CustomerValidator();
 
+	private Customer aValidCustomer() {
+		return new Customer()
+			.setName("John Doe")
+			.setAddress(aValidAddress());
+	}
+
+	private Address aValidAddress() {
+		return new Address()
+			.setCity("Bucharest")
+			.setStreetAddress("Dristor");
+	}
+
 	@Test
 	public void validCustomer_ok() {
-		Customer customer = aValidCustomer().build();
+		Customer customer = aValidCustomer();
 		validator.validate(customer);
-	}
-
-	private CustomerBuilder aValidCustomer() {
-		return new CustomerBuilder()
-			.withName("John Doe")
-			.withAddress(aValidAddress()
-				.build());
-	}
-
-	private AddressBuilder aValidAddress() {
-		return new AddressBuilder()
-			.withCity("Bucharest")
-			.withStreetName("Dristor");
 	}
 
 	@Test
 	public void throwsForCustomerWithNoName() {
-		Customer customer = aValidCustomer().withName(null).build();
+		Customer customer = aValidCustomer().setName(null);
 		Assertions.assertThrows(IllegalArgumentException.class,
 			() -> validator.validate(customer));
 	}
@@ -38,8 +37,7 @@ public class CustomerValidatorTest {
 	@Test
 	public void throwsForCustomerWithNoAddressCity() {
 		Customer customer = aValidCustomer()
-			.withAddress(aValidAddress().withCity(null).build())
-			.build();
+			.setAddress(aValidAddress().setCity(null));
 
 		Assertions.assertThrows(IllegalArgumentException.class,
 			() -> validator.validate(customer));
