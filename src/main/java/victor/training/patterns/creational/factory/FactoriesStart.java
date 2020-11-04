@@ -27,6 +27,10 @@ public class FactoriesStart {
 
 
 class LovingParent {
+//   private boolean loving = true;
+//   private Love love
+//   Loving part of LovingParent be a field.
+
    private final Child child;
 
    public LovingParent(Child child) {
