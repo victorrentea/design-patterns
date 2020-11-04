@@ -1,69 +1,59 @@
 package victor.training.patterns.creational.nullobject;
 
-import victor.training.patterns.stuff.pretend.Entity;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NullObject {
-    public static void main(String[] args) {
-        // 1
-        PriceService priceService = new PriceService();
-        Customer customer = new Customer().setCard(new MemberCard(10));
-        double price = priceService.computePrice(100, customer); // TODO null it
-        System.out.println(price);
-
-        // 2
-        System.out.println(parseInts(Arrays.asList("1","2"))); // TODO null it
-        // TODO sum() Tip: CTRL-SHIFT-SPACE in .map..()
-    }
-
-    static List<Integer> parseInts(List<String> numbers) {
-        return numbers.stream().map(Integer::parseInt).collect(Collectors.toList());
-    }
-}
-
-
 class MemberCard {
-    private String email;
-    private String mailAddress;
-    private boolean hipster;
-    private boolean withChildren;
-    private int points;
-    public MemberCard(int points) {
-        this.points = points;
-    }
-    public MemberCard() {}
+    private final int points;
+    private final double discountFactor;
 
-    public MemberCard setPoints(int points) {
+    public MemberCard(int points, double discountFactor) {
         this.points = points;
-        return this;
+        this.discountFactor = discountFactor;
     }
 
     public int getPoints() {
         return points;
     }
+
+    public double getDiscountFactor() {
+        return discountFactor;
+    }
 }
 
-@Entity
 class Customer {
-    private String fullName;
-    private MemberCard card;
+    private MemberCard memberCard;
 
-    public Customer setCard(MemberCard card) {
-        this.card = card;
+    public Customer setMemberCard(MemberCard memberCard) {
+        this.memberCard = memberCard;
         return this;
     }
 
-    public MemberCard getCard() {
-        return card;
+    public MemberCard getMemberCard() {
+        return memberCard;
     }
 }
 
 class PriceService {
     public double computePrice(double basePrice, Customer customer) {
-        System.out.println("Using fidelity points: " + customer.getCard().getPoints());
-        return basePrice - customer.getCard().getPoints() / 10d;
+        System.out.println("Using fidelity points: " + customer.getMemberCard().getPoints());
+        return basePrice * customer.getMemberCard().getDiscountFactor() - customer.getMemberCard().getPoints() / 10d;
+    }
+}
+
+public class NullObject {
+    public static void main(String[] args) {
+        // 1
+        // TODO no member card
+        // TODO default state, eg parseInts(emptyList)
+        // Imagine price being used in many places
+        // TODO Fix Feature Envy + dummy behavior (Null Object Pattern)
+        Customer customer = new Customer().setMemberCard(new MemberCard(10, .95));
+        double price = new PriceService().computePrice(100, customer);
+        System.out.println(price);
+    }
+
+    static List<Integer> parseInts(List<String> numbers) {
+        return numbers.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
 }
