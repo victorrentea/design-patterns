@@ -12,12 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class BizService5Test {
    @Test
    public void test() {
-      try (MockedStatic<ConfigManager> mock = Mockito.mockStatic(ConfigManager.class)) {
-         ConfigManager mockManager = Mockito.mock(ConfigManager.class);
-         mock.when(ConfigManager::getInstance).thenReturn(mockManager);
-         Mockito.when(mockManager.getConfig()).thenReturn("NOOP");
+      ConfigManager mockManager = Mockito.mock(ConfigManager.class);
 
-         Assertions.assertEquals(-1, new BizService().bizMethod());
-      }
+      ServiceLocator.setTestInstance(ConfigManager.class, mockManager);
+
+      Mockito.when(mockManager.getConfig()).thenReturn("NOOP");
+
+      Assertions.assertEquals(-1, new BizService().bizMethod());
    }
 }
