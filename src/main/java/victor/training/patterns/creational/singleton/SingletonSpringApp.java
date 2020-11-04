@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -57,12 +58,12 @@ public class SingletonSpringApp implements CommandLineRunner{
 @RequiredArgsConstructor
 class OrderExporter  {
 	private final InvoiceExporter invoiceExporter;
-	private final ObjectFactory<LabelService> labelServiceObjectFactory;
+	private final LabelServiceFactory labelServiceFactory;
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = labelServiceObjectFactory.getObject();
-		labelService.load(locale);
+		LabelService labelService = labelServiceFactory.getLabelServiceForLocale(locale);
+
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 		invoiceExporter.exportInvoice(labelService);
 	}
@@ -76,6 +77,19 @@ class InvoiceExporter {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
+
+
+@Component
+@RequiredArgsConstructor
+class LabelServiceFactory {
+	private final ObjectFactory<LabelService> labelServiceObjectFactory;
+	public LabelService getLabelServiceForLocale(Locale locale) {
+		LabelService labelService = labelServiceObjectFactory.getObject();
+		labelService.load(locale);
+		return labelService;
+	}
+}
+
 
 @Slf4j
 @RequiredArgsConstructor
