@@ -2,17 +2,27 @@ package victor.training.patterns.creational.factory;
 
 public class NamedConstructors {
    public static void main(String[] args) {
-      OutputFile outputFile = new OutputFile("irs");
+      OutputFile outputFile = OutputFile.createCsv("irs");
    }
 }
 
 
+
+
+
+
 class OutputFile {
-   private String delimiter = ";";
-   private String fileExt = ".csv";
+   private final String delimiter;
+   private final String fileExt;
    private final String fileName;
 
-   public OutputFile(String fileName) {
+   public static OutputFile createCsv(String fileName) {
+      return new OutputFile(fileName, ";", ".csv");
+   }
+
+   public OutputFile(String fileName, String delimiter, String fileExt) {
+      this.delimiter = delimiter;
+      this.fileExt = fileExt;
       this.fileName = fileName;
    }
 
