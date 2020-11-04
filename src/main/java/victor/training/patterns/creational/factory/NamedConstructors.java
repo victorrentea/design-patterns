@@ -2,6 +2,13 @@ package victor.training.patterns.creational.factory;
 
 public class NamedConstructors {
    public static void main(String[] args) {
+
+
+      Long l1 = Long.valueOf(127L);
+      Long l2 = Long.valueOf(127L);
+
+      System.out.println(l1 == l2);
+
       OutputFile outputFile = OutputFile.createCsv("irs");
    }
 }
