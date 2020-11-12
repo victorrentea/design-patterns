@@ -4,7 +4,7 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-public class CannonCanonicalInstances {
+public class CanonicalInstances {
    public static void main(String[] args) {
       Random r = new Random();
       List<Coord> coords = new ArrayList<>();
