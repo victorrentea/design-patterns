@@ -6,6 +6,7 @@ import java.util.*;
 
 public class CanonicalInstances {
    public static void main(String[] args) {
+      System.out.println("Creating lots of objects (some identical)...");
       Random r = new Random();
       List<Coord> coords = new ArrayList<>();
       for (int i = 0; i < 10_000_000; i++) {
@@ -30,10 +31,13 @@ public class CanonicalInstances {
       System.out.println("Measure used memory now again (no reference left) with jvisualvm after triggering a Full GC");
       System.out.println("Program paused. [ENTER] to continue");
       System.out.println("Entries: " + Coord.CURRENT_INSTANCES.size()); // Critical Line: size() will call java.util.WeakHashMap.expungeStaleEntries that clears entries with null keys
+      System.out.println("Entries: " + Coord.CURRENT_INSTANCES.size()); // Critical Line: size() will call java.util.WeakHashMap.expungeStaleEntries that clears entries with null keys
+
+      System.gc();
+      System.out.println("Now see visualVM: end of all -> should be < 50mb");
       new Scanner(System.in).nextLine();
       // 84 MB after
       System.out.println("Entries: " + Coord.CURRENT_INSTANCES.size());
-      System.out.println(Coord.CURRENT_INSTANCES.entrySet().iterator().next().getKey());
    }
 }
 
