@@ -22,11 +22,10 @@ import static java.util.stream.Collectors.toList;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
-	private final LdapUserWebserviceClient wsClient;
-
+	private final LdapUserServiceAdapter adapter;
 
 	public void importUserFromLdap(String username) {
-		List<User> list = searchByUsername(username);
+		List<User> list = adapter.searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
@@ -40,23 +39,8 @@ public class UserService {
 	}
 	// 200 de linii de jos
 	public List<User> searchUserInLdap(String username) {
-		return searchByUsername(username);
+		return adapter.searchByUsername(username);
 	}
 
-	// deasupra e doar pace, armonie,
-	// ------------------ o linie ---------------------
-	// sub aceasta linie e gunoi
-
-	private List<User> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null)
-			.stream()
-			.map(this::convertToEntity)
-			.collect(toList());
-	}
-
-	private User convertToEntity(LdapUser ldapUser) {
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-	}
 
 }
