@@ -16,7 +16,7 @@ import java.util.List;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
-	private final ILdapUserServiceAdapter adapter;
+	private final ExternaUserService adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUsername(username);
