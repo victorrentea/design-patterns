@@ -12,47 +12,49 @@ import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
 @Slf4j
 public class SingletonIntro {
-   public static void main(String[] args) {
-      log.debug("Start");
-      log.debug("Out: " + new BizService().bizMethod());
-      log.debug("Out: " + new BizService().bizMethod());
-   }
+	public static void main(String[] args) {
+		log.debug("Start");
+		log.debug("Out: " + new BizService().bizMethod());
+		log.debug("Out: " + new BizService().bizMethod());
+	}
 }
 
 class BizService {
-   public int bizMethod() {
-      // Think about testing
-      // TODO keep loaded config in ConfigManager field
-      // TODO reuse ConfigManager instance in field (performance)
-      // TODO push life mgmt to ConfigManager (getInstance)
-      // TODO Test it
-      // TODO Introduce ServiceLocator
-      ConfigManager configManager = new ConfigManager();
-      String config = configManager.getConfig();
-      if (config.equals("NOOP")) {
-         return -1;
-      }
-      return 0;
-   }
+	public int bizMethod() {
+		ConfigManager configManager = ConfigManager.getInstance();
+		String config = configManager.getConfig();
+		if (config.equals("NOOP")) {
+			return -1;
+		}
+		return 0;
+	}
 }
 
 
 class ConfigManager {
+	private static ConfigManager INSTANCE;
 
-   private final String config;
+	public static ConfigManager getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new ConfigManager();
+		}
+		return INSTANCE;
+	}
 
-   public ConfigManager() {
-      try (Reader reader = new FileReader("f.txt")) {
-         config = IOUtils.toString(reader); // takes time
-         sleepq(1000);
-      } catch (IOException e) {
-         throw new RuntimeException(e);
-      }
-   }
+	private final String config;
 
-   public String getConfig() {
-      return config;
-   }
+	private ConfigManager() {
+		try (Reader reader = new FileReader("f.txt")) {
+			config = IOUtils.toString(reader); // takes time
+			sleepq(1000);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getConfig() {
+		return config;
+	}
 }
 
 //class ServiceLocator {
