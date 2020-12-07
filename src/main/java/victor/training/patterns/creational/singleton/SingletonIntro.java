@@ -21,13 +21,7 @@ public class SingletonIntro {
 
 class BizService {
    public int bizMethod() {
-      // Think about testing
-      // TODO keep loaded config in ConfigManager field
-      // TODO reuse ConfigManager instance in field (performance)
-      // TODO push life mgmt to ConfigManager (getInstance)
-      // TODO Test it
-      // TODO Introduce ServiceLocator
-      ConfigManager configManager = new ConfigManager();
+      ConfigManager configManager = ConfigManager.getInstance();
       String config = configManager.getConfig();
       if (config.equals("NOOP")) {
          return -1;
@@ -39,9 +33,21 @@ class BizService {
 
 class ConfigManager {
 
-   private final String config;
+   private /*static*/ String config; // practic orice variabila pe Singleton este 'effectively static'
 
-   public ConfigManager() {
+   // DE AICI
+   private static ConfigManager INSTANCE;
+
+   public static ConfigManager getInstance() {
+      if (INSTANCE == null) {
+         INSTANCE = new ConfigManager();
+      }
+      return INSTANCE;
+   }
+   // PANA AICI  nu va fi necesar in viata reala.
+   // Pentru ca vor exista niste containere de Dependency Injection
+
+   private ConfigManager() {
       try (Reader reader = new FileReader("f.txt")) {
          config = IOUtils.toString(reader); // takes time
          sleepq(1000);
