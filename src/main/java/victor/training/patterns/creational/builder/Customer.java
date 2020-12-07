@@ -1,55 +1,31 @@
 package victor.training.patterns.creational.builder;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.web.bind.annotation.GetMapping;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class Customer {
+	@Getter
 	private Long id;
+	@Getter @Setter
 	private String name;
+	@Getter @Setter
 	private String phone;
+	@Getter
 	private List<String> labels = new ArrayList<>();
+	@Getter @Setter
 	private Address address;
+	@Getter @Setter
 	private Date createDate;
 
-	public Address getAddress() {
-		return address;
+	public Customer addLabels(String... labels) {
+		this.labels.addAll(asList(labels));
+		return this;
 	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
 }
