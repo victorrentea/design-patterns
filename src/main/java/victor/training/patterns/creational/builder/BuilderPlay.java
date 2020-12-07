@@ -31,3 +31,15 @@ public class BuilderPlay {
       System.out.println("Customer address: " + customer.getAddress().getStreetAddress());
    }
 }
+
+//
+//interface I1 {
+//   default void m() {};
+//}
+//interface I2 {
+//   default void m() {};
+//}
+//
+//class C implements I1,I2 {
+//
+//}

@@ -4,7 +4,7 @@ import victor.training.patterns.creational.factory.abstractfactory.spi.BlockFact
 import victor.training.patterns.creational.factory.abstractfactory.spi.Board;
 import victor.training.patterns.creational.factory.abstractfactory.spi.Cube;
 
-public class LegoFactory implements BlockFactory {
+public class LegoBox implements BlockFactory {
 
 	@Override
 	public Board createBoard() {
