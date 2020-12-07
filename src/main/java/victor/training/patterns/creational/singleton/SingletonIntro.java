@@ -2,7 +2,7 @@ package victor.training.patterns.creational.singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import victor.training.patterns.stuff.ThreadUtils;
+import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,16 +12,23 @@ import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
 @Slf4j
 public class SingletonIntro {
+
    public static void main(String[] args) {
       log.debug("Start");
-      log.debug("Out: " + new BizService().bizMethod());
-      log.debug("Out: " + new BizService().bizMethod());
+//      log.debug("Out: " + new BizService(configManager).bizMethod());
+//      log.debug("Out: " + new BizService(configManager).bizMethod());
    }
 }
 
+@Service
 class BizService {
+   private final ConfigManager configManager;
+
+   BizService(ConfigManager configManager) {
+      this.configManager = configManager;
+   }
+
    public int bizMethod() {
-      ConfigManager configManager = ConfigManager.getInstance();
       String config = configManager.getConfig();
       if (config.equals("NOOP")) {
          return -1;
@@ -31,6 +38,7 @@ class BizService {
 }
 
 
+@Service
 class ConfigManager {
 
    private /*static*/ String config; // practic orice variabila pe Singleton este 'effectively static'
