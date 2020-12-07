@@ -12,7 +12,11 @@ public class HaiSaMaJoc {
       InvocationHandler h = new InvocationHandler() {
          public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             System.out.println("SRI: Se cheama metoda " + method.getName() + " " + Arrays.toString(args));
-            return method.invoke(realMate, args);
+            long t0 = System.currentTimeMillis();
+            Object result = method.invoke(realMate, args);
+            long t1 = System.currentTimeMillis();
+            System.out.println("Took "+ (t1-t0));
+            return result;
          }
       };
 
