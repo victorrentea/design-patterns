@@ -8,6 +8,9 @@ import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClien
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -23,12 +26,12 @@ public class UserService {
 
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
+		List<User> list = searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0); // modelul lu' ala
-		User user = convertToEntity(ldapUser);
+
+		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -37,22 +40,23 @@ public class UserService {
 	}
 	// 200 de linii de jos
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			User user = convertToEntity(ldapUser);
-			results.add(user);
-		}
-		return results;
+		return searchByUsername(username);
+	}
+
+	// deasupra e doar pace, armonie,
+	// ------------------ o linie ---------------------
+	// sub aceasta linie e gunoi
+
+	private List<User> searchByUsername(String username) {
+		return wsClient.search(username.toUpperCase(), null, null)
+			.stream()
+			.map(this::convertToEntity)
+			.collect(toList());
 	}
 
 	private User convertToEntity(LdapUser ldapUser) {
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-	}
-
-	private List<LdapUser> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
 	}
 
 }
