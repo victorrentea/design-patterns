@@ -3,14 +3,8 @@ package victor.training.patterns.structural.adapter.domain;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import victor.training.patterns.structural.adapter.infra.LdapUser;
-import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -22,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
-	private final LdapUserServiceAdapter adapter;
+	private final ILdapUserServiceAdapter adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUsername(username);

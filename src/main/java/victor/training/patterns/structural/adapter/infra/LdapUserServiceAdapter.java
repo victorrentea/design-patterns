@@ -1,9 +1,9 @@
-package victor.training.patterns.structural.adapter.domain;
+package victor.training.patterns.structural.adapter.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import victor.training.patterns.structural.adapter.infra.LdapUser;
-import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
+import victor.training.patterns.structural.adapter.domain.ILdapUserServiceAdapter;
+import victor.training.patterns.structural.adapter.domain.User;
 
 import java.util.List;
 
@@ -11,9 +11,10 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
-public class LdapUserServiceAdapter {
+public class  LdapUserServiceAdapter implements ILdapUserServiceAdapter {
    private final LdapUserWebserviceClient wsClient;
 
+   @Override
    public List<User> searchByUsername(String username) {
       return wsClient.search(username.toUpperCase(), null, null)
           .stream()
