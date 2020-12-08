@@ -33,7 +33,7 @@ public class TemplateSpringApp implements CommandLineRunner {
    private void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
-      emailSender.sendEmail("a@b.com", emails::composeOrderShippedEmail);
+      emailSender.sendEmail("a@b.com", email -> emails.composeOrderShippedEmail(email));
    }
 }
 

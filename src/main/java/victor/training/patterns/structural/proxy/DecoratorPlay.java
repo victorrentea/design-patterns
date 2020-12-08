@@ -10,7 +10,7 @@ public class DecoratorPlay {
 //      ICeva ceva = new Ceva();
 //      ICeva ceva = new CevaPlusPlus(new Ceva());
       ICeva ceva = new Ceva();
-      ceva = new CevaMinusMinus(new CevaPlusPlus(ceva));
+//      ceva = new CevaMinusMinus(new CevaPlusPlus(ceva));
 
       method(ceva);
 
