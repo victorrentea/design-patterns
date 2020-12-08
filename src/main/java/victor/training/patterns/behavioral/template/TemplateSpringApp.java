@@ -20,17 +20,17 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendEmail("a@b.com");
+		new OrderReceivedEmailSender().sendEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new Hackareala().sendEmail("a@b.com");
+		new OrderShippedEmailSender().sendEmail("a@b.com");
 	}
 }
 
-class EmailService {
+abstract class AbstractEmailSender {
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -40,30 +40,26 @@ class EmailService {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			p(email);
+			composeEmail(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
+	public abstract void composeEmail(Email email);
 
-	public void p(Email email) {
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+
+	public void composeEmail(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
 
-
-
-
-
-
-
-
-
-
-class Hackareala extends EmailService {
+class OrderShippedEmailSender extends AbstractEmailSender {
 	@Override
-	public void p(Email email) {
+	public void composeEmail(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram sa ajunga (de data Asta);");
 	}
