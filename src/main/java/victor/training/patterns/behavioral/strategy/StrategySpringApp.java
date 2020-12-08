@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,6 +52,20 @@ class CustomsService {
          }
       }
       throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+   }
+}
+interface Validatable {
+   default void validate() {
+      // obt validatorul cumva hocu pocus
+//      validate and throw ex daca e prost
+   }
+}
+
+class User implements Validatable {
+   @NotNull
+   String username;
+   public User() {
+      validate();
    }
 }
 
