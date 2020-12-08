@@ -11,12 +11,7 @@ public class ObserverInGUI {
 		MyFrame myFrame = new MyFrame();
 		
 		// SOLUTION(
-		myFrame.button1.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Button clicked");
-			}
-		});
+		myFrame.button1.addActionListener(e -> JOptionPane.showMessageDialog(null, "Button clicked"));
 		// SOLUTION)
 		//TODO myFrame.button1.addActionListener(new ActionListener);
 	}
