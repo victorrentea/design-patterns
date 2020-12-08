@@ -1,16 +1,16 @@
 package victor.training.patterns.creational.builder;
 
 public class Address {
-	private String streetAddress;
+	private String streetName;
 	private String city;
 	private String country;
 
-	public String getStreetAddress() {
-		return streetAddress;
+	public String getStreetName() {
+		return streetName;
 	}
 
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
 	}
 
 	public String getCity() {

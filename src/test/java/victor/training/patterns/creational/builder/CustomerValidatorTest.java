@@ -14,7 +14,7 @@ public class CustomerValidatorTest {
 		customer.setName("John Doe");
 		Address address = new Address();
 		address.setCity("Bucharest");
-		address.setStreetAddress("Dristor 91");
+		address.setStreetName("Dristor 91");
 		customer.setAddress(address);
 		validator.validate(customer);
 	}

@@ -16,7 +16,7 @@ public class CustomerValidator {
 		if (StringUtils.isBlank(address.getCity())) {
 			throw new IllegalArgumentException("Missing address city");
 		}
-		if (StringUtils.isBlank(address.getStreetAddress())) {
+		if (StringUtils.isBlank(address.getStreetName())) {
 			throw new IllegalArgumentException("Missing address street");
 		}
 	}

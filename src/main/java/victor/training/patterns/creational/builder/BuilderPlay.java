@@ -16,11 +16,11 @@ public class BuilderPlay {
 		labels.add("Label1");
 		customer.setLabels(labels);
 		Address address = new Address();
-		address.setStreetAddress("Viorele 4");
+		address.setStreetName("Viorele");
 		address.setCity("Bucharest");
 		customer.setAddress(address);
 
 		System.out.println("Customer name: " + customer.getName());
-		System.out.println("Customer address: " + customer.getAddress().getStreetAddress());
+		System.out.println("Customer address: " + customer.getAddress().getStreetName());
 	}
 }

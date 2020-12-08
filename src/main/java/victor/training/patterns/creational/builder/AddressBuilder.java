@@ -4,7 +4,7 @@ public class AddressBuilder {
 	private final Address address = new Address();
 
 	public AddressBuilder withStreetName(String streetName) {
-		address.setStreetAddress(streetName);
+		address.setStreetName(streetName);
 		return this;
 	}
 
