@@ -20,17 +20,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderReceivedEmailSender()).sendEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
 	}
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+	private final EmailComposer emailComposer;
+
+	public EmailSender(EmailComposer emailComposer) {
+		this.emailComposer = emailComposer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -40,26 +45,23 @@ abstract class AbstractEmailSender {
 			email.setSender("noreply@corp.com");
 			email.setReplyTo("/dev/null");
 			email.setTo(emailAddress);
-			composeEmail(email);
+			emailComposer.compose(email);
 			boolean success = context.send(email);
 			if (success) break;
 		}
 	}
-	public abstract void composeEmail(Email email);
-
 }
-
-class OrderReceivedEmailSender extends AbstractEmailSender {
-
-	public void composeEmail(Email email) {
+interface EmailComposer {
+	void compose(Email email);
+}
+class OrderReceivedEmailSender implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
-
-class OrderShippedEmailSender extends AbstractEmailSender {
-	@Override
-	public void composeEmail(Email email) {
+class OrderShippedEmailSender implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Shipped");
 		email.setBody("Ti-am trimis. Speram sa ajunga (de data Asta);");
 	}
