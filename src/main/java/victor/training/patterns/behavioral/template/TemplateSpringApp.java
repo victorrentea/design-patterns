@@ -1,9 +1,11 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -18,26 +20,27 @@ public class TemplateSpringApp implements CommandLineRunner {
 		shipOrder();
 	}
 
+	@Autowired
+	private EmailSender emailSender;
 	private void placeOrder() {
 		// other logic
-		new EmailSender(new OrderReceivedEmailSender()).sendEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", new OrderReceivedEmailSender());
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", new OrderShippedEmailSender());
 	}
 }
 
+//@Stateless /
+@Service// -- nu merge o singura instanta
 class EmailSender {
-	private final EmailComposer emailComposer;
+//	@Autowired // @Resource @PersistenceContext
+//	private EmailClient client;
 
-	public EmailSender(EmailComposer emailComposer) {
-		this.emailComposer = emailComposer;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailComposer emailComposer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		for (int i = 0; i < MAX_RETRIES; i++ ) {
@@ -54,12 +57,14 @@ class EmailSender {
 interface EmailComposer {
 	void compose(Email email);
 }
+@Service
 class OrderReceivedEmailSender implements EmailComposer {
 	public void compose(Email email) {
 		email.setSubject("Order Received");
 		email.setBody("Thank you for your order");
 	}
 }
+@Service
 class OrderShippedEmailSender implements EmailComposer {
 	public void compose(Email email) {
 		email.setSubject("Order Shipped");
