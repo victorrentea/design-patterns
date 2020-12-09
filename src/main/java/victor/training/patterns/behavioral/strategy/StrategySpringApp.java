@@ -4,6 +4,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
    public static void main(String[] args) {
@@ -36,23 +40,22 @@ class CustomsService {
    }
 
    private TaxCalculator selectTaxCalculator(String originCountry) {
-      switch (originCountry) {
-         case "UK":
-            return new UKTaxCalculator();
-         case "CN":
-            return new ChinaTaxCalculator();
-         case "FR":
-         case "ES": // other EU country codes...
-         case "RO":
-            return new EUTaxCalculator();
-         default:
-            throw new IllegalStateException("Unexpected value: " + originCountry);
+      List<TaxCalculator> calculators = asList(new UKTaxCalculator(), new EUTaxCalculator(), new ChinaTaxCalculator());
+
+      for (TaxCalculator calculator : calculators) {
+         if (calculator.canProcess(originCountry)) {
+            return calculator;
+         }
       }
+      throw new IllegalStateException("Unexpected value: " + originCountry);
+
    }
 }
 
 interface TaxCalculator {
    double calculate(double tobaccoValue, double regularValue);
+
+   boolean canProcess(String originCountry);
 }
 
 
@@ -62,17 +65,32 @@ class UKTaxCalculator implements TaxCalculator {
       // Maria: las si eu aicea o sacosa  de cod
       return tobaccoValue / 2 + regularValue;
    }
+
+   @Override
+   public boolean canProcess(String originCountry) {
+      return "UK".equals(originCountry);
+   }
 }
 
 class ChinaTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       return tobaccoValue + regularValue;
    }
+
+   @Override
+   public boolean canProcess(String originCountry) {
+      return "CN".equals(originCountry);
+   }
 }
 
 class EUTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValueDegeaba) {
       return tobaccoValue / 3;
+   }
+
+   @Override
+   public boolean canProcess(String originCountry) {
+      return asList("RO", "ES", "FR").contains(originCountry);
    }
 
 }
