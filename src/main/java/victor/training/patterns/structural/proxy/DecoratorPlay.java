@@ -4,6 +4,7 @@ public class DecoratorPlay {
    public static void main(String[] args) {
       IMate mate = new Mate();
       mate = new Decorator(mate);
+      mate = new DecoratorCareMasoaraTimpul(new Decorator(mate));
       client(mate);
    }
 
@@ -16,6 +17,21 @@ public class DecoratorPlay {
 interface IMate {
    int sum(int a, int b);
 }
+class DecoratorCareMasoaraTimpul implements IMate {
+   private final IMate mate;
+   public DecoratorCareMasoaraTimpul(IMate mate) {
+      this.mate = mate;
+   }
+
+   @Override
+   public int sum(int a, int b) {
+      long t0 = System.currentTimeMillis();
+      int result = mate.sum(a, b);
+      long t1 = System.currentTimeMillis();
+      System.out.println("Ce masor : " +(t1-t0));
+      return result;
+   }
+}
 class Decorator implements IMate {
    private final IMate mate;
    public Decorator(IMate mate) {
@@ -24,11 +40,7 @@ class Decorator implements IMate {
    @Override
    public int sum(int a, int b) {
       System.out.println("Calling sum: " + a + "  +  " + b);
-      long t0 = System.currentTimeMillis();
-      int result = mate.sum(a, b);
-      long t1 = System.currentTimeMillis();
-      System.out.println("Ce masor : " +(t1-t0));
-      return result;
+      return mate.sum(a, b);
    }
 }
 class Mate implements IMate {
