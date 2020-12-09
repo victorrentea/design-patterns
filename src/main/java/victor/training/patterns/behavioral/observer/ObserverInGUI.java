@@ -10,15 +10,12 @@ public class ObserverInGUI {
 	public static void main(String[] args) {
 		MyFrame myFrame = new MyFrame();
 		
-		// SOLUTION(
-		myFrame.button1.addActionListener(new ActionListener() {
+		myFrame.jButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "Button clicked");
 			}
 		});
-		// SOLUTION)
-		//TODO myFrame.button1.addActionListener(new ActionListener);
 	}
 }
 
