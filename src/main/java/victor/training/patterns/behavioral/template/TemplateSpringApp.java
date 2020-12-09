@@ -3,6 +3,8 @@ package victor.training.patterns.behavioral.template;
 import lombok.Data;
 import org.apache.commons.codec.Encoder;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Random;
 
 public class TemplateSpringApp {
@@ -40,7 +42,11 @@ abstract class AbstractEmailSender {
    }
    public abstract void compose(Email email);
    protected final String formatSubject(String subject) {
-      return subject.toUpperCase();
+      try {
+         return URLEncoder.encode(subject.toUpperCase(),"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+         throw new RuntimeException(e);
+      }
    }
 }
 
@@ -55,7 +61,7 @@ class OrderReceivedEmailSender extends AbstractEmailSender {
 class OrderShippedEmailSender extends AbstractEmailSender {
    @Override
    public void compose(Email email) {
-      email.setSubject(formatSubject("Order Shipped"));
+      email.setSubject(formatSubject("Order Shipped!"));
       email.setBody("Ti-am trimis, speram sa ajunga de data asta (dupa anu nou)");
    }
 }
