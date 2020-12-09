@@ -16,18 +16,18 @@ public class TemplateSpringApp {
 
    private static void placeOrder() {
       // other logic
-      new OrderReceivedEmailSender().sendEmail("a@b.com");
+      new EmailSender().sendEmail("a@b.com", new OrderReceivedEmailSender());
    }
 
    private static void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+      new EmailSender().sendEmail("a@b.com", new OrderShippedEmailSender());
    }
 }
 
-abstract class AbstractEmailSender {
-   public void sendEmail(String emailAddress) {
+class EmailSender {
+   public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       for (int i = 0; i < MAX_RETRIES; i++) {
@@ -35,33 +35,26 @@ abstract class AbstractEmailSender {
          email.setSender("noreply@corp.com");
          email.setReplyTo("/dev/null");
          email.setTo(emailAddress);
-         compose(email);
+         composer.compose(email);
          boolean success = context.send(email);
          if (success) break;
       }
    }
-   public abstract void compose(Email email);
-   protected final String formatSubject(String subject) {
-      try {
-         return URLEncoder.encode(subject.toUpperCase(),"UTF-8");
-      } catch (UnsupportedEncodingException e) {
-         throw new RuntimeException(e);
-      }
-   }
 }
+interface EmailComposer {
+   void compose(Email email);
+ }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
+class OrderReceivedEmailSender implements  EmailComposer {
    public void compose(Email email) {
-      email.setSubject(formatSubject("Order Received"));
+      email.setSubject("Order Received");
       email.setBody("Thank you for your order");
    }
-
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-   @Override
+class OrderShippedEmailSender implements  EmailComposer {
    public void compose(Email email) {
-      email.setSubject(formatSubject("Order Shipped!"));
+      email.setSubject("Order Shipped!");
       email.setBody("Ti-am trimis, speram sa ajunga de data asta (dupa anu nou)");
    }
 }
