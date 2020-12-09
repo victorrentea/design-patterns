@@ -16,13 +16,14 @@ public class TemplateSpringApp {
 
    private static void placeOrder() {
       // other logic
-      new EmailSender().sendEmail("a@b.com", new OrderReceivedEmailSender());
+      new EmailSender().sendEmail("a@b.com", AllEmails::composeOrderReceivedEmail);
+
    }
 
    private static void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
-      new EmailSender().sendEmail("a@b.com", new OrderShippedEmailSender());
+      new EmailSender().sendEmail("a@b.com", AllEmails::composeOrderShippedEmail);
    }
 }
 
@@ -45,15 +46,12 @@ interface EmailComposer {
    void compose(Email email);
  }
 
-class OrderReceivedEmailSender implements  EmailComposer {
-   public void compose(Email email) {
+class AllEmails {
+   public static void composeOrderReceivedEmail(Email email) {
       email.setSubject("Order Received");
       email.setBody("Thank you for your order");
    }
-}
-
-class OrderShippedEmailSender implements  EmailComposer {
-   public void compose(Email email) {
+   public static void composeOrderShippedEmail(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("Ti-am trimis, speram sa ajunga de data asta (dupa anu nou)");
    }
