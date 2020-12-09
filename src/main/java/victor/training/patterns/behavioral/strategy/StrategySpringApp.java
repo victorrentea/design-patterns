@@ -71,7 +71,8 @@ class ChinaTaxCalculator implements TaxCalculator {
 }
 
 class EUTaxCalculator implements TaxCalculator {
-   public double calculate(double tobaccoValue) {
+   public double calculate(double tobaccoValue, double regularValueDegeaba) {
       return tobaccoValue / 3;
    }
+
 }
