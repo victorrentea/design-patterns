@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public class LdapUserWebserviceClient {
 
-	public List<LdapUser> search(String uId, String fName, String lastName) {
+	public List<LdapUser> search(String uId, String fName, String lastName, String bDate) {
 		// Imagine a search URL is formed here and a GET is then performed
 		// Then, the response JSON list is converted to LdapUser objects
 		return Arrays.asList(DummyData.ldapUser1/*, DummyData.ldapUser2*/);

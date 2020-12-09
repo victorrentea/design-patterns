@@ -1,27 +1,25 @@
 package victor.training.patterns.structural.adapter.domain;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import victor.training.patterns.structural.adapter.infra.LdapUser;
-import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@Service
 public class UserService {
-	@Autowired
-	private LdapUserWebserviceClient wsClient;
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+	private final IAdapter adapter;
+
+	public UserService(IAdapter adapter) {
+		this.adapter = adapter;
+	}
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
+		List<User> list = adapter.searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		User user = convertUser(ldapUser);
+		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -31,27 +29,10 @@ public class UserService {
 
 	// 200 de linii mai jos:
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			results.add(convertUser(ldapUser));
-		}
-		return results;
+		return adapter.searchByUsername(username);
 	}
 
 	// TODO vreau sa scot cu totul din clasa asta orice urma de LdapUser intr-o alta clasa, Adapter
 
-	private User convertUser(LdapUser ldapUser) {
-		String fullName = getFullName(ldapUser);
-		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-	}
-
-	private String getFullName(LdapUser ldapUser) {
-		return ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-	}
-
-	private List<LdapUser> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
-	}
 
 }
