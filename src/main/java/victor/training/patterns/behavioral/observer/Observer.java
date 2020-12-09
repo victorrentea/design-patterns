@@ -12,6 +12,8 @@ public class Observer {
       baba.afla("Rita a venit cu un pletos");
    }
 }
+
+//function delegate Abonat
 class Baba {
    private final List<Abonat> abonati = new ArrayList<>();
    public void subscribe(Abonat abonat) {
