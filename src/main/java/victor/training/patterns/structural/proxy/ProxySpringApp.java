@@ -6,7 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 
 @Slf4j
 @EnableCaching
@@ -24,7 +27,12 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-		ExpensiveOps ops = new ExpensiveOps(); 
+		ExpensiveOps ops = new ExpensiveOps();
+
+
+//		File file;
+//		Writer writer = new FileWriter("a.txt");
+//		writer = new BufferedWriter(writer);
 
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
