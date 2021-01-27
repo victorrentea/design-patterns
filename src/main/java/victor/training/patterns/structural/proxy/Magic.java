@@ -36,7 +36,11 @@ public class Magic {
          }
       };
       Math math = (Math) Enhancer.create(Math.class, callback);
+// To not try this in production. Not by bare hands. With Spring sprng go to @Aspect.
+      bizLogi(math);
+   }
 
+   private static void bizLogi(Math math) {
       System.out.println(math.sum(1,1));
       System.out.println(math.sum(2,0));
       System.out.println(math.sum(3,-1));
