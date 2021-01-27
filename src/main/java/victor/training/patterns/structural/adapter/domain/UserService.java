@@ -10,9 +10,9 @@ import java.util.List;
 // YOu who enter, be careful. ZEN LOGIC is here .
 // Peace harmony... DOMAIN LOGIC.
 public class UserService {
-	private final Adapter adapter;
+	private final IAdapter adapter;
 
-	public UserService(Adapter adapter) {
+	public UserService(IAdapter adapter) {
 		this.adapter = adapter;
 	}
 
