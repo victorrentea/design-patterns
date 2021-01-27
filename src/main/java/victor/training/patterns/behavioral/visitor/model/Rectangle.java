@@ -2,11 +2,11 @@ package victor.training.patterns.behavioral.visitor.model;
 
 import victor.training.patterns.behavioral.visitor.ShapeVisitor;
 
-public class Circle implements Shape {
+public class Rectangle implements Shape {
 
 	private final int radius;
 
-	public Circle(int radius) {
+	public Rectangle(int radius) {
 		this.radius = radius;
 	}
 

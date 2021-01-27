@@ -1,37 +1,44 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
 public class TemplateSpringApp implements CommandLineRunner {
-   public static void main(String[] args) {
-      new TemplateSpringApp().run();
-   }
+   @Autowired
+   private EmailSender emailSender = new EmailSender();
 
    public void run(String... args) {
       placeOrder();
       shipOrder();
    }
 
+   @Autowired
+   private Emails emails = new Emails();
+
+   //   public static void main(String[] args) {
+//       SpringApplication.run(TemplateSpringApp.class, args);
+//   }
+   public static void main(String[] args) {
+      new TemplateSpringApp().run();
+   }
+
    private void placeOrder() {
-      // other logic
-      new OrderPlacedEmailSender().sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", emails::composeOrderReceived);
    }
 
    private void shipOrder() {
-      // other logic
-      // TODO send order shipped email 'similar to how send order received was implemented'
-      // TODO URLEncoder.encode
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", emails::composeOrderShipped);
 
    }
 }
 
-abstract class AbstractEmailSender {
-
-   public void sendEmail(String emailAddress) {
+@Service
+class EmailSender {
+   public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -40,7 +47,7 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            compose(email);
+            composer.compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -49,23 +56,21 @@ abstract class AbstractEmailSender {
       }
    }
 
-   public abstract void compose(Email email);
+   @FunctionalInterface
+   interface EmailComposer {
+      void compose(Email email);
+   }
+//   protected String encodeTitle
+
 }
 
-class OrderPlacedEmailSender extends AbstractEmailSender {
-   @Override
-   public void compose(Email email) {
+class Emails {
+   public void composeOrderReceived(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
-
    }
-}
 
-
-// 10 packages away.
-class OrderShippedEmailSender extends AbstractEmailSender {
-   @Override
-   public void compose(Email email) {
+   public void composeOrderShipped(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("We've shipped you. Hope it gets to you (this time).");
    }
