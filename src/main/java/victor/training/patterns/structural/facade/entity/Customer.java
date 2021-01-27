@@ -11,4 +11,5 @@ public class Customer {
 	private String email;
 	private Site site;
 	private Date creationDate;
+
 }
