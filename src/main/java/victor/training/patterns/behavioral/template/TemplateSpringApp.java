@@ -57,6 +57,7 @@ class OrderPlacedEmailSender extends AbstractEmailSender {
    public void compose(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
+
    }
 }
 
