@@ -140,17 +140,14 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!--
-          <plugin>
+         <!-- <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <compilerArgs>&#45;&#45;enable-preview</compilerArgs>
-                <source>12</source>
-                <target>12</target>
+                <release>15</release>
             </configuration>
-          </plugin>
-    -->
+          </plugin>-->
         </plugins>
     </build>
 </project>
