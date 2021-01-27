@@ -27,6 +27,8 @@ public class BuilderPlay {
 			.bar("")
 			.build();
 
+		vo = vo.withBar("Surprise");
+
 
 //		vo.
 ////		vo.with
