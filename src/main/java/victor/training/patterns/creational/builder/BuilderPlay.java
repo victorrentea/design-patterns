@@ -16,9 +16,20 @@ public class BuilderPlay {
 		labels.add("Label1");
 		customer.setLabels(labels);
 		Address address = new Address();
-		address.setStreetName("Viorele");
+		address.setStreetName("Viorel4");
+
 		address.setCity("Bucharest");
 		customer.setAddress(address);
+
+
+		ImmutableFoobarValue vo = ImmutableFoobarValue.builder()
+			.foo(2)
+			.bar("")
+			.build();
+
+
+//		vo.
+////		vo.with
 
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
