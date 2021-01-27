@@ -55,7 +55,6 @@ abstract class AbstractEmailSender {
 class OrderPlacedEmailSender extends AbstractEmailSender {
    @Override
    public void compose(Email email) {
-
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
 
