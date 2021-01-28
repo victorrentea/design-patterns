@@ -29,7 +29,7 @@ public class UserService {
 		}
 		log.debug("Insert user in my database");
 	}
-	
+
 	public List<User> searchUserInLdap(String username) {
 		List<LdapUser> list = wsClient.search(username.toUpperCase(), null, null);
 		List<User> results = new ArrayList<>();
@@ -38,7 +38,8 @@ public class UserService {
 			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 			results.add(user);
 		}
-		return results;
+		return results.subList(0, 5);
 	}
-	
+
+	// TODO @end: Archunit!
 }
