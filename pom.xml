@@ -105,9 +105,15 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-        <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit4</artifactId>
+            <version>0.15.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <dependencyManagement>
