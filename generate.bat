@@ -1,1 +1,0 @@
-wsimport src/main/resources/wsdl/simple-ws.wsdl -s src/main/gen -Xnocompile
