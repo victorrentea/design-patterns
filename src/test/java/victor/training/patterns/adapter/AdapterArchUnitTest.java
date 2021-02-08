@@ -11,8 +11,8 @@ public class AdapterArchUnitTest {
    public void dependencyInversionTest() {
       JavaClasses classes = new ClassFileImporter().importPackages("victor.training");
 
-      ClassesShouldConjunction domainDoesnDependOnInfra = ArchRuleDefinition.noClasses()
-          .that().resideInAPackage("..adapter.domain")
+      ClassesShouldConjunction domainDoesnDependOnInfra = ArchRuleDefinition
+          .noClasses().that().resideInAPackage("..adapter.domain")
           .should()
           .dependOnClassesThat().resideInAPackage("..adapter.infra");
 

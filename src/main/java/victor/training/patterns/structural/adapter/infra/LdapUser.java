@@ -11,22 +11,27 @@ public class LdapUser {
 	private Date creationDate;
 	private String workEmail;
 	private List<LdapUserPhone> emailAddresses = new ArrayList<>();
-	
+
 	public final String getuId() {
 		return uId;
 	}
+
 	public final void setuId(String uId) {
 		this.uId = uId;
 	}
-	public final String getfName() {
+
+	public String getfName() {
 		return fName;
 	}
+
 	public final void setfName(String fName) {
 		this.fName = fName;
 	}
+
 	public final String getlName() {
 		return lName;
 	}
+
 	public final void setlName(String lName) {
 		this.lName = lName;
 	}
