@@ -80,8 +80,10 @@ class Barman {
 
 @Data
 class Beer {
+   private final String type = "BLOND";
 }
 
 @Data
 class Vodka {
+   private final String make = "STALINSKAYA";
 }
