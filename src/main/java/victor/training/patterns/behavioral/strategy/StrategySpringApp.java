@@ -4,9 +4,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 interface TaxComputer {
    double compute(double tobaccoValue, double regularValue);
 
+   boolean accepts(String originCountry);
 }
 
 @SpringBootApplication
@@ -40,18 +45,19 @@ class CustomsService {
    }
 
    private TaxComputer selectTaxComputer(String originCountry) {
-      switch (originCountry) {
-         case "UK":
-            return new UKTaxComputer();
-         case "CN":
-            return new ChinaTaxComputer();
-         case "FR":
-         case "ES": // other EU country codes...
-         case "NL":
-            return new EUTaxComputer();
-         default:
-            throw new IllegalStateException("Unexpected value: " + originCountry);
+      List<TaxComputer> computers = asList(
+          new UKTaxComputer(),
+          new ChinaTaxComputer(),
+          new EUTaxComputer()
+//          new DefaultTaxComputer()
+      );
+
+      for (TaxComputer computer : computers) {
+         if (computer.accepts(originCountry)) {
+            return computer;
+         }
       }
+      throw new IllegalStateException("Unexpected value: " + originCountry);
    }
 }
 
@@ -88,11 +94,21 @@ class UKTaxComputer implements TaxComputer {
       return tobaccoValue / 2 + regularValue;
    }
 
+   @Override
+   public boolean accepts(String originCountry) {
+      return "UK".equals(originCountry);
+   }
+
 }
 
 class ChinaTaxComputer implements TaxComputer {
    public double compute(double tobaccoValue, double regularValue) {
       return tobaccoValue + regularValue;
+   }
+
+   @Override
+   public boolean accepts(String originCountry) {
+      return "CH".equals(originCountry);
    }
 
 }
@@ -103,6 +119,11 @@ class EUTaxComputer implements TaxComputer {
       // growing
       //brewing bugs
       return tobaccoValue / 3;
+   }
+
+   @Override
+   public boolean accepts(String originCountry) {
+      return asList("NL", "FR", "ES").contains(originCountry);
    }
 
 }
