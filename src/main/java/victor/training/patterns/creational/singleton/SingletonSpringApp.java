@@ -53,31 +53,31 @@ public class SingletonSpringApp implements CommandLineRunner{
 @Service
 class OrderExporter {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
-	private final LabelService labelService;
+	private final CountryRepo countryRepo;
 
-	public OrderExporter(LabelService labelService) {
-		this.labelService = labelService;
+	OrderExporter(CountryRepo countryRepo) {
+		this.countryRepo = countryRepo;
 	}
+
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		labelService.load(locale);
+		LabelService labelService = new LabelService(countryRepo, locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 	}
 }
 
-@Service
+//@Service
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private final CountryRepo countryRepo;
+	private final CountryRepo countryRepo;
+	private final CountryRepo countryRepo;
+	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames;
 
-	public LabelService(CountryRepo countryRepo) {
+	public LabelService(CountryRepo countryRepo, Locale locale) {
 		this.countryRepo = countryRepo;
-	}
-
-	public void load(Locale locale) {
-		log.debug("load() map in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 
