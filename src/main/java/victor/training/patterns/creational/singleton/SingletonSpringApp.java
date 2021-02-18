@@ -1,5 +1,6 @@
 package victor.training.patterns.creational.singleton;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +51,11 @@ public class SingletonSpringApp implements CommandLineRunner{
 	}
 }
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 class OrderExporter {
-	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
 	private final CountryRepo countryRepo;
-
-	OrderExporter(CountryRepo countryRepo) {
-		this.countryRepo = countryRepo;
-	}
-
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
