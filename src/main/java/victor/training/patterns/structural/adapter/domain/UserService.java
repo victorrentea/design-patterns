@@ -10,13 +10,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService { // the holy ground
-	private final LdapAdapter ldapAdapter;
+	private final ILdapAdapter ldapAdapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = ldapAdapter.searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
+
 		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
