@@ -71,9 +71,6 @@ class OrderExporter {
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private final CountryRepo countryRepo;
-	private final CountryRepo countryRepo;
-	private final CountryRepo countryRepo;
-	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames;
 
 	public LabelService(CountryRepo countryRepo, Locale locale) {
