@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -53,34 +51,18 @@ public class SingletonSpringApp implements CommandLineRunner{
 }
 
 @Service
-class OrderExporter  {
+class OrderExporter {
 	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
-	private final InvoiceExporter invoiceExporter;
 	private final LabelService labelService;
 
-	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
-		this.invoiceExporter = invoiceExporter;
+	public OrderExporter(LabelService labelService) {
 		this.labelService = labelService;
 	}
 
 	public void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
-	}
-}
-
-@Service
-class InvoiceExporter {
-	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
-	private final LabelService labelService;
-
-	public InvoiceExporter(LabelService labelService) {
-		this.labelService = labelService;
-	}
-
-	public void exportInvoice() {
-		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
+		labelService.load(locale);
+		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 	}
 }
 
@@ -94,12 +76,11 @@ class LabelService {
 		this.countryRepo = countryRepo;
 	}
 
-	@PostConstruct
-	public void load() {
+	public void load(Locale locale) {
 		log.debug("load() map in instance: " + this.hashCode());
-		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
+		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
-	
+
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		sleepr();
