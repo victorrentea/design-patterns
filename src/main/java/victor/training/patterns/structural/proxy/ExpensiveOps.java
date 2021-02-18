@@ -6,21 +6,31 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
-public class ExpensiveOps {
+interface IExpensiveOps {
+   Boolean isPrime(int n);
+}
 
+class ExpensiveOpsCuCache implements IExpensiveOps {
+   private final IExpensiveOps ops;
    private final Map<Integer, Boolean> cache = new HashMap<>();
 
-   private static final BigDecimal TWO = new BigDecimal("2");
+   public ExpensiveOpsCuCache(IExpensiveOps ops) {
+      this.ops = ops;
+   }
 
-   public Boolean isPrimeCached(int n) {
+   public Boolean isPrime(int n) {
       if (cache.containsKey(n)) {
          return cache.get(n);
       }
-      Boolean result = isPrime(n);
+      Boolean result = ops.isPrime(n);
       cache.put(n, result);
       return result;
    }
+}
+
+@Slf4j
+public class ExpensiveOps implements IExpensiveOps {
+   private static final BigDecimal TWO = new BigDecimal("2");
 
    public Boolean isPrime(int n) {
       log.debug("Computing isPrime({})", n);
