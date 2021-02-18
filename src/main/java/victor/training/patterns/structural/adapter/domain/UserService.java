@@ -3,21 +3,17 @@ package victor.training.patterns.structural.adapter.domain;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import victor.training.patterns.structural.adapter.infra.LdapUser;
-import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService { // the holy ground
-	private final LdapUserWebserviceClient wsClient;
+	private final LdapAdapter ldapAdapter;
 
 	public void importUserFromLdap(String username) {
-		List<User> list = searchByUsername(username);
+		List<User> list = ldapAdapter.searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
@@ -31,24 +27,11 @@ public class UserService { // the holy ground
 
 	// 200 de linii mai jos
 	public List<User> searchUserInLdap(String username) {
-		return searchByUsername(username);
+		return ldapAdapter.searchByUsername(username);
 	}
 
 	// ------------------------- o linie -------------------------
 	// fa te rog ca tot ce nu e al nostru sa shada sub linie
-
-
-	private User convertToEntity(LdapUser ldapUser) {
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-	}
-
-	private List<User> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null)
-			.stream()
-			.map(this::convertToEntity)
-			.collect(toList());
-	}
 
 	// TODO @end: Archunit!
 }
