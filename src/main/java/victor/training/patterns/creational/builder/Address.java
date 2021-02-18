@@ -9,24 +9,26 @@ public class Address {
 		return streetName;
 	}
 
-	public void setStreetName(String streetName) {
+	public Address setStreetName(String streetName) {
 		this.streetName = streetName;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
+		return this;
 	}
 
 	public String getCountry() {
 		return country;
 	}
 
-	public void setCountry(String country) {
+	public Address setCountry(String country) {
 		this.country = country;
+		return this;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
+	public Address setCity(String city) {
+		this.city = city;
+		return this;
+	}
 }

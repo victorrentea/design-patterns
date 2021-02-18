@@ -8,15 +8,12 @@ public class BuilderPlay {
 	public static void main(String[] args) {
 
 
-		Customer customer = new CustomerBuilder()
-			.withName("John Doe")
-			.withLabels("Label1", "Label2")
-			.withAddress(new AddressBuilder()
-				.withCity("Bucuresti")
-				.withStreetName("Viorele")
-				.build())
-//			.withDefaultData()
-			.persist();
+		Customer customer = new Customer()
+			.setName("John Doe")
+			.addLabels("Label1", "Label2")
+			.setAddress(new Address()
+				.setCity("Bucuresti")
+				.setStreetName("Viorele"));
 
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
