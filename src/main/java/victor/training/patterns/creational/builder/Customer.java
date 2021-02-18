@@ -1,71 +1,25 @@
 package victor.training.patterns.creational.builder;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 public class Customer {
+	@Setter(AccessLevel.NONE)
 	private Long id;
 	private String name;
 	private String phone;
+	@Setter(AccessLevel.NONE)
 	private List<String> labels = new ArrayList<>();
 	private Address address;
 	private Date createDate;
-
-	public Long getId() {
-		return id;
-	}
-
-	public Customer setId(Long id) {
-		this.id = id;
-		return this;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Customer setName(String name) {
-		this.name = name;
-		return this;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public Customer setPhone(String phone) {
-		this.phone = phone;
-		return this;
-	}
-
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public Customer setLabels(List<String> labels) {
-		this.labels = labels;
-		return this;
-	}
-
-	public Address getAddress() {
-		return address;
-	}
-
-	public Customer setAddress(Address address) {
-		this.address = address;
-		return this;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public Customer setCreateDate(Date createDate) {
-		this.createDate = createDate;
-		return this;
-	}
 
 	public Customer addLabels(String... labelsArr) {
 		labels.addAll(Arrays.asList(labelsArr));
