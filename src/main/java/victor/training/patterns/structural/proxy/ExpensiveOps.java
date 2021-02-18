@@ -1,21 +1,26 @@
 package victor.training.patterns.structural.proxy;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
-import org.jooq.lambda.Unchecked;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class ExpensiveOps {
 
+   private final Map<Integer, Boolean> cache = new HashMap<>();
+
    private static final BigDecimal TWO = new BigDecimal("2");
+
+   public Boolean isPrimeCached(int n) {
+      if (cache.containsKey(n)) {
+         return cache.get(n);
+      }
+      Boolean result = isPrime(n);
+      cache.put(n, result);
+      return result;
+   }
 
    public Boolean isPrime(int n) {
       log.debug("Computing isPrime({})", n);
@@ -36,19 +41,5 @@ public class ExpensiveOps {
       return true;
    }
 
-   @SneakyThrows
-   public String hashAllFiles(File folder) {
-      log.debug("Computing hashAllFiles({})", folder);
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
-         Files.walk(folder.toPath())
-             .map(Path::toFile)
-             .filter(File::isFile)
-             .map(Unchecked.function(FileUtils::readFileToString))
-             .forEach(s -> md.update(s.getBytes()));
-      }
-      byte[] digest = md.digest();
-      return Hex.encodeHexString(digest).toUpperCase();
-   }
 
 }
