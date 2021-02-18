@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import victor.training.patterns.structural.adapter.infra.LdapUser;
 import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -16,12 +17,11 @@ public class UserService { // the holy ground
 	private final LdapUserWebserviceClient wsClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
+		List<User> list = searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUser ldapUser = list.get(0);
-		User user = convertToEntity(ldapUser);
+		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -31,22 +31,23 @@ public class UserService { // the holy ground
 
 	// 200 de linii mai jos
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUser> list = searchByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUser ldapUser : list) {
-			User user = convertToEntity(ldapUser);
-			results.add(user);
-		}
-		return results.subList(0, 5);
+		return searchByUsername(username);
 	}
+
+	// ------------------------- o linie -------------------------
+	// fa te rog ca tot ce nu e al nostru sa shada sub linie
+
 
 	private User convertToEntity(LdapUser ldapUser) {
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 	}
 
-	private List<LdapUser> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
+	private List<User> searchByUsername(String username) {
+		return wsClient.search(username.toUpperCase(), null, null)
+			.stream()
+			.map(this::convertToEntity)
+			.collect(toList());
 	}
 
 	// TODO @end: Archunit!
