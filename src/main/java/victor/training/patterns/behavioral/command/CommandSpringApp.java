@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -64,15 +66,21 @@ class Drinker {
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
 
+   @Autowired
+   ApplicationEventPublisher eventPublisher;
+
    @GetMapping
    public CompletableFuture<DillyDilly> f() throws ExecutionException, InterruptedException {
 
-      CompletableFuture<Beer> futureBeer = barman.pourBeer();
+      CompletableFuture<Beer> futureBeer = barman.pourBeer()
+          .exceptionally(e -> null);
       CompletableFuture<Vodka> futureVodka = barman.pourVodka();
 
       log.debug("Waiting for my drinks...");
       // bati darabana
 
+      eventPublisher.publishEvent(new BeerEvent());
+      log.debug("After");
 //      HttpServletRequest r;
 //      r.startAsync()
 
@@ -82,6 +90,21 @@ class Drinker {
 
       return futureDilly;
    }
+}
+
+@Slf4j
+@Service
+class EventHandl {
+   @EventListener
+   public void method(BeerEvent event) {
+      log.debug("Start");
+      sleepq(1000);
+      log.debug("end");
+      throw new RuntimeException("Noo");
+   }
+}
+
+class BeerEvent {
 }
 
 @Data
@@ -96,6 +119,9 @@ class DillyDilly {
 class Barman {
    @Async("barmanBere")
    public CompletableFuture<Beer> pourBeer() {
+      if (true) {
+         throw new IllegalArgumentException("Nu mai e bere!");
+      }
       log.debug("Pouring Beer...");
       sleepq(1000); // REST call / SELECT/ FTP / writefile
       return CompletableFuture.completedFuture(new Beer());
