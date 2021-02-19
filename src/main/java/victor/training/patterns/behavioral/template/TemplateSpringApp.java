@@ -7,6 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Random;
 
+// Data Service Impl Manager = cuvinte inutile
+interface EmailComposer {
+   void compose(Email email);
+}
+
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
    public static void main(String[] args) {
@@ -20,18 +25,26 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // other logic
-      new OrderReceivedEmailSender().sendEmail("a@b.com");
+      EmailSender sender = new EmailSender(new OrderReceivedEmailComposer());
+      sender.sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
       // TODO URLEncoder.encode
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+      EmailSender sender = new EmailSender(new OrderShippedEmailComposer());
+      sender.sendEmail("a@b.com");
    }
 }
 
-abstract class EmailSender {
+class EmailSender {
+   private final EmailComposer composer;
+
+   EmailSender(EmailComposer composer) {
+      this.composer = composer;
+   }
+
 
    public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -42,7 +55,7 @@ abstract class EmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            compose(email);
+            composer.compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -50,18 +63,16 @@ abstract class EmailSender {
          throw new RuntimeException("Can't send email", e);
       }
    }
-
-   public abstract void compose(Email email);
 }
 
-class OrderReceivedEmailSender extends EmailSender {
+class OrderReceivedEmailComposer implements EmailComposer {
    public void compose(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
 }
 
-class OrderShippedEmailSender extends EmailSender {
+class OrderShippedEmailComposer implements EmailComposer {
    public void compose(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("Ti-am trimis coletul. Speram sa ajunga (de data asta).");
