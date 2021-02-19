@@ -24,57 +24,53 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
+interface TaxComputer {
+	double compute(double tobaccoValue, double regularValue);
+}
+
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxComputer taxComputer;
 		switch (originCountry) {
 			case "UK":
-				return new UKTaxComputer().compute(tobaccoValue, regularValue);
+				taxComputer = new UKTaxComputer();
+				break;
 			case "CN":
-				return new ChinaTaxComputer().compute(tobaccoValue, regularValue);
+				taxComputer = new ChinaTaxComputer();
+				break;
 			case "FR":
 			case "ES": // other EU country codes...
 			case "RO":
-				return new EUTaxComputer().compute(tobaccoValue);
+				taxComputer = new EUTaxComputer();
+				break;
 			default:
 				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
+		return taxComputer.compute(tobaccoValue, regularValue);
 	}
 
 	// DRY < SRP
-
-
 }
 
-class ChinaTaxComputer {
+class ChinaTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
-		//
-		//
-		//
 		return tobaccoValue + regularValue;
 	}
 }
 
-class UKTaxComputer {
+class UKTaxComputer implements TaxComputer {
 	public double compute(double tobaccoValue, double regularValue) {
-		// COlegu1: las si eu aicea 3 linii cod
-		// COlegu1: las si eu aicea 3 linii cod
-		// COlegu1: las si eu aicea 3 linii cod
-		// COlegu1: las si eu aicea 3 linii cod
-		// COlegu1: las si eu aicea 3 linii cod
-
-		// COlega1: las si eu aicea 5 linii cod
-
 		return tobaccoValue / 2 + regularValue;
 	}
 }
 
-class EUTaxComputer {
-	public double compute(double tobaccoValue) {
+class EUTaxComputer implements TaxComputer {
+	public double compute(double tobaccoValue, double degeabaRegularValue) {
 		return tobaccoValue / 3;
 	}
 
