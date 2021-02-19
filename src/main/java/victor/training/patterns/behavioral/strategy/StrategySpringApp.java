@@ -87,7 +87,7 @@ class UKTaxComputer implements TaxComputer {
 
 	@Override
 	public boolean isApplicable(String originCountry) {
-		return "UK".equals(originCountry);
+		return "UK".equals(originCountry) /*|| originCountry.i*/;
 	}
 }
 
