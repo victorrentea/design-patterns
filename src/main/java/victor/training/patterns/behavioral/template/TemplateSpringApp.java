@@ -12,9 +12,7 @@ import java.util.Random;
 
 
 // Data Service Impl Manager = cuvinte inutile
-interface EmailComposer {
-   void compose(Email email);
-}
+
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -27,7 +25,6 @@ public class TemplateSpringApp implements CommandLineRunner {
       placeOrder();
       shipOrder();
    }
-
    @Autowired
    EmailService emailService;
 
@@ -40,7 +37,7 @@ public class TemplateSpringApp implements CommandLineRunner {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
       // TODO URLEncoder.encode
-      emailService.sendOrderShippedEmail("a@b.com");
+     emailService.sendOrderShippedEmail("a@b.com");
    }
 }
 
@@ -62,6 +59,11 @@ class EmailService {// Email sending facade
 
 @Service
 class EmailSender {
+
+   @FunctionalInterface
+   interface EmailComposer {
+      void compose(Email email);
+   }
 
    public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
