@@ -18,8 +18,6 @@ interface EmailComposer {
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
-   @Autowired
-   private EmailSender sender;
 
    public static void main(String[] args) {
       SpringApplication.run(TemplateSpringApp.class, args);
@@ -30,26 +28,35 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
+   @Autowired
+   EmailService emailService;
+
    private void placeOrder() {
       // other logic
-      sender.sendEmail("a@b.com", new OrderReceivedEmailComposer());
+      emailService.sendOrderReceivedEmail("a@b.com");
    }
 
    private void shipOrder() {
       // other logic
       // TODO send order shipped email 'similar to how send order received was implemented'
       // TODO URLEncoder.encode
-      sender.sendEmail("a@b.com", new OrderShippedEmailComposer());
+      emailService.sendOrderShippedEmail("a@b.com");
    }
 }
 
 @Service
 class EmailService {// Email sending facade
+   @Autowired
+   AllEmails allEmails;
+   @Autowired
+   private EmailSender sender;
 
-   public void sendOrderReceivedEmail() {
+   public void sendOrderReceivedEmail(String emailAddress) {
+      sender.sendEmail(emailAddress, allEmails::composeOrderReceived);
    }
 
-   public void sendOrderShippedEmail() {
+   public void sendOrderShippedEmail(String emailAddress) {
+      sender.sendEmail(emailAddress, allEmails::composeEmailShipped);
    }
 }
 
@@ -77,16 +84,13 @@ class EmailSender {
 }
 
 @Component
-class OrderReceivedEmailComposer implements EmailComposer {
-   public void compose(Email email) {
+class AllEmails {
+   public void composeOrderReceived(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
-}
 
-@Component
-class OrderShippedEmailComposer implements EmailComposer {
-   public void compose(Email email) {
+   public void composeEmailShipped(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("Ti-am trimis coletul. Speram sa ajunga (de data asta).");
    }
