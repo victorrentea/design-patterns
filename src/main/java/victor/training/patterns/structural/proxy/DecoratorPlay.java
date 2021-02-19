@@ -14,7 +14,8 @@ public class DecoratorPlay {
       Writer w = new FileWriter("a.txt");
 //      w = new BufferedWriter(w);
 
-      f(new AltDecorator(new ExpensiveOpsCuCache(new ExpensiveOps())));
+      f(new ExpensiveOpsCuCache(new ExpensiveOps()));
+//      f(new AltDecorator(new ExpensiveOpsCuCache(new ExpensiveOps())));
       f(new ExpensiveOps());
 
    }
