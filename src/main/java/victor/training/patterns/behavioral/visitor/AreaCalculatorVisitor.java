@@ -4,10 +4,19 @@ import victor.training.patterns.behavioral.visitor.model.Circle;
 import victor.training.patterns.behavioral.visitor.model.Rectangle;
 import victor.training.patterns.behavioral.visitor.model.Square;
 
-public interface ShapeVisitor {
-	void visit(Square square);
+public class AreaCalculatorVisitor implements ShapeVisitor {
+   @Override
+   public void visit(Square square) {
 
-	void visit(Circle circle);
+   }
 
-	void visit(Rectangle rectangle);
+   @Override
+   public void visit(Circle circle) {
+
+   }
+
+   @Override
+   public void visit(Rectangle rectangle) {
+
+   }
 }

@@ -1,6 +1,5 @@
 package victor.training.patterns.behavioral.observer;
 
-import lombok.SneakyThrows;
 import victor.training.patterns.stuff.MyFrame;
 
 import javax.swing.*;
@@ -16,16 +15,20 @@ public class ObserverInGUI {
 		myFrame.baba.addActionListener(new VasilescuDeLa2());
 	}
 
-	private static class VasilescuDeLa2 implements ActionListener {
-		@SneakyThrows
-		@Override
-		public void actionPerformed(ActionEvent e) {
+}
+
+class VasilescuDeLa2 implements ActionListener {
+	@Override
+	public void actionPerformed(ActionEvent e) {
 //			ExecutorService pool = Executors.newFixedThreadPool(2);
 //			pool.submit()
 
+		try {
 			Thread.sleep(10000);
-//			JOptionPane.showMessageDialog(null, "Button clicked2");
+		} catch (InterruptedException interruptedException) {
+			interruptedException.printStackTrace();
 		}
+//			JOptionPane.showMessageDialog(null, "Button clicked2");
 	}
 }
 
