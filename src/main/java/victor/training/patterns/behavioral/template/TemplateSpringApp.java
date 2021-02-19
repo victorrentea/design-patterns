@@ -60,7 +60,6 @@ class EmailService {// Email sending facade
 @Service
 class EmailSender {
 
-   @FunctionalInterface
    interface EmailComposer {
       void compose(Email email);
    }
