@@ -19,6 +19,7 @@ public class Unmodif {
 
       list = Collections.unmodifiableList(list); // polimorfism imi intoarce o alta implem decat ArrayList
       // care blocheaza orice incercare de modificare
+      list.add("2");
 
       System.out.println(list);
       return list;
