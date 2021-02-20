@@ -133,8 +133,7 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <compilerArgs>&#45;&#45;enable-preview</compilerArgs>
-                <source>12</source>
-                <target>12</target>
+                <release>15</release>
             </configuration>
           </plugin>
     -->
