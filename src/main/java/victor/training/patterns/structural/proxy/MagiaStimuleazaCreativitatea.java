@@ -20,13 +20,21 @@ public class MagiaStimuleazaCreativitatea {
          }
       };
 
-      Matematica mate = (Matematica) Proxy.newProxyInstance(MagiaStimuleazaCreativitatea.class.getClassLoader(),
+      Matematica mateProxy = (Matematica) Proxy.newProxyInstance(MagiaStimuleazaCreativitatea.class.getClassLoader(),
           new Class<?>[]{Matematica.class}, h);
 
-      demo(mate);
+//      demo(new MatematicaImpl());
+      demo(mateProxy);
    }
 
    private static void demo(Matematica mate) {
+      System.out.println("Am primit un param de tip: " + mate.getClass());
+      if (mate instanceof Matematica) {
+         System.out.println("TOT TIMPUL");
+      }
+      if (mate instanceof MatematicaImpl) {
+         System.out.println("Real impl");
+      }
       System.out.println(mate.suma(1, 1));
       System.out.println(mate.suma(2, 0));
       System.out.println(mate.suma(3, -1));
