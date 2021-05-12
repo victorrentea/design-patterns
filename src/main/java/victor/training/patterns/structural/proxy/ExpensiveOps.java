@@ -1,23 +1,49 @@
 package victor.training.patterns.structural.proxy;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
-import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.MessageDigest;
+
+//interface IExpensiveOps {
+//   Boolean isPrime(int n);
+// }
+//
+// class ExpensiveOpsCuCache implements IExpensiveOps {
+//   private final IExpensiveOps delegate;
+//
+//    ExpensiveOpsCuCache(IExpensiveOps delegate) {
+//       this.delegate = delegate;
+//    }
+//   static private Map<Integer, Boolean> primes = new HashMap<>();
+//
+//    @Override
+//    public Boolean isPrime(int n) {
+//      if (primes.containsKey(n)) {
+//         return primes.get(n);
+//      }
+//
+//      Boolean prime = delegate.isPrime(n);
+//      primes.put(n, prime);
+//      return prime;
+//   }
+// }
 
 @Slf4j
+@Service
 public class ExpensiveOps {
 
    private static final BigDecimal TWO = new BigDecimal("2");
 
+   @Autowired
+   private ExpensiveOps myselfProxied;
+
+   @Cacheable("primes")
+//   @Transactional(propagation = Propagation.REQUIRES_NEW)
    public Boolean isPrime(int n) {
+      new RuntimeException().printStackTrace();
       log.debug("Computing isPrime({})", n);
       BigDecimal number = new BigDecimal(n);
       if (number.compareTo(TWO) <= 0) {
@@ -36,19 +62,8 @@ public class ExpensiveOps {
       return true;
    }
 
-   @SneakyThrows
-   public String hashAllFiles(File folder) {
-      log.debug("Computing hashAllFiles({})", folder);
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      for (int i = 0; i < 3; i++) { // pretend there is much more work to do here
-         Files.walk(folder.toPath())
-             .map(Path::toFile)
-             .filter(File::isFile)
-             .map(Unchecked.function(FileUtils::readFileToString))
-             .forEach(s -> md.update(s.getBytes()));
-      }
-      byte[] digest = md.digest();
-      return Hex.encodeHexString(digest).toUpperCase();
+   public void altaMetodaDinAceeasiClasa() {
+      log.debug("10000169 is prime ? ");
+      log.debug("Got: " + myselfProxied.isPrime(10000169) + "\n");
    }
-
 }

@@ -1,27 +1,30 @@
 package victor.training.patterns.structural.proxy;
 
-import java.lang.reflect.InvocationHandler;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 public class MagiaStimuleazaCreativitatea {
 
+//   @Autowired
+//   Matematica matematica;
 
    public static void main(String[] args) {
 
-      MatematicaImpl real = new MatematicaImpl();
+      Matematica real = new Matematica();
 
-      InvocationHandler h = new InvocationHandler() {
+      Callback callback = new MethodInterceptor() {
          @Override
-         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+         public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
             System.out.println("Chem metoda " + method.getName() + " cu param " + Arrays.toString(args));
             return method.invoke(real, args);
          }
       };
-
-      Matematica mateProxy = (Matematica) Proxy.newProxyInstance(MagiaStimuleazaCreativitatea.class.getClassLoader(),
-          new Class<?>[]{Matematica.class}, h);
+      Matematica mateProxy = (Matematica) Enhancer.create(Matematica.class, callback);
 
 //      demo(new MatematicaImpl());
       demo(mateProxy);
@@ -29,12 +32,6 @@ public class MagiaStimuleazaCreativitatea {
 
    private static void demo(Matematica mate) {
       System.out.println("Am primit un param de tip: " + mate.getClass());
-      if (mate instanceof Matematica) {
-         System.out.println("TOT TIMPUL");
-      }
-      if (mate instanceof MatematicaImpl) {
-         System.out.println("Real impl");
-      }
       System.out.println(mate.suma(1, 1));
       System.out.println(mate.suma(2, 0));
       System.out.println(mate.suma(3, -1));
@@ -44,21 +41,14 @@ public class MagiaStimuleazaCreativitatea {
    }
 }
 
-class MatematicaImpl implements Matematica {
+class Matematica {
 
-   @Override
    public int suma(int a, int b) {
       return a + b;
    }
 
-   @Override
    public int produs(int a, int b) {
       return a * b;
    }
 }
 
-interface Matematica {
-   int suma(int a, int b);
-
-   int produs(int a, int b);
-}
