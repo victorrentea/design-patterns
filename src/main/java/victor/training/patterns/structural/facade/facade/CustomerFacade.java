@@ -1,6 +1,7 @@
 package victor.training.patterns.structural.facade.facade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import victor.training.patterns.structural.facade.Facade;
 import victor.training.patterns.structural.facade.entity.Customer;
 import victor.training.patterns.structural.facade.entity.Email;
@@ -8,9 +9,7 @@ import victor.training.patterns.structural.facade.facade.dto.CustomerDto;
 import victor.training.patterns.structural.facade.infra.EmailClient;
 import victor.training.patterns.structural.facade.repo.CustomerRepository;
 import victor.training.patterns.structural.facade.repo.EmailRepository;
-import victor.training.patterns.structural.facade.repo.SiteRepository;
-
-import java.text.SimpleDateFormat;
+import victor.training.patterns.structural.facade.service.RegisterCustomerService;
 
 @Facade
 @RequiredArgsConstructor
@@ -18,35 +17,29 @@ public class CustomerFacade {
 	private final CustomerRepository customerRepo;
 	private final EmailClient emailClient;
 	private final EmailRepository emailRepo;
-	private final SiteRepository siteRepo;
+	private final CustomerMapper customerMapper;
+	private final RegisterCustomerService registerCustomerService;
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
-		CustomerDto dto = new CustomerDto();
-		dto.name = customer.getName();
-		dto.email = customer.getEmail();
-		dto.creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
-		dto.id = customer.getId();
-		return dto;
+		return new CustomerDto(customer);
 	}
 
+	@Validated
 	public void registerCustomer(CustomerDto dto) {
-		Customer customer = new Customer();
-		customer.setEmail(dto.email);
-		customer.setName(dto.name);
-		customer.setSite(siteRepo.getReference(dto.countryId));
+		Customer customer = customerMapper.toEntity(dto);
 
 		if (customer.getName().trim().length() <= 5) {
 			throw new IllegalArgumentException("Name too short");
 		}
-		
 		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
 			throw new IllegalArgumentException("Email already registered");
 		}
-		// Heavy logic
-		// Heavy logic
-		customerRepo.save(customer);
-		// Heavy logic
+
+
+		// ce-ar fi daca Customer entity ar avea 80 de campuri?
+//		>>> cat de mare credeti voi ca va creste CustomerService >> 1500 linii
+		registerCustomerService.registerCustomer(customer);
 
 		sendRegistrationEmail(customer.getEmail());
 	}
