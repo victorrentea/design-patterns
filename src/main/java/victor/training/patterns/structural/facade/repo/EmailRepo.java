@@ -4,14 +4,14 @@ import org.springframework.stereotype.Repository;
 import victor.training.patterns.structural.facade.entity.Email;
 
 @Repository
-public class EmailRepository {
+public class EmailRepo {
 
 	public boolean emailWasSentBefore(int emailHash) {
 		return false; // TODO fake implementation
 	}
 
 	public void saveSentEmail(Email email) {
-		 // TODO
+		// TODO
 	}
 
 }

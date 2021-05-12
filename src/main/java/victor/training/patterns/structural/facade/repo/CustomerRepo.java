@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 import victor.training.patterns.structural.facade.entity.Customer;
 
 @Repository
-public class CustomerRepository {
+public class CustomerRepo {
 	public Customer getCustomerByEmail(String email) {
 		return null; // TODO
 	}
