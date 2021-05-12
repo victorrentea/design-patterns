@@ -3,6 +3,7 @@ package victor.training.patterns.creational.singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,12 +33,11 @@ public class SingletonIntro {
 //   }
 //}
 //@Service
+@Service
 class BizService {
 
    @Autowired
    private ConfigManager configManager;
-
-   //   @Inject
 
    public int bizMethod() {
       // Think about testing
@@ -58,7 +58,7 @@ class BizService {
 }
 
 
-
+@Service
 class ConfigManager {
 
    private static ConfigManager INSTANCE;
