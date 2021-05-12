@@ -2,6 +2,7 @@ package victor.training.patterns.creational.singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,12 +33,11 @@ public class SingletonIntro {
 //}
 //@Service
 class BizService {
-   private final ConfigManager configManager;
+
+   @Autowired
+   private ConfigManager configManager;
 
    //   @Inject
-   public BizService(ConfigManager configManager) {
-      this.configManager = configManager;
-   }
 
    public int bizMethod() {
       // Think about testing
