@@ -7,12 +7,7 @@ public class BuilderPlay {
 
 	public static void main(String[] args) {
 
-		Customer customer = new Customer()
-			.setName("John Doe")
-			.addLabels("Label1")
-			.setAddress(new Address()
-				.setStreetName("Viorele")
-				.setCity("Bucharest"));
+		Customer customer = TestDataPtParteadeCustomers.aCustomer();
 
 		new CustomerBuilder()
 			.build();
@@ -20,5 +15,31 @@ public class BuilderPlay {
 
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
+	}
+
+}
+
+// Object Mother pattern
+class TestDataPtParteadeCustomers {
+
+	public static Customer aCustomer() {
+		return new Customer()
+			.setName("John Doe")
+			.addLabels("Label1", "Label2")
+			.setAddress(new Address()
+				.setStreetName("Viorele")
+				.setCity("Bucharest"));
+	}
+}
+
+class TestDataPtParteaDeOrders {
+
+	public static Customer aCustomer() {
+		return new Customer()
+			.setName("John Doe")
+			.addLabels("Label1", "Label2")
+			.setAddress(new Address()
+				.setStreetName("Viorele")
+				.setCity("Bucharest"));
 	}
 }

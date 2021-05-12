@@ -1,19 +1,18 @@
 package victor.training.patterns.creational.singleton;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 import java.util.Locale;
 import java.util.Map;
@@ -33,12 +32,12 @@ public class SingletonSpringApp implements CommandLineRunner{
 		configurer.addScope("thread", new SimpleThreadScope()); // WARNING: Leaks memory. Prefer 'request' scope or read here: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/support/SimpleThreadScope.html 
 		return configurer;
 	}
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(SingletonSpringApp.class);
 	}
-	
-	@Autowired 
+
+	@Autowired
 	private OrderExporter exporter;
 
 	// TODO [0] Lombok
@@ -47,59 +46,56 @@ public class SingletonSpringApp implements CommandLineRunner{
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you say "Factory"? ...
 	// TODO [4] thread/request scope. HOW it works?! Leaks: @see SimpleThreadScope javadoc
 	public void run(String... args) {
-		exporter.export(Locale.ENGLISH);
-//		exporter.export(Locale.FRENCH);
+		new Thread(() -> exporter.export(Locale.ENGLISH)).start();
+		new Thread(() -> exporter.export(Locale.FRENCH)).start();
 	}
 }
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
-class OrderExporter  {
-	private static final Logger log = LoggerFactory.getLogger(OrderExporter.class);
+class OrderExporter {
 	private final InvoiceExporter invoiceExporter;
-	private final LabelService labelService;
-
-	public OrderExporter(InvoiceExporter invoiceExporter, LabelService labelService) {
-		this.invoiceExporter = invoiceExporter;
-		this.labelService = labelService;
-	}
+	//	private final LabelService labelService;
+	private final ApplicationContext spring;
 
 	public void export(Locale locale) {
+		LabelService labelService = spring.getBean(LabelService.class);
+		labelService.load(locale);
 		log.debug("Running export in " + locale);
-		log.debug("Origin Country: " + labelService.getCountryName("rO")); 
-		invoiceExporter.exportInvoice();
+		log.debug("Origin Country: " + labelService.getCountryName("rO"));
+		invoiceExporter.exportInvoice(labelService);
 	}
 }
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 class InvoiceExporter {
-	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
-	private final LabelService labelService;
+//	private final LabelService labelService;
 
-	public InvoiceExporter(LabelService labelService) {
-		this.labelService = labelService;
-	}
-
-	public void exportInvoice() {
+	public void exportInvoice(LabelService labelService) {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
 
+@Slf4j
 @Service
+@Scope("prototype")
 class LabelService {
-	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private final CountryRepo countryRepo;
+
 	private Map<String, String> countryNames;
 
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
 	}
 
-	@PostConstruct
-	public void load() {
+	public void load(Locale locale) {
 		log.debug("load() map in instance: " + this.hashCode());
-		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
+		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
-	
+
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		sleepr();
