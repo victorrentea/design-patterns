@@ -30,7 +30,7 @@ public class CustomerFacade {
 		return dto;
 	}
 
-	public void registerCustomer(CustomerDto dto) {
+	public void register(CustomerDto dto) {
 		Customer customer = new Customer();
 		customer.setEmail(dto.email);
 		customer.setName(dto.name);

@@ -17,6 +17,6 @@ public class FacadeSpringApp implements CommandLineRunner{
 	
 	public void run(String... args) throws Exception {
 		// pretend you are in a @RestController here
-		customerFacade.registerCustomer(new CustomerDto("John Doe", "john.doe@pentagon.us"));
+		customerFacade.register(new CustomerDto("John Doe", "john.doe@pentagon.us"));
 	}
 }
