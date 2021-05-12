@@ -2,7 +2,6 @@ package victor.training.patterns.creational.singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import victor.training.patterns.stuff.ThreadUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,7 +18,27 @@ public class SingletonIntro {
    }
 }
 
+//
+//class ServiceLocator {
+//
+////   ThreadLocal<Map<Class<?>, Object>>
+//   public static <T> T getInstance(Class<T> clazz) {
+//      // if deja am creat ConfigManager, da-i acceasi instanta
+//   }
+//
+//   public static <T> void setInstanceForTest(Class<T> clazz, T mock) {
+//
+//   }
+//}
+//@Service
 class BizService {
+   private final ConfigManager configManager;
+
+   //   @Inject
+   public BizService(ConfigManager configManager) {
+      this.configManager = configManager;
+   }
+
    public int bizMethod() {
       // Think about testing
       // TODO keep loaded config in ConfigManager field
@@ -27,27 +46,39 @@ class BizService {
       // TODO push life mgmt to ConfigManager (getInstance)
       // TODO Test it
       // TODO Introduce ServiceLocator
-      ConfigManager configManager = new ConfigManager();
+//      ConfigManager configManagerMock = ConfigManager.getInstance(); // PowerMock
+//      ConfigManager configManagerMock = ServiceLocator.getInstance(ConfigManager.class);
       String config = configManager.getConfig();
       if (config.equals("NOOP")) {
          return -1;
       }
       return 0;
    }
+
 }
+
 
 
 class ConfigManager {
 
-   private final String config;
+   private static ConfigManager INSTANCE;
 
-   public ConfigManager() {
+   private ConfigManager() {
       try (Reader reader = new FileReader("f.txt")) {
          config = IOUtils.toString(reader); // takes time
          sleepq(1000);
       } catch (IOException e) {
          throw new RuntimeException(e);
       }
+   }
+
+   private final String config;
+
+   public static ConfigManager getInstance() {
+      if (INSTANCE == null) {
+         INSTANCE = new ConfigManager();
+      }
+      return INSTANCE;
    }
 
    public String getConfig() {
