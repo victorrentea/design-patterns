@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import victor.training.patterns.behavioral.observer.service.OrderService;
+import victor.training.patterns.behavioral.observer.order.service.OrderService;
 
 @Slf4j
 @SpringBootApplication

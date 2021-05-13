@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.observer.service;
+package victor.training.patterns.behavioral.observer.stock.service;
 
 import org.springframework.stereotype.Service;
 
