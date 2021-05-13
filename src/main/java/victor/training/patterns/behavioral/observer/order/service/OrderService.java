@@ -1,20 +1,21 @@
 package victor.training.patterns.behavioral.observer.order.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import victor.training.patterns.behavioral.observer.invoice.service.InvoiceService;
-import victor.training.patterns.behavioral.observer.stock.service.StockManagementService;
+import victor.training.patterns.behavioral.observer.events.OrderPlacedEvent;
 
 @Service
+@Slf4j
 public class OrderService {
+
    @Autowired
-   private StockManagementService stockManagementService;
-   @Autowired
-   private InvoiceService invoiceService;
+   ApplicationEventPublisher publisher;
 
    public void placeOrder(Long orderId) {
-      System.out.println("Halo!");
-      stockManagementService.checkStock(orderId);
-      invoiceService.generateInvoice(orderId);
+      log.debug("Halo!");
+      publisher.publishEvent(new OrderPlacedEvent(orderId));
+//      invoiceService.generateInvoice(orderId);
    }
 }

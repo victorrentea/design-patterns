@@ -32,6 +32,8 @@ public class ObserverArchUnitTest {
       int violations = evaluationResult.getFailureReport().getDetails().size();
       System.out.println("Got Violations: " + violations);
 
+//      Assertions.assertThat(violations).isLessThan(920)
+
       sliceRule.check(classes);
 
 
