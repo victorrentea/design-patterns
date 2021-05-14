@@ -1,13 +1,11 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Random;
 
 @SpringBootApplication
@@ -21,32 +19,22 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
-   @Autowired
-   EmailSender sender;
-   @Autowired
-   AllEmails emails;
-
    private void placeOrder() {
       // other logic
-      sender.sendEmail("a@b.com", email -> emails.composeOrderReceivedEmail(email));
+      new OrderReceivedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // other logic
-      sender.sendEmail("a@b.com", emails::composeOrderShippedEmail);
+      new OrderShippedEmailSender().sendEmail("a@b.com");
       // TODO send order shipped email 'similar to how send order received was implemented'
       // TODO URLEncoder.encode
    }
 }
 
-@Service
-class EmailSender {
-   @FunctionalInterface
-   interface EmailComposer {
-      void compose(Email email);
-   }
+abstract class AbstractEmailSender {
 
-   public void sendEmail(String emailAddress, EmailComposer composer) {
+   public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -55,7 +43,7 @@ class EmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            composer.compose(email);
+            compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -63,21 +51,28 @@ class EmailSender {
          throw new RuntimeException("Can't send email", e);
       }
    }
-}
 
-@Component
-class AllEmails {
-   public void composeOrderReceivedEmail(Email email) {
-      email.setSubject("Order Received!");
-      email.setBody("Thank you for your order");
+   public String subjectMIMEEncode(String raw) {
+      return raw.toLowerCase(Locale.ROOT);
    }
 
-   public void composeOrderShippedEmail(Email email) {
-      email.setSubject("Order Shipped!");
+   public abstract void compose(Email email);
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+   public void compose(Email email) {
+      email.setSubject(subjectMIMEEncode("Order Received!"));
+      email.setBody("Thank you for your order");
+   }
+}
+
+class OrderShippedEmailSender extends AbstractEmailSender {
+   @Override
+   public void compose(Email email) {
+      email.setSubject(subjectMIMEEncode("Order Shipped!"));
       email.setBody("Ti-am trimis coletu. Speram sa ajunga ( de data asta :)");
    }
 }
-
 
 class EmailContext {
    public boolean send(Email email) {
