@@ -21,6 +21,17 @@ enum Country {
    }
 }
 
+class UnTestPeJenkins {
+   //   @org.junit.Test
+   public void verificaCaSelectAreCasePtFiecareEnumDinCountry() {
+
+      for (Country value : Country.values()) {
+         new SwitchPeEnum().select(value);
+      }
+
+   }
+}
+
 public class SwitchPeEnum {
    public static void main(String[] args) {
 
@@ -32,19 +43,21 @@ public class SwitchPeEnum {
    }
 
    @SneakyThrows
-   private TaxCalculator select(Country country) {
+   TaxCalculator select(Country country) {
 //      spring.getBean(clasa)
-      return country.getCalculatorClass().newInstance();
-//      switch (country) {
-//         case RO:
-//         case ES:
-//         case FR: return new EUTaxCalculator();
-//         case CN: return new ChinaTaxCalculator();
-//         case UK: return new UKTaxCalculator();
-//
-//         default:
-//            throw new IllegalStateException("Unexpected value: " + country);
-//      }
+//      return country.getCalculatorClass().newInstance();
+      switch (country) {
+         case RO:
+         case ES:
+         case FR:
+            return new EUTaxCalculator();
+         case CN:
+            return new ChinaTaxCalculator();
+         case UK:
+            return new UKTaxCalculator();
+         default:
+            throw new IllegalStateException("Unexpected value: " + country);
+      }
 //      return switch (country) {
 //         case RO, ES, FR, SK -> new EUTaxCalculator();
 //         case CN -> new ChinaTaxCalculator();
