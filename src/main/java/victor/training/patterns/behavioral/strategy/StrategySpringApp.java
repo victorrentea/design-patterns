@@ -47,7 +47,16 @@ class CustomsService {
    @Autowired
    List<TaxCalculator> calculators;
 
+//   static Map<String, TaxCalculator> calculatorsMap = loadDinFisier();
+//   static {
+//      calculatorsMap.put("UK", new UKTaxCalculator());
+//      calculatorsMap.put("RO", new EUTaxCalculator());
+//      calculatorsMap.put("ES", new EUTaxCalculator());
+//   }
+
+
    private TaxCalculator selectTaxCalculator(String originCountry) {
+//      return calculatorsMap.get(originCountry);
 
       for (TaxCalculator calculator : calculators) {
          if (calculator.isApplicableForCountry(originCountry)) {
