@@ -6,6 +6,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
    private ConfigProvider configProvider = new ConfigFileProvider();
@@ -38,25 +40,14 @@ class CustomsService {
    }
 
    private TaxCalculator selectTaxCalculator(String originCountry) {
-      List<TaxCalculator> calculators = ... // eu va dau
+      List<TaxCalculator> calculators = asList(new UKTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
 
       for (TaxCalculator calculator : calculators) {
-
+         if (calculator.getApplicableCountryIso().contains(originCountry)) {
+            return calculator;
+         }
       }
-// tre sa scrii ceva in foru de mai sus a.i. switchul de jos sa dipara.
-      // Nota dc vreti aveti voie sa modificati interfata
-      switch (originCountry) {
-         case "UK":
-            return new UKTaxCalculator();
-         case "CN":
-            return new ChinaTaxCalculator();
-         case "FR":
-         case "ES": // other EU country codes...
-         case "RO":
-            return new EUTaxCalculator();
-         default:
-            throw new IllegalStateException("Unexpected value: " + originCountry);
-      }
+      throw new IllegalArgumentException(originCountry);
    }
 }
 
@@ -64,11 +55,19 @@ class ChinaTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       return tobaccoValue + regularValue;
    }
+
+   public List<String> getApplicableCountryIso() {
+      return asList("CN");
+   }
 }
 
 class UKTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       return tobaccoValue / 2 + regularValue;
+   }
+
+   public List<String> getApplicableCountryIso() {
+      return asList("UK");
    }
 }
 
@@ -76,8 +75,14 @@ class EUTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValueUnused) {
       return tobaccoValue / 3;
    }
+
+   public List<String> getApplicableCountryIso() {
+      return asList("RO", "ES", "FR");
+   }
 }
 
 interface TaxCalculator {
    double calculate(double tobaccoValue, double regularValue);
+
+   List<String> getApplicableCountryIso();
 }
