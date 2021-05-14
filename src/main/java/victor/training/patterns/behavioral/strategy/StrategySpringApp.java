@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
    private ConfigProvider configProvider = new ConfigFileProvider();
@@ -36,6 +38,13 @@ class CustomsService {
    }
 
    private TaxCalculator selectTaxCalculator(String originCountry) {
+      List<TaxCalculator> calculators = ... // eu va dau
+
+      for (TaxCalculator calculator : calculators) {
+
+      }
+// tre sa scrii ceva in foru de mai sus a.i. switchul de jos sa dipara.
+      // Nota dc vreti aveti voie sa modificati interfata
       switch (originCountry) {
          case "UK":
             return new UKTaxCalculator();
