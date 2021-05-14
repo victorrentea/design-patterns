@@ -1,8 +1,10 @@
 package victor.training.patterns.behavioral.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -18,12 +20,14 @@ public class StrategySpringApp implements CommandLineRunner {
           .run(args);
    }
 
+   @Autowired
+   CustomsService service;
+
    // TODO [1] Break CustomsService logic into Strategies
    // TODO [2] Convert it to Chain Of Responsibility
    // TODO [3] Wire with Spring
    // TODO [4] ConfigProvider: selected based on environment props, with Spring
    public void run(String... args) {
-      CustomsService service = new CustomsService();
       System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
       System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
       System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
@@ -32,6 +36,7 @@ public class StrategySpringApp implements CommandLineRunner {
    }
 }
 
+@Service
 class CustomsService {
    public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
       TaxCalculator taxCalculator = selectTaxCalculator(originCountry);
@@ -39,8 +44,10 @@ class CustomsService {
       return taxCalculator.calculate(tobaccoValue, regularValue);
    }
 
+   @Autowired
+   List<TaxCalculator> calculators;
+
    private TaxCalculator selectTaxCalculator(String originCountry) {
-      List<TaxCalculator> calculators = asList(new UKTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
 
       for (TaxCalculator calculator : calculators) {
          if (calculator.isApplicableForCountry(originCountry)) {
@@ -51,6 +58,7 @@ class CustomsService {
    }
 }
 
+@Service
 class ChinaTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       return tobaccoValue + regularValue;
@@ -62,6 +70,7 @@ class ChinaTaxCalculator implements TaxCalculator {
    }
 }
 
+@Service
 class UKTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValue) {
       return tobaccoValue / 2 + regularValue;
@@ -73,6 +82,7 @@ class UKTaxCalculator implements TaxCalculator {
    }
 }
 
+@Service
 class EUTaxCalculator implements TaxCalculator {
    public double calculate(double tobaccoValue, double regularValueUnused) {
       return tobaccoValue / 3;
