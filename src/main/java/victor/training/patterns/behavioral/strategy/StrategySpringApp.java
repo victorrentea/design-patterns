@@ -43,7 +43,7 @@ class CustomsService {
       List<TaxCalculator> calculators = asList(new UKTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
 
       for (TaxCalculator calculator : calculators) {
-         if (calculator.getApplicableCountryIso().contains(originCountry)) {
+         if (calculator.isApplicableForCountry(originCountry)) {
             return calculator;
          }
       }
@@ -56,8 +56,9 @@ class ChinaTaxCalculator implements TaxCalculator {
       return tobaccoValue + regularValue;
    }
 
-   public List<String> getApplicableCountryIso() {
-      return asList("CN");
+   @Override
+   public boolean isApplicableForCountry(String isoCode) {
+      return "CN".equals(isoCode);
    }
 }
 
@@ -66,8 +67,9 @@ class UKTaxCalculator implements TaxCalculator {
       return tobaccoValue / 2 + regularValue;
    }
 
-   public List<String> getApplicableCountryIso() {
-      return asList("UK");
+   @Override
+   public boolean isApplicableForCountry(String isoCode) {
+      return "UK".equals(isoCode);
    }
 }
 
@@ -76,13 +78,14 @@ class EUTaxCalculator implements TaxCalculator {
       return tobaccoValue / 3;
    }
 
-   public List<String> getApplicableCountryIso() {
-      return asList("RO", "ES", "FR");
+   @Override
+   public boolean isApplicableForCountry(String isoCode) {
+      return asList("RO", "ES", "FR").contains(isoCode);
    }
 }
 
 interface TaxCalculator {
    double calculate(double tobaccoValue, double regularValue);
 
-   List<String> getApplicableCountryIso();
+   boolean isApplicableForCountry(String isoCode);
 }
