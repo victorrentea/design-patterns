@@ -20,7 +20,7 @@ public class BuilderPlay {
 //			.setParameter("name", "smth")
 //			.setParameter("phone", "+13921898198");
 
-		Customer customer = new Customer("John")
+		Customer customer = new Customer()
 			.setName(null)
 			.setAddress(new Address()
 				.setStreetName("Viorele")
