@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import victor.training.patterns.behavioral.observer.order.OrderService;
+import victor.training.patterns.behavioral.observer.order.OrderServiceApp;
 
 @Slf4j
 @SpringBootApplication
@@ -30,7 +30,7 @@ public class ObserverSpringApp {
 	private ObserverTransaction afterTransaction;
 
 	@Autowired
-	OrderService orderService;
+	OrderServiceApp orderService;
 
 	@EventListener
 	public void atStartup(ContextRefreshedEvent event) {
