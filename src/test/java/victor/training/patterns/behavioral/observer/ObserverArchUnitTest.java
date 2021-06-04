@@ -34,7 +34,7 @@ public class ObserverArchUnitTest {
 
 //      sliceRule.check(classes);
 
-//      Assertions.assertThat(violations).isLessThan()
+//      Assertions.assertThat(violations).isLessThan(50);
 
    }
 }

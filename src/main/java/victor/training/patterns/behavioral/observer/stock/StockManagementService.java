@@ -17,5 +17,6 @@ public class StockManagementService {
       System.out.println("Checking stock for products in order " + orderPlacedEvent.getOrderId());
       System.out.println("If something goes wrong - throw an exception");
       eventPublisher.publishEvent(new OrderWasInStockEvent(orderPlacedEvent.getOrderId()));
+//      eventPublisher.publishEvent(new GenerateInvoiceCommand(orderPlacedEvent.getOrderId()));
    }
 }
