@@ -50,6 +50,8 @@ public class CommandSpringApp {
 //            };
 //         }
 //      });
+//      executor.setRejectedExecutionHandler(new AbortPolicy());
+//      executor.setRejectedExecutionHandler(new CallerRunsPolicy());
       executor.setWaitForTasksToCompleteOnShutdown(true);
       return executor;
    }
@@ -61,6 +63,7 @@ public class CommandSpringApp {
       executor.setMaxPoolSize(poolSize);
       executor.setQueueCapacity(500);
       executor.setThreadNamePrefix("vodka-");
+
       executor.initialize();
       executor.setWaitForTasksToCompleteOnShutdown(true);
       return executor;
@@ -82,11 +85,17 @@ class Drinker {
 //   public void run(String... args) throws ExecutionException, InterruptedException {
    @GetMapping("drink")
    public CompletableFuture<DillyDilly> method() { // async servlet
+
+      // FOR GET "retrieving data" NOT FOR UPDATE/INSERT
+
+
 //      HttpServletRequest request;
 //      request.startAsync()
       log.debug("Submitting my order +" + barman.getClass());
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
+
+//      CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(payenet);
 
       CompletableFuture<Beer> futureBeer = barman.pourBeer(); // ~ promise in FE
       CompletableFuture<Vodka> futureVodka = barman.pourVodka();
@@ -113,6 +122,7 @@ class Barman {
    @Async("beerPool")
    public CompletableFuture<Beer> pourBeer() {
       log.debug("Pouring Beer...");
+//      RestTemplate.getForObject >> non blocking REST calls : WebClient (Spring 5 + Reactor) Mono
       sleepq(1000); // Please imagine here a BLOCKING REST call
       return completedFuture(new Beer());
    }
