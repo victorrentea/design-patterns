@@ -1,14 +1,20 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
+
+	@Autowired
+	private EmailSender emailSender;
+
 	public static void main(String[] args) {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
@@ -20,25 +26,21 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailSender(new OrderPlacedEmailSender()).sendEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", new OrderPlacedEmailComposer());
 	}
 
 	private void shipOrder() {
 		// other logic
-		new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
+		emailSender.sendEmail("a@b.com", new OrderShippedEmailComposer());
 		// TODO send order shipped email 'similar to how send order received was implemented'
 		// TODO URLEncoder.encode
 	}
 }
 
+@Service
 class EmailSender {
-	private final EmailComposer composer;
 
-	EmailSender(EmailComposer composer) {
-		this.composer = composer;
-	}
-
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailComposer composer) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		try {
@@ -58,7 +60,8 @@ class EmailSender {
 
 }
 
-class OrderPlacedEmailSender implements EmailComposer {
+@Service
+class OrderPlacedEmailComposer implements EmailComposer {
 	public void compose(Email email) {
 		// MOre logic
 		email.setSubject("Order Received!");
@@ -66,7 +69,8 @@ class OrderPlacedEmailSender implements EmailComposer {
 	}
 }
 
-class OrderShippedEmailSender implements EmailComposer {
+@Service
+class OrderShippedEmailComposer implements EmailComposer {
 	public void compose(Email email) {
 		email.setSubject("Order Shipped!");
 		email.setBody("Your order has been shipped to you.");
