@@ -14,7 +14,8 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	@Autowired
 	private EmailSender emailSender;
-
+	@Autowired
+	private Emails emails;
 	public static void main(String[] args) {
 		SpringApplication.run(TemplateSpringApp.class, args);
 	}
@@ -26,14 +27,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		emailSender.sendEmail("a@b.com", new OrderPlacedEmailComposer());
+		emailSender.sendEmail("a@b.com", emails::composeOrderReceived);
 	}
 
 	private void shipOrder() {
 		// other logic
-		emailSender.sendEmail("a@b.com", new OrderShippedEmailComposer());
+		emailSender.sendEmail("a@b.com", this::composeOrderShipped);
 		// TODO send order shipped email 'similar to how send order received was implemented'
 		// TODO URLEncoder.encode
+	}
+
+	public void composeOrderShipped(Email email) {
+		email.setSubject("Order Shipped!");
+		email.setBody("Your order has been shipped to you.");
 	}
 }
 
@@ -61,17 +67,14 @@ class EmailSender {
 }
 
 @Service
-class OrderPlacedEmailComposer implements EmailComposer {
-	public void compose(Email email) {
+class Emails {
+	public void composeOrderReceived(Email email) {
 		// MOre logic
 		email.setSubject("Order Received!");
 		email.setBody("Thank you for your order");
 	}
-}
 
-@Service
-class OrderShippedEmailComposer implements EmailComposer {
-	public void compose(Email email) {
+	public void composeOrderShipped(Email email) {
 		email.setSubject("Order Shipped!");
 		email.setBody("Your order has been shipped to you.");
 	}
