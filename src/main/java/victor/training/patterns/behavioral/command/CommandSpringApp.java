@@ -42,6 +42,16 @@ public class CommandSpringApp {
       executor.setQueueCapacity(500);
       executor.setThreadNamePrefix("beer-");
       executor.initialize();
+//      executor.setTaskDecorator(new TaskDecorator() {
+//         @Override
+//         public Runnable decorate(Runnable runnable) {
+//            curretUser =  ThreadLocal.get() // from the caller thread
+//            return () -> {
+//               ThreadLocal.set(currentUser) // restoring user metadata on thread local in the worker thread.
+//               runnable.run();
+//            };
+//         }
+//      });
       executor.setWaitForTasksToCompleteOnShutdown(true);
       return executor;
    }
