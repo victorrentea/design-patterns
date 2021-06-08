@@ -20,18 +20,23 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new OrderPlacedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderPlacedEmailSender()).sendEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailSender()).sendEmail("a@b.com");
 		// TODO send order shipped email 'similar to how send order received was implemented'
 		// TODO URLEncoder.encode
 	}
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+	private final EmailComposer composer;
+
+	EmailSender(EmailComposer composer) {
+		this.composer = composer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -42,7 +47,7 @@ abstract class AbstractEmailSender {
 				email.setSender("noreply@corp.com");
 				email.setReplyTo("/dev/null");
 				email.setTo(emailAddress);
-				compose(email);
+				composer.compose(email);
 				boolean success = context.send(email);
 				if (success) break;
 			}
@@ -51,21 +56,25 @@ abstract class AbstractEmailSender {
 		}
 	}
 
-	protected abstract void compose(Email email);
 }
 
-class OrderPlacedEmailSender extends AbstractEmailSender {
-	protected void compose(Email email) {
+class OrderPlacedEmailSender implements EmailComposer {
+	public void compose(Email email) {
+		// MOre logic
 		email.setSubject("Order Received!");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-	protected void compose(Email email) {
+class OrderShippedEmailSender implements EmailComposer {
+	public void compose(Email email) {
 		email.setSubject("Order Shipped!");
 		email.setBody("Your order has been shipped to you.");
 	}
+}
+
+interface EmailComposer {
+	void compose(Email email);
 }
 
 
