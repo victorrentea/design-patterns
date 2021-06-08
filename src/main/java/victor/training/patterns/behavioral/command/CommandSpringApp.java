@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -14,14 +13,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
@@ -31,7 +28,8 @@ import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 public class CommandSpringApp {
    public static void main(String[] args) {
 
-      SpringApplication.run(CommandSpringApp.class, args).close(); // Note: .close to stop executors after CLRunner finishes
+      SpringApplication.run(CommandSpringApp.class, args); // Note: .close to stop executors after CLRunner finishes
+      sleepq(4000);
    }
 
    @Bean
@@ -71,8 +69,8 @@ public class CommandSpringApp {
 }
 
 @Slf4j
-@Component
-class Drinker implements CommandLineRunner {
+@RestController
+class Drinker {
    @Autowired
    private Barman barman;
 //   @Autowired
@@ -81,20 +79,32 @@ class Drinker implements CommandLineRunner {
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) throws ExecutionException, InterruptedException {
+//   public void run(String... args) throws ExecutionException, InterruptedException {
+   @GetMapping("drink")
+   public CompletableFuture<DillyDilly> method() { // async servlet
+//      HttpServletRequest request;
+//      request.startAsync()
       log.debug("Submitting my order +" + barman.getClass());
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
 
-      Future<Beer> futureBeer = barman.pourBeer();
-      Future<Vodka> futureVodka = barman.pourVodka();
+      CompletableFuture<Beer> futureBeer = barman.pourBeer(); // ~ promise in FE
+      CompletableFuture<Vodka> futureVodka = barman.pourVodka();
 
-      Beer beer = futureBeer.get();
-      Vodka vodka = futureVodka.get();
 
-      long t1 = System.currentTimeMillis();
-      log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
+      CompletableFuture<DillyDilly> futureDilly = futureBeer.thenCombine(futureVodka, (b, v) -> new DillyDilly(b, v));
+
+
+      futureDilly.thenAccept(dilly -> log.debug("Got my order ms ! Enjoying {}", dilly));
+      log.info("Thread is free");
+      return futureDilly;
    }
+}
+
+@Data
+class DillyDilly {
+   private final Beer beer;
+   private final Vodka vodka;
 }
 
 @Slf4j
