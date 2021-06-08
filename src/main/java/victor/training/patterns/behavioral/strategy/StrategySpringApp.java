@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
    private ConfigProvider configProvider = new ConfigFileProvider();
@@ -35,6 +38,13 @@ class CustomsService {
    }
 
    private TaxComputer selectTaxComputer(String originCountry) {
+
+
+      List<TaxComputer> allComputers = Arrays.asList(new ChinaTaxComputer(), new EuropeTaxComputer(), new BrexitTaxComputer());
+      // you are allowed to change the interface.
+      for
+
+      // get rid of the switch by the above code
       switch (originCountry) {
          case "UK":
             return new BrexitTaxComputer();
