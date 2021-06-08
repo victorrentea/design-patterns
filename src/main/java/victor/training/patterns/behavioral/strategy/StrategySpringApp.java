@@ -3,6 +3,7 @@ package victor.training.patterns.behavioral.strategy;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,41 +39,48 @@ class CustomsService {
    }
 
    private TaxComputer selectTaxComputer(String originCountry) {
-
-
       List<TaxComputer> allComputers = Arrays.asList(new ChinaTaxComputer(), new EuropeTaxComputer(), new BrexitTaxComputer());
       // you are allowed to change the interface.
-      for
-
-      // get rid of the switch by the above code
-      switch (originCountry) {
-         case "UK":
-            return new BrexitTaxComputer();
-         case "CN":
-            return new ChinaTaxComputer();
-         case "FR":
-         case "ES": // other EU country codes...
-         case "RO":
-            return new EuropeTaxComputer();
-         default:
-            throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+      for (TaxComputer computer : allComputers) {
+         if (computer.supportsCountry(originCountry)) {
+            return computer;
+         }
       }
+      throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
    }
 }
 
+@Service
 class ChinaTaxComputer implements TaxComputer {
+   @Override
+   public boolean supportsCountry(String country) {
+      return "CN".equals(country);
+   }
+
    public double compute(double tobaccoValue, double regularValue) {
       return tobaccoValue + regularValue;
    }
 }
 
+@Service
 class BrexitTaxComputer implements TaxComputer {
+   @Override
+   public boolean supportsCountry(String country) {
+      return "UK".equals(country);
+   }
+
    public double compute(double tobaccoValue, double regularValue) {
       return tobaccoValue / 2 + regularValue;
    }
 }
 
+@Service
 class EuropeTaxComputer implements TaxComputer {
+   @Override
+   public boolean supportsCountry(String country) {
+      return Arrays.asList("RO", "ES", "FR").contains(country);
+   }
+
    public double compute(double tobaccoValue, double unusedRegularValue) {
       return tobaccoValue / 3;
    }
@@ -80,5 +88,7 @@ class EuropeTaxComputer implements TaxComputer {
 }
 
 interface TaxComputer {
+   boolean supportsCountry(String country);
+
    double compute(double tobaccoValue, double regularValue);
 }
