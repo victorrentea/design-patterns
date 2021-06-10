@@ -9,8 +9,7 @@ import victor.training.patterns.structural.facade.infra.EmailClient;
 import victor.training.patterns.structural.facade.repo.CustomerRepo;
 import victor.training.patterns.structural.facade.repo.EmailRepo;
 import victor.training.patterns.structural.facade.repo.SiteRepo;
-
-import java.text.SimpleDateFormat;
+import victor.training.patterns.structural.facade.service.RegisterCustomerService;
 
 @Facade
 @RequiredArgsConstructor
@@ -19,22 +18,16 @@ public class CustomerFacade {
 	private final EmailClient emailClient;
 	private final EmailRepo emailRepo;
 	private final SiteRepo siteRepo;
+	private final CustomerMapper customerMapper;
+	private final RegisterCustomerService registerCustomerService;
 
-	public CustomerDto findById(long customerId) {
+	public CustomerDto findById(long customerId) { // STUPID USECASE, BRAINLESS.
 		Customer customer = customerRepo.findById(customerId);
-		CustomerDto dto = new CustomerDto();
-		dto.name = customer.getName();
-		dto.email = customer.getEmail();
-		dto.creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
-		dto.id = customer.getId();
-		return dto;
+		return new CustomerDto(customer);
 	}
 
 	public void register(CustomerDto dto) {
-		Customer customer = new Customer();
-		customer.setEmail(dto.email);
-		customer.setName(dto.name);
-		customer.setSite(siteRepo.getReference(dto.countryId));
+		Customer customer = dto.toEntity();
 
 		if (customer.getName().trim().length() <= 5) {
 			throw new IllegalArgumentException("Name too short");
@@ -43,13 +36,7 @@ public class CustomerFacade {
 		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
 			throw new IllegalArgumentException("Email already registered");
 		}
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
-		customerRepo.save(customer);
-		// Heavy business logic
+		registerCustomerService.registerCustomer(customer);
 
 		sendRegistrationEmail(customer.getEmail());
 	}
