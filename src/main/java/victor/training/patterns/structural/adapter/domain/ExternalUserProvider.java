@@ -2,6 +2,6 @@ package victor.training.patterns.structural.adapter.domain;
 
 import java.util.List;
 
-public interface ILdapUserServiceAdapter {
+public interface ExternalUserProvider {
    List<User> searchByUsername(String username);
 }
