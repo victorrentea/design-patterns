@@ -1,6 +1,7 @@
 package victor.training.patterns.structural.facade.facade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import victor.training.patterns.structural.facade.Facade;
 import victor.training.patterns.structural.facade.entity.Customer;
 import victor.training.patterns.structural.facade.entity.Email;
@@ -26,7 +27,7 @@ public class CustomerFacade {
 		return new CustomerDto(customer);
 	}
 
-	public void register(CustomerDto dto) {
+	public void register(@Validated CustomerDto dto) {
 		Customer customer = dto.toEntity();
 
 		if (customer.getName().trim().length() <= 5) {

@@ -1,11 +1,13 @@
 package victor.training.patterns.structural.facade.facade.dto;
 
+import org.hibernate.validator.constraints.Length;
 import victor.training.patterns.structural.facade.entity.Customer;
 
 import java.text.SimpleDateFormat;
 
 public class CustomerDto {
    public Long id;
+   @Length(min = 2)
    public String name;
    public String email;
    public Long countryId;

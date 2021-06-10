@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -13,10 +15,17 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 
 @Slf4j
+@Service
 public class ExpensiveOps {
 
    private static final BigDecimal TWO = new BigDecimal("2");
 
+   //   @Transactional
+//   @PreAuthorize
+//   @Async
+//   @Retryable
+//   @RolesAllowed()
+   @Cacheable("primes")
    public Boolean isPrime(int n) {
       log.debug("Computing isPrime({})", n);
       BigDecimal number = new BigDecimal(n);
@@ -34,6 +43,10 @@ public class ExpensiveOps {
          }
       }
       return true;
+   }
+
+   public Boolean aLocalMethod(int n) {
+      return isPrime(n); // PROXIES DO NOT WORK IF YOU CALL METHODS LOCALLY!
    }
 
    @SneakyThrows
