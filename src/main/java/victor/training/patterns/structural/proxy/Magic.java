@@ -5,13 +5,24 @@ import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class Magic {
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
 
       Math real = new Math();
+
+
+//      Writer writer = new FileWriter("a");
+//      writer = new BufferedWriter(writer);
+//
+//      List<String> list= Arrays.asList("adsa");
+//
+//      List<String> strings = Collections.unmodifiableList(list);
+//      list.add("a");
+
 
       Callback callback = new MethodInterceptor() {
          @Override
@@ -40,6 +51,32 @@ public class Magic {
 
 }
 
+//class MathLoggingDecorator implements IMath{
+//   private final IMath delegate;
+//
+//   MathLoggingDecorator(IMath delegate) {
+//      this.delegate = delegate;
+//   }
+//
+//   @Override
+//   public int sum(int a, int b) {
+//      log.debug();
+//      return delegate.sum(a,b);
+//   }
+//
+//   @Override
+//   public int multiply(int a, int b) {
+//      log.debug();
+//      return 0;
+//   }
+//}
+//
+//interface IMath {
+//
+//   int sum(int a, int b);
+//
+//   int multiply(int a, int b);
+//}
 class Math {
    public int sum(int a, int b) {
       return a + b;
