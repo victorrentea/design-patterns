@@ -1,17 +1,17 @@
 package victor.training.patterns.structural.adapter.infra;
 
 import org.springframework.stereotype.Component;
-import victor.training.patterns.structural.adapter.domain.LdapServiceAdapter;
+import victor.training.patterns.structural.adapter.domain.ExternalUserService;
 import victor.training.patterns.structural.adapter.domain.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class LdapServiceAdapterImpl implements LdapServiceAdapter {
+public class LdapServiceAdapter implements ExternalUserService {
    private final LdapUserWebserviceClient wsClient;
 
-   LdapServiceAdapterImpl(LdapUserWebserviceClient wsClient) {
+   LdapServiceAdapter(LdapUserWebserviceClient wsClient) {
       this.wsClient = wsClient;
    }
 

@@ -23,7 +23,7 @@ import java.util.List;
 // ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN ZEN
 public class UserService {
 	@Autowired
-	private LdapServiceAdapter adapter;
+	private ExternalUserService adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUsername(username);
