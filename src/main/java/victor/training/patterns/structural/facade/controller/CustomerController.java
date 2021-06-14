@@ -2,13 +2,13 @@ package victor.training.patterns.structural.facade.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import victor.training.patterns.structural.facade.facade.CustomerFacade;
+import victor.training.patterns.structural.facade.facade.CustomerPicnicController;
 import victor.training.patterns.structural.facade.facade.dto.CustomerDto;
 
 @RestController //faking it
 @RequiredArgsConstructor
 public class CustomerController {
-   private final CustomerFacade customerFacade;
+   private final CustomerPicnicController customerFacade;
 
    @GetMapping("{customerId}")
    public CustomerDto findById(@PathVariable long customerId) {

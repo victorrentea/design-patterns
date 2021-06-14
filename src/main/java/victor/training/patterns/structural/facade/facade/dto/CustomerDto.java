@@ -1,7 +1,13 @@
 package victor.training.patterns.structural.facade.facade.dto;
 
+import victor.training.patterns.structural.facade.entity.Customer;
+
+import javax.validation.constraints.Size;
+import java.text.SimpleDateFormat;
+
 public class CustomerDto {
    public Long id;
+   @Size(min = 6)
    public String name;
    public String email;
    public Long countryId;
@@ -15,4 +21,10 @@ public class CustomerDto {
       this.email = email;
    }
 
+   public CustomerDto(Customer customer) {
+      name = customer.getName();
+      email = customer.getEmail();
+      creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
+      id = customer.getId();
+   }
 }
