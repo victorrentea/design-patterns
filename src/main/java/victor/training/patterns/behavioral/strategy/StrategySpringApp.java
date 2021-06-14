@@ -93,7 +93,6 @@ class UKTaxComputer implements TaxComputer {
 		return "UK".equals(isoCode);
 	}
 
-	i
 
 }
 
@@ -109,9 +108,11 @@ class EUTaxComputer implements TaxComputer {
 	}
 
 }
-	nterface TaxComputer {
-	double compute(double tobaccoValue,double regularValue);
-//	List<String> getCounty(); leaking too much implem details
+
+interface TaxComputer {
+	double compute(double tobaccoValue, double regularValue);
+
+	//	List<String> getCounty(); leaking too much implem details
 	boolean appliesTo(String isoCode);
-	}
+}
 

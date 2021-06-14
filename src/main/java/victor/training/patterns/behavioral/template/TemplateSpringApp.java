@@ -20,13 +20,13 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com", true);
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new EmailService().sendOrderShippedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com", false);
 
 		// TODO URLEncoder.encode
 	}
@@ -34,15 +34,7 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 class EmailService {
 
-	public void sendOrderShippedEmail(String emailAddress) {
-		sendEmail(emailAddress, "Order Shipped");
-	}
-
-	public void sendOrderReceivedEmail(String emailAddress) {
-		sendEmail(emailAddress, "Order Received!");
-	}
-
-	private void sendEmail(String emailAddress, String subject) {
+	public void sendOrderReceivedEmail(String emailAddress, boolean received) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		try {
@@ -51,8 +43,13 @@ class EmailService {
 				email.setSender("noreply@corp.com");
 				email.setReplyTo("/dev/null");
 				email.setTo(emailAddress);
-				email.setSubject(subject);
-				email.setBody("Thank you for your order");
+				if (received) {
+					email.setSubject("Order Received!");
+					email.setBody("Thank you for your order");
+				} else {
+					email.setSubject("Order Shipped!");
+					email.setBody("The order is on its way. Hope it gets to you this time. :)");
+				}
 				boolean success = context.send(email);
 				if (success) break;
 			}
@@ -62,8 +59,6 @@ class EmailService {
 	}
 
 }
-//				email.setSubject("Order Shipped!");
-//				email.setBody("The order is on its way. Hope it gets to you this time. :)");
 
 class EmailContext {
 	public boolean send(Email email) {
