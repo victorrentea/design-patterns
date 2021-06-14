@@ -1,6 +1,7 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,15 +20,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 		shipOrder();
 	}
 
+	@Autowired
+	Emails emails;
+
 	private void placeOrder() {
 		// other logic
-		new EmailSender().sendEmail("a@b.com", new OrderReceivedEmailWriter());
+		new EmailSender().sendOrderReceivedEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new EmailSender().sendEmail("a@b.com", new OrderShippedEmailWriter());
+		new EmailSender().sendEmail("a@b.com", emails::writeShippedEmail);
 
 		// TODO URLEncoder.encode
 	}
@@ -35,6 +39,20 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 @Service
 class EmailSender {
+
+
+	@Autowired
+	Emails emails;
+
+	public void sendOrderReceivedEmail(String emailAddress) { // best: it also hides the "Emails" class from our clients.
+		sendEmail(emailAddress, emails::writeReceivedEmail);
+	}
+
+
+	@FunctionalInterface
+	interface EmailWriter {
+		void writeEmail(Email email); // BAD because it involves MUTATIONS in Email. Setter (don't show Sander this)
+	}
 
 	public void sendEmail(String emailAddress, EmailWriter emailWriter) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -55,27 +73,32 @@ class EmailSender {
 	}
 
 }
+//			() ->  new SubjectAndBody("Order Received!", "Thank you for your order");
+
+// Extreme SRP --> too short classes > BAD
+//interface Email {
+//	String getSubject();
+//	String getBody();
+//}
+
+//interface Email {
+//	SubjectAndBody getContent(); // immutable tiny object, still possible labmdas.
+//}
 
 @Service
-class OrderReceivedEmailWriter implements EmailWriter {
-	public void writeEmail(Email email) {
+class Emails {
+	public void writeReceivedEmail(Email email) {
 		email.setSubject("Order Received!");
 		email.setBody("Thank you for your order");
 	}
-}
 
-@Service
-class OrderShippedEmailWriter implements EmailWriter {
-	public void writeEmail(Email email) {
+	public void writeShippedEmail(Email email) {
 		email.setSubject("Order Shipped!");
 		email.setBody("The order is on its way. Hope it gets to you this time. :)");
 	}
 }
 
-interface EmailWriter {
-	void writeEmail(Email email);
 
-}
 
 class EmailContext {
 	public boolean send(Email email) {
