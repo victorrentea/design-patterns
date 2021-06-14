@@ -3,6 +3,7 @@ package victor.training.patterns.behavioral.command;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static java.util.Arrays.asList;
@@ -32,10 +31,10 @@ public class CommandSpringApp {
    }
 
    @Bean
-   public ThreadPoolTaskExecutor executor() {
+   public ThreadPoolTaskExecutor executor(@Value("${barman.count}") int barmanCount) {
       ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-      executor.setCorePoolSize(1);
-      executor.setMaxPoolSize(1);
+      executor.setCorePoolSize(barmanCount);
+      executor.setMaxPoolSize(barmanCount);
       executor.setQueueCapacity(500);
       executor.setThreadNamePrefix("barman-");
       executor.initialize();
@@ -51,7 +50,7 @@ class Drinker implements CommandLineRunner {
    @Autowired
    private Barman barman;
    @Autowired
-   private ServiceActivatorPattern serviceActivatorPattern;
+   private ThreadPoolTaskExecutor executor;
 
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
@@ -61,15 +60,15 @@ class Drinker implements CommandLineRunner {
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
 
-      ExecutorService pool = Executors.newFixedThreadPool(2);
+//      ExecutorService pool = Executors.newFixedThreadPool(2);
 
-      Future<Beer> futureBeer = pool.submit(() -> barman.pourBeer());
-      Future<Vodka> futureVodka = pool.submit(() -> barman.pourVodka());
+      Future<Beer> futureBeer = executor.submit(() -> barman.pourBeer());
+      Future<Vodka> futureVodka = executor.submit(() -> barman.pourVodka());
 
       log.debug("Instantaneous");
 
-      Beer beer = futureBeer.get();
-      Vodka vodka = futureVodka.get();
+      Beer beer = futureBeer.get(); // blocked for 1sec
+      Vodka vodka = futureVodka.get(); // blocked for 0sec
 
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
