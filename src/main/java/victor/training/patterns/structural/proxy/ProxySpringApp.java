@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
+
 @Slf4j
 @EnableCaching
 @SpringBootApplication
@@ -25,7 +26,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) throws Exception {
-
+//		System.out.println(new ScareYou().ops);
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");
 		log.debug("10000169 is prime ? ");
@@ -35,5 +36,12 @@ public class ProxySpringApp implements CommandLineRunner {
 
 		ops.someOtherMethod();
 	}
-	
+
 }
+
+//@Configurable // black magic. + add 1g of bytecode instrumentation. And scare your colleagues.
+//class ScareYou {
+//	@Autowired
+//	ExpensiveOps ops;
+//
+//}
