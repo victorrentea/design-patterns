@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class Customer {
@@ -13,5 +13,14 @@ public class Customer {
 	private String name;
 	private String email;
 	private Site site;
-	private Date creationDate;
+	private LocalDate creationDate;
+	private boolean goldMember;
+
+	public boolean isGoldMember() {
+		return goldMember;
+	}
+
+	public void setGoldMember(boolean goldMember) {
+		this.goldMember = goldMember;
+	}
 }

@@ -46,6 +46,11 @@ public class CustomerFacade {
 		// Heavy business logic
 		// Heavy business logic
 		// Heavy business logic
+		int discountPercentage = 3;
+		if (customer.isGoldMember()) {
+			discountPercentage += 1;
+		}
+		System.out.println("Biz Logic with discount " + discountPercentage);
 		// Heavy business logic
 		// Heavy business logic
 		customerRepo.save(customer);
