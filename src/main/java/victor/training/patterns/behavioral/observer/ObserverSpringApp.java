@@ -93,11 +93,9 @@ class StockManagementService {
 
 class OrderWasInStock { // event
 	private final long orderId;
-
 	OrderWasInStock(long orderId) {
 		this.orderId = orderId;
 	}
-
 	public long getOrderId() {
 		return orderId;
 	}
