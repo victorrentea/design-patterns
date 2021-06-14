@@ -34,7 +34,6 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
-
 @Service
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
@@ -44,7 +43,6 @@ class CustomsService {
 
 	@Autowired
 	List<TaxComputer> taxComputers;
-
 	private TaxComputer selectTaxCalculator(String originCountry) {
 		return taxComputers.stream()
 			.filter(c -> c.appliesTo(originCountry))
