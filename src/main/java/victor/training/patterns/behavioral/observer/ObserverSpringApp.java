@@ -86,11 +86,12 @@ class StockManagementService {
 	public void checkStock(OrderPlacedEvent event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
-		publisher.publishEvent(new OrderWasInStock(event.getOrderId()));
+		publisher.publishEvent(new OrderWasInStock(event.getOrderId())); // event: many receivers; in the past; emitter decides the schema of event
+//		publisher.publishEvent(new IssueInvoice(event.getOrderId())); // command: 1 receiver; future; the executor(receiver) decides the parameter
 	}
 }
 
-class OrderWasInStock {
+class OrderWasInStock { // event
 	private final long orderId;
 
 	OrderWasInStock(long orderId) {

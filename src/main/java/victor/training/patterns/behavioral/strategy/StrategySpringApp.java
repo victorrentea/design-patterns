@@ -12,9 +12,9 @@ public class StrategySpringApp implements CommandLineRunner {
 			.run(args);
 	}
 
-	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
-	
+
+	private ConfigProvider configProvider = new ConfigFileProvider();
+
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
@@ -24,20 +24,69 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		TaxComputer computer = selectTaxCalculator(originCountry);
+		return computer.compute(tobaccoValue, regularValue);
+	}
+
+	private TaxComputer selectTaxCalculator(String originCountry) {
+		// other EU country codes...
+		switch (originCountry) {
+			case "UK":
+				return new UKTaxComputer();
+			case "CN":
+				return new ChinaTaxComputer();
+			case "FR":
+			case "ES":
+			case "RO":
+				return new EUTaxComputer();
+			default:
+				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		}
+//		return switch (originCountry) {
+//			case "UK" -> new UKTaxComputer();
+//			case "CN" -> new ChinaTaxComputer();
+//// other EU country codes...
+//			case "FR", "ES", "RO" -> new EUTaxComputer();
+//			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//		};
 	}
 }
+
+class ChinaTaxComputer implements TaxComputer {
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+}
+
+class UKTaxComputer implements TaxComputer {
+	public double compute(double tobaccoValue, double regularValue) {
+		// big
+		// big
+		// big
+		// big
+		// big
+		// big
+		return tobaccoValue / 2 + regularValue;
+	}
+
+	i
+
+}
+
+class EUTaxComputer implements TaxComputer {
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue / 3;
+	}
+
+}
+	nterface TaxComputer {
+	double compute(double tobaccoValue,double regularValue);
+	}
+

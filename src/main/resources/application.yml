@@ -1,0 +1,3 @@
+mappings:
+  - countries: FR,ES,BE,NL,DE  # -> List<String>
+    impl: victor.training.patterns.behavioral.strategy.UKTaxComputer #--> Class<?>
