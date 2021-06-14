@@ -4,6 +4,7 @@ import victor.training.patterns.structural.facade.entity.Customer;
 
 import javax.validation.constraints.Size;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 public class CustomerDto {
    public Long id;
@@ -12,6 +13,7 @@ public class CustomerDto {
    public String email;
    public Long countryId;
    public String creationDateStr;
+   public LocalDate creationDate;
 
    public CustomerDto() {
    }
