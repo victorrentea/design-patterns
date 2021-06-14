@@ -9,10 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Random;
 
@@ -82,12 +79,26 @@ class OrderPlacedEvent {
 	// ~microservice
 class StockManagementService {
 	private static final Logger log = LoggerFactory.getLogger(StockManagementService.class);
+	@Autowired
+	ApplicationEventPublisher publisher;
 
 	@EventListener
-	@Order(10)
 	public void checkStock(OrderPlacedEvent event) {
 		log.info("Checking stock for products in order " + event.getOrderId());
 		log.info("If something goes wrong - throw an exception");
+		publisher.publishEvent(new OrderWasInStock(event.getOrderId()));
+	}
+}
+
+class OrderWasInStock {
+	private final long orderId;
+
+	OrderWasInStock(long orderId) {
+		this.orderId = orderId;
+	}
+
+	public long getOrderId() {
+		return orderId;
 	}
 }
 
@@ -95,9 +106,8 @@ class StockManagementService {
 class InvoiceService { // ~microservice
 	private static final Logger log = LoggerFactory.getLogger(InvoiceService.class);
 
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	@Order(20)
-	public void generateInvoice(OrderPlacedEvent event) {
+	@EventListener
+	public void generateInvoice(OrderWasInStock event) {
 		log.info("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
