@@ -37,7 +37,6 @@ public class CustomerPicnicController {
 			throw new IllegalArgumentException("Email already registered");
 		}
 		customerService.registerCustomer(customer);
-
 		sendRegistrationEmail(customer.getEmail());
 	}
 
