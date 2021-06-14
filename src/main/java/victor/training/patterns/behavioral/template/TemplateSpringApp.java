@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -20,21 +21,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new EmailSender().sendEmail("a@b.com", new OrderReceivedEmailWriter());
 	}
 
 	private void shipOrder() {
 		// other logic
 		// TODO send order shipped email 'similar to how send order received was implemented'
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender().sendEmail("a@b.com", new OrderShippedEmailWriter());
 
 		// TODO URLEncoder.encode
 	}
 }
 
-abstract class AbstractEmailSender {
+@Service
+class EmailSender {
 
-	public void sendEmail(String emailAddress) {
+	public void sendEmail(String emailAddress, EmailWriter emailWriter) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		try {
@@ -43,7 +45,7 @@ abstract class AbstractEmailSender {
 				email.setSender("noreply@corp.com");
 				email.setReplyTo("/dev/null");
 				email.setTo(emailAddress);
-				writeEmail(email);
+				emailWriter.writeEmail(email);
 				boolean success = context.send(email);
 				if (success) break;
 			}
@@ -52,22 +54,27 @@ abstract class AbstractEmailSender {
 		}
 	}
 
-	public abstract void writeEmail(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
+@Service
+class OrderReceivedEmailWriter implements EmailWriter {
 	public void writeEmail(Email email) {
 		email.setSubject("Order Received!");
 		email.setBody("Thank you for your order");
 	}
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-	@Override
+@Service
+class OrderShippedEmailWriter implements EmailWriter {
 	public void writeEmail(Email email) {
 		email.setSubject("Order Shipped!");
 		email.setBody("The order is on its way. Hope it gets to you this time. :)");
 	}
+}
+
+interface EmailWriter {
+	void writeEmail(Email email);
+
 }
 
 class EmailContext {
