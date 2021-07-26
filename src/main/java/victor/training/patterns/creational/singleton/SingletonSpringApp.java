@@ -69,6 +69,9 @@ class OrderExporter  {
 class LabelService {
 	private final CountryRepo countryRepo;
 	private Map<String, String> countryNames;
+	//private Map<Locale, Map<String, String>> allCountryNames;
+	// EN ->  RO -> Romania
+	// FR -> RO -> Roumanie
 
 	public LabelService(CountryRepo countryRepo) {
 		this.countryRepo = countryRepo;
