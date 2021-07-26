@@ -1,12 +1,15 @@
 package victor.training.patterns.creational.builder;
 
-import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Builder
+//@Builder
+@Setter
+@Getter
 public class Customer {
 	private Long id;
 	private String name;
@@ -15,44 +18,57 @@ public class Customer {
 	private Address address;
 	private Date createDate;
 
-	public Address getAddress() {
-		return address;
-	}
+//	public Long getId() {
+//		return id;
+//	}
+//
+//	public Customer setId(Long id) {
+//		this.id = id;
+//		return this;
+//	}
+//
+//	public String getName() {
+//		return name;
+//	}
+//
+//	public Customer setName(String name) {
+//		this.name = name;
+//		return this;
+//	}
+//
+//	public String getPhone() {
+//		return phone;
+//	}
+//
+//	public Customer setPhone(String phone) {
+//		this.phone = phone;
+//		return this;
+//	}
+//
+//	public List<String> getLabels() {
+//		return labels;
+//	}
+//
+//	public Customer setLabels(List<String> labels) {
+//		this.labels = labels;
+//		return this;
+//	}
+//
+//	public Address getAddress() {
+//		return address;
+//	}
+//
+//	public Customer setAddress(Address address) {
+//		this.address = address;
+//		return this;
+//	}
+//
+//	public Date getCreateDate() {
+//		return createDate;
+//	}
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
+	public Customer setCreateDate(Date createDate) {
 		this.createDate = createDate;
+		return this;
 	}
-
 }
