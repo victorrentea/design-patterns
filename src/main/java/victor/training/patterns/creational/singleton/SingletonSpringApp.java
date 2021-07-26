@@ -66,7 +66,12 @@ class OrderExporter {
 @Slf4j
 //@Service // panica!
 class LabelService {
-	private final CountryRepo countryRepo;
+//	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
+//	private static final Logger log2 = LoggerFactory.getLogger(LabelService.class);
+//	private static final Logger log3 = LoggerFactory.getLogger(OrderExporter.class);
+//	log==log2
+//	log!=log3
+private final CountryRepo countryRepo;
 	private final Map<String, String> countryNames;
 	//private Map<Locale, Map<String, String>> allCountryNames;
 	// EN ->  RO -> Romania

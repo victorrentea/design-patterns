@@ -25,7 +25,7 @@ public class CePatternEAsta implements CommandLineRunner {
 
 }
 
-@Component
+//@Component
 class T {
 }
 
