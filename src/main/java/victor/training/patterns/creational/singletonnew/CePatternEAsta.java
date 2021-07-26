@@ -25,25 +25,14 @@ public class CePatternEAsta implements CommandLineRunner {
 
 }
 
+@Component
+class T {
+}
+
 @Component // Spring garanteaza ca va creea o singura INSTANTA din aceasta clasa S
 class S {
-//   @Autowired mama, tata
-//   private static S INSTANCE;
-//
-//   private S() {
-//   }
-//
-//   public static S getInstance() {
-//      if (INSTANCE == null) {
-//         INSTANCE = new S(); // lazy singleton
-//      }
-//      return INSTANCE;
-//   }
-
-
-//   public void setName(String name) {
-//      this.name = name;
-//   }
+   @Autowired
+   T t;
 
    public int deInstanta() {
       System.out.println(this);
