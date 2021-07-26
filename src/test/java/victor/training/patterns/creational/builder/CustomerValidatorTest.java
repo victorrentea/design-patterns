@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static victor.training.patterns.creational.builder.TestData.aValidCustomer;
+
 @Slf4j
 public class CustomerValidatorTest {
 
@@ -19,13 +21,7 @@ public class CustomerValidatorTest {
 		validator.validate(customer);
 	}
 
-	private Customer aValidCustomer() {
-		return new Customer()
-			.setName("John Doe")
-			.setAddress(new Address()
-				.setCity("Bucharest")
-				.setStreetName("Dristor"));
-	}
+
 
 	@Test(expected = IllegalArgumentException.class)
 	public void customerWithoutName() {
@@ -49,4 +45,17 @@ public class CustomerValidatorTest {
 		validator.validate(customer);
 	}
 
+}
+
+class TestData { // ObjectMother pattern
+	// multe clase de Test vor folosi aceasta metoda.
+	public static Customer aValidCustomer() {
+		return new Customer()
+			.setName("John Doe")
+			// intr-o zi cu soare afara dupa o betie cineva vine si  face
+			.addLabels("l1") // = 20 teste picate pe jenkins.
+			.setAddress(new Address()
+				.setCity("Bucharest")
+				.setStreetName("Dristor"));
+	}
 }

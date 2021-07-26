@@ -12,13 +12,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class XTest {
    @Mock
-   private S s;
+   private SomeRepo s;
    @InjectMocks
    private X x;
 
    @Test
    public void test() {
+      // arrangeD
       Mockito.when(s.deInstanta()).thenReturn(1);
-      assertEquals(2, x.methodX());
+
+      // act
+      int actual = x.methodX();
+
+      // assert
+      assertEquals(2, actual);
+      Mockito.verify(s).saveCevaCritic("aa");
+
    }
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.SimpleThreadScope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -54,31 +55,57 @@ public class SingletonSpringApp implements CommandLineRunner{
 @RequiredArgsConstructor
 class OrderExporter {
 	//	private final LabelService labelService;
-	private final CountryRepo countryRepo;
+	private final LabelServiceFactory factory;
 
 	public /*synchronized - avoid*/ void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = new LabelService(countryRepo, locale);
+		LabelService labelService = factory.createLabelService(locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
+	}
+}
+
+
+@Component
+@RequiredArgsConstructor
+class LabelServiceFactory {
+	private final CountryRepo countryRepo;
+	private final CountryRepo countryRepo2;
+	private final CountryRepo countryRepo3;
+	private final CountryRepo countryRepo4;
+
+	public LabelService createLabelService(Locale locale) {
+		LabelService labelService = new LabelService(countryRepo, countryRepo2, countryRepo3, countryRepo4);
+		labelService.load(locale); // daca uiti sa faci asta, o incurci === Temporal Coupling
+		return labelService;
 	}
 }
 
 @Slf4j
 //@Service // panica!
 class LabelService {
-//	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
+	//	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 //	private static final Logger log2 = LoggerFactory.getLogger(LabelService.class);
 //	private static final Logger log3 = LoggerFactory.getLogger(OrderExporter.class);
 //	log==log2
 //	log!=log3
-private final CountryRepo countryRepo;
-	private final Map<String, String> countryNames;
+	private final CountryRepo countryRepo;
+	private final CountryRepo countryRepo2;
+	private final CountryRepo countryRepo3;
+	private final CountryRepo countryRepo4;
+	private Map<String, String> countryNames;
 	//private Map<Locale, Map<String, String>> allCountryNames;
 	// EN ->  RO -> Romania
 	// FR -> RO -> Roumanie
 
-	public LabelService(CountryRepo countryRepo, Locale locale) {
+	public LabelService(CountryRepo countryRepo, CountryRepo countryRepo2, CountryRepo countryRepo3, CountryRepo countryRepo4) {
 		this.countryRepo = countryRepo;
+		this.countryRepo2 = countryRepo2;
+		this.countryRepo3 = countryRepo3;
+		this.countryRepo4 = countryRepo4;
+
+	}
+
+	public void load(Locale locale) {
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 

@@ -30,7 +30,7 @@ class T {
 }
 
 @Component // Spring garanteaza ca va creea o singura INSTANTA din aceasta clasa S
-class S {
+class SomeRepo {
    @Autowired
    T t;
 
@@ -38,17 +38,22 @@ class S {
       System.out.println(this);
       return (int) System.currentTimeMillis();
    }
+
+   public void saveCevaCritic(String aa) {
+
+   }
 }
 
 @Component
 class X {
    @Autowired
-   private S s;
+   private SomeRepo s;
 
    public int methodX() {
 //      S s = new S();
 //      S s = ServiceLocator.getInstance(S.class); // Tip: folosesti un Map<class,instanta>
       System.out.println("Ce mi-a fost dat:  " + s);
+      s.saveCevaCritic("aa");
       return s.deInstanta() + 1;
    }
 }
@@ -56,7 +61,7 @@ class X {
 @Component
 class Y {
    @Autowired
-   private S s;
+   private SomeRepo s;
 
    public void methodY() {
       System.out.println("Ce mi-a fost dat:  " + s);
