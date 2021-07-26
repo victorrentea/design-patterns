@@ -3,17 +3,21 @@ package victor.training.patterns.creational.builder;
 //import java.util.ArrayList; // INITIAL
 //import java.util.List; // INITIAL
 
+import victor.training.patterns.creational.builder.Customer.CustomerBuilder;
+
+import java.util.Arrays;
+
 public class BuilderPlay {
 
 	public static void main(String[] args) {
 
 		Customer customer = new CustomerBuilder()
-			.withName("John Doe")
-			.withAddress(new AddressBuilder()
+			.name("John Doe")
+			.address(new AddressBuilder()
 				.withStreetName("Viorele")
 				.withCity("Bucharest")
 				.build())
-			.withLabels("Label1")
+			.labels(Arrays.asList("Label1"))
 			.build();
 
 		System.out.println("Customer name: " + customer.getName());

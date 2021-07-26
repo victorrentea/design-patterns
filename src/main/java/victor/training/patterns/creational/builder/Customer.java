@@ -1,9 +1,12 @@
 package victor.training.patterns.creational.builder;
 
+import lombok.Builder;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Builder
 public class Customer {
 	private Long id;
 	private String name;
