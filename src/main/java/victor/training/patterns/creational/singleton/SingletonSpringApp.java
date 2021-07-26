@@ -52,14 +52,13 @@ public class SingletonSpringApp implements CommandLineRunner{
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class OrderExporter  {
-//	private final LabelService labelService;
+class OrderExporter {
+	//	private final LabelService labelService;
 	private final CountryRepo countryRepo;
 
-	public void export(Locale locale) {
+	public /*synchronized - avoid*/ void export(Locale locale) {
 		log.debug("Running export in " + locale);
-		LabelService labelService = new LabelService(countryRepo);
-		labelService.load(locale);
+		LabelService labelService = new LabelService(countryRepo, locale);
 		log.debug("Origin Country: " + labelService.getCountryName("rO"));
 	}
 }
@@ -68,21 +67,17 @@ class OrderExporter  {
 //@Service // panica!
 class LabelService {
 	private final CountryRepo countryRepo;
-	private Map<String, String> countryNames;
+	private final Map<String, String> countryNames;
 	//private Map<Locale, Map<String, String>> allCountryNames;
 	// EN ->  RO -> Romania
 	// FR -> RO -> Roumanie
 
-	public LabelService(CountryRepo countryRepo) {
+	public LabelService(CountryRepo countryRepo, Locale locale) {
 		this.countryRepo = countryRepo;
-	}
-
-	//	@PostConstruct
-	public void load(Locale locale) {
-		log.debug("load() map in instance: " + this.hashCode());
 		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
-	
+
+
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
 		sleepr();
