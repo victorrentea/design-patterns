@@ -22,16 +22,26 @@ class LovingParent {
    }
 
    public void finishWorkExhausted() {
-      // TODO buy time to take a shower
-      child.noticeAndDrainParent();
+
+      Toy toy = ToyShop.buyToy();
+//      toy.us
+
+
    }
 }
 
-class ToyShop { // close by
-   public static ToyHammer buyToy() {
-      return new ToyHammer();
+class ToyShop {
+   private static boolean maiAmCiocane = true; // close by
+
+   public static Toy buyToy() {
+      if (maiAmCiocane) return new ToyHammer();
+      else return new ToyAxe();
    }
 }
+
+
+
+
 
 class Child {
 
@@ -48,8 +58,19 @@ class Child {
       System.out.println("Done Playing");
    }
 }
-class ToyHammer {
+
+class ToyHammer implements Toy {
    public void use() {
       System.out.println("Bang-Bang!");
    }
+}
+
+class ToyAxe implements Toy {
+   public void use() {
+      System.out.println("Harh Harh");
+   }
+}
+
+interface Toy {
+   void use();
 }
