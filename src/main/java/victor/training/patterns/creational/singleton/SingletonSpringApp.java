@@ -102,7 +102,7 @@ class LabelService {
 		this.countryRepo2 = countryRepo2;
 		this.countryRepo3 = countryRepo3;
 		this.countryRepo4 = countryRepo4;
-
+//		load(locale);
 	}
 
 	public void load(Locale locale) {
