@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import victor.training.patterns.structural.adapter.infra.LdapUserDto;
 import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -33,40 +34,39 @@ public class UserService {
 	private LdapUserWebserviceClient wsClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUserDto> list = searchByUsername(username);
+		List<User> list = searchByUsername(username);
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUserDto ldapUser = list.get(0);
-		User user = convert(ldapUser);
+		User user = list.get(0);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
-			// COD
 		}
 		log.debug("Insert user in my database");
-		// COD
 	}
 
 	public List<User> searchUserInLdap(String username) {
-		List<LdapUserDto> list = searchByUsername(username);
-		List<User> results = new ArrayList<>();
-		for (LdapUserDto ldapUser : list) {
-			User user = convert(ldapUser);
-			results.add(user);
-		}
+		List<User> results = searchByUsername(username);
 		return results.subList(0, 5);
 	}
 
+	// ZEN
+	// ---------------------------------------------------------- arhitectura = the art of drawing lines ---------------
+	// GUNOI
 	// ai extras duplicate. Felicitari.. ai actionat dupa reflexe.
+
 
 	private User convert(LdapUserDto ldapUser) {
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 	}
 
-	private List<LdapUserDto> searchByUsername(String username) {
-		return wsClient.search(username.toUpperCase(), null, null);
+	private List<User> searchByUsername(String username) {
+		return wsClient.search(username.toUpperCase(), null, null)
+			.stream()
+			.map(this::convert)
+			.collect(toList());
 	}
 
 	// TODO @end: Archunit!
