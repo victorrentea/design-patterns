@@ -10,7 +10,8 @@ import java.time.LocalDate;
 public class Customer {
 	@Setter(AccessLevel.NONE)
 	private Long id;
-	private String name;
+//	@Min(5)
+private String name;
 	private String email;
 	private Site site;
 	private LocalDate creationDate;
@@ -23,4 +24,21 @@ public class Customer {
 	public void setGoldMember(boolean goldMember) {
 		this.goldMember = goldMember;
 	}
+
+	public int getDiscountPercentage() {
+		int discountPercentage = 3;
+		if (isGoldMember()) {
+			discountPercentage += 1;
+		}
+		return discountPercentage;
+	}
+
+//	private Customer() {} // pt hibernate
+//	public Customer(String name) {
+//		if (name.trim().length() <= 5) {
+//			throw new IllegalArgumentException("Name too short");
+//		}
+//		this.name = name;
+//	}
+//	public CustomerDto toDto() {} // !! anathema
 }
