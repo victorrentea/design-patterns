@@ -7,8 +7,8 @@ public class DummyData {
 	public static final LdapUserDto ldapUser1 = new LdapUserDto();
 
 	static {
-		ldapUser1.setfName("John");
-		ldapUser1.setlName("DOE");
+		ldapUser1.setFirstName("John");
+		ldapUser1.setLastName("DOE");
 		ldapUser1.setuId("jdoe");
 		ldapUser1.setCreationDate(new Date());
 		ldapUser1.setWorkEmail("0123456789");
@@ -18,8 +18,8 @@ public class DummyData {
 	public static final LdapUserDto ldapUser2 = new LdapUserDto();
 
 	static {
-		ldapUser2.setfName("Jane");
-		ldapUser2.setlName("DOE");
+		ldapUser2.setFirstName("Jane");
+		ldapUser2.setLastName("DOE");
 		ldapUser2.setuId("janedoe");
 		ldapUser2.setCreationDate(new Date());
 	}

@@ -6,8 +6,8 @@ import java.util.List;
 
 public class LdapUserDto {
 	private String uId;
-	private String fName;
-	private String lName;
+	private String firstName;
+	private String lastName;
 	private Date creationDate;
 	private String workEmail;
 	private List<LdapUserPhone> emailAddresses = new ArrayList<>();
@@ -15,28 +15,35 @@ public class LdapUserDto {
 	public final String getuId() {
 		return uId;
 	}
+
 	public final void setuId(String uId) {
 		this.uId = uId;
 	}
-	public final String getfName() {
-		return fName;
+
+	public final String getFirstName() {
+		return firstName;
 	}
-	public final void setfName(String fName) {
-		this.fName = fName;
+
+	public final void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
-	public final String getlName() {
-		return lName;
+
+	public final String getLastName() {
+		return lastName;
 	}
-	public final void setlName(String lName) {
-		this.lName = lName;
+
+	public final void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
+
 	public final Date getCreationDate() {
 		return creationDate;
 	}
+
 	public final void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
-	
+
 	public final String getWorkEmail() {
 		return workEmail;
 	}
