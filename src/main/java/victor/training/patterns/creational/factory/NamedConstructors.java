@@ -8,7 +8,6 @@ public class NamedConstructors {
 
 
 class OutputFile {
-   private String delimiter = ";";
    private String fileExt = ".csv";
    private final String fileName;
 
@@ -17,6 +16,6 @@ class OutputFile {
    }
 
    public void writeStuff(String stuff) {
-      System.out.println("Writing stuff using " + delimiter + " in the file " + fileName + fileExt);
+      System.out.println("Writing stuff in the file " + fileName + fileExt);
    }
 }
