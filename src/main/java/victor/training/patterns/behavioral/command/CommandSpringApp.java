@@ -77,6 +77,9 @@ class Drinker implements CommandLineRunner {
       long t1 = System.currentTimeMillis();
       futureDilly.thenAccept(dilly -> log.debug("Got my order in {} ms ! Enjoying {}", System.currentTimeMillis() - t0, dilly));
       System.out.println("Main pleaca dupa " + (t1 - t0));
+
+      barman.injura("!*@!&$*@!%&*!&*@!");
+      System.out.println("Main se baga cuminte in patuc");
    }
 }
 
@@ -92,6 +95,9 @@ class Barman {
    @Async
    public CompletableFuture<Beer> pourBeer() {
       log.debug("Pouring Beer...");
+      if (true) {
+         throw new IllegalArgumentException("NU MAI EBERE!!");
+      }
       sleepq(1000); // REST call
       return CompletableFuture.completedFuture(new Beer());
    }
@@ -101,6 +107,13 @@ class Barman {
       log.debug("Pouring Vodka...");
       sleepq(1000); // expensive DB SELECT
       return CompletableFuture.completedFuture(new Vodka());
+   }
+
+   @Async
+   public void injura(String uratura) {
+      if (uratura != null) {
+         throw new IllegalArgumentException("Iti fac buzunar");
+      }
    }
 }
 
