@@ -64,7 +64,7 @@ class Drinker implements CommandLineRunner {
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
 
-      CompletableFuture<Beer> beerFuture = barman.pourBeer();
+      CompletableFuture<Beer> beerFuture = barman.pourBeer().exceptionally(e -> null);
       CompletableFuture<Vodka> vodkaFuture = barman.pourVodka();
 
 
@@ -75,7 +75,9 @@ class Drinker implements CommandLineRunner {
       CompletableFuture<DillyDilly> futureDilly = beerFuture.thenCombine(vodkaFuture, (b, v) -> new DillyDilly(b, v));
 
       long t1 = System.currentTimeMillis();
-      futureDilly.thenAccept(dilly -> log.debug("Got my order in {} ms ! Enjoying {}", System.currentTimeMillis() - t0, dilly));
+      futureDilly
+
+          .thenAccept(dilly -> log.debug("Got my order in {} ms ! Enjoying {}", System.currentTimeMillis() - t0, dilly));
       System.out.println("Main pleaca dupa " + (t1 - t0));
 
       barman.injura("!*@!&$*@!%&*!&*@!");
@@ -105,7 +107,7 @@ class Barman {
    @Async
    public CompletableFuture<Vodka> pourVodka() {
       log.debug("Pouring Vodka...");
-      sleepq(1000); // expensive DB SELECT
+      sleepq(10000); // expensive DB SELECT
       return CompletableFuture.completedFuture(new Vodka());
    }
 
