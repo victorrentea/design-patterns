@@ -23,7 +23,12 @@ public class NamedConstructors {
 
       System.out.println(listWrapped.get(0));
 
-      listWrapped.remove(0);
+      departe(listWrapped);
+   }
+
+   private static void departe(List<String> list) {
+      list.remove(0);
+      list.add("aa");
    }
 }
 

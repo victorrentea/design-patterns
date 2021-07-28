@@ -5,6 +5,10 @@ import lombok.Data;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Data
 public class Customer {
@@ -41,4 +45,18 @@ private String name;
 //		this.name = name;
 //	}
 //	public CustomerDto toDto() {} // !! anathema
+
+	static {
+		Set<String> strings = new HashSet<>();
+		strings.iterator().next();
+
+//		for (String string : strings) {
+		Iterator<String> iterator = strings.iterator();
+		while (iterator.hasNext()) {
+			String string = iterator.next();
+			System.out.println(string);
+		}
+		Stream<String> a = Stream.of("a", "b");
+//		a.iterator()/
+	}
 }
