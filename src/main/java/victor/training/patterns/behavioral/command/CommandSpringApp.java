@@ -12,14 +12,14 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
-import static java.util.Arrays.asList;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
 @EnableAsync
@@ -64,31 +64,43 @@ class Drinker implements CommandLineRunner {
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
 
-      Future<Beer> beerFuture = pool.submit(() -> barman.pourBeer());
-      Future<Vodka> vodkaFuture = pool.submit(() -> barman.pourVodka());
+      CompletableFuture<Beer> beerFuture = barman.pourBeer();
+      CompletableFuture<Vodka> vodkaFuture = barman.pourVodka();
 
 
-      Beer beer = beerFuture.get(); // 1 sec sta aici
-      Vodka vodka = vodkaFuture.get(); // main sta 0 secunde aici.
+      // antipattern cu CompletableFuture
+//      Beer beer = beerFuture.get(); // 1 sec sta aici
+//      Vodka vodka = vodkaFuture.get(); // main sta 0 secunde aici.
+
+      CompletableFuture<DillyDilly> futureDilly = beerFuture.thenCombine(vodkaFuture, (b, v) -> new DillyDilly(b, v));
 
       long t1 = System.currentTimeMillis();
-      log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
+      futureDilly.thenAccept(dilly -> log.debug("Got my order in {} ms ! Enjoying {}", System.currentTimeMillis() - t0, dilly));
+      System.out.println("Main pleaca dupa " + (t1 - t0));
    }
+}
+
+@Data
+class DillyDilly {
+   private final Beer beer;
+   private final Vodka vodka;
 }
 
 @Slf4j
 @Service
 class Barman {
-   public Beer pourBeer() {
+   @Async
+   public CompletableFuture<Beer> pourBeer() {
       log.debug("Pouring Beer...");
       sleepq(1000); // REST call
-      return new Beer();
+      return CompletableFuture.completedFuture(new Beer());
    }
 
-   public Vodka pourVodka() {
+   @Async
+   public CompletableFuture<Vodka> pourVodka() {
       log.debug("Pouring Vodka...");
       sleepq(1000); // expensive DB SELECT
-      return new Vodka();
+      return CompletableFuture.completedFuture(new Vodka());
    }
 }
 
