@@ -41,28 +41,39 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 @Service
 class EmailSender {
-	public void sendEmail(String emailAddress, EmailContentWriter writer) {
-		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-		int MAX_RETRIES = 3;
-		try {
-			for (int i = 0; i < MAX_RETRIES; i++) {
-				Email email = new Email(); // constructor generates new unique ID
-				email.setSender("noreply@corp.com");
-				email.setReplyTo("/dev/null");
-				email.setTo(emailAddress);
-				writer.writeContent(email);
-				boolean success = context.send(email);
-				if (success) break;
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Can't send email", e);
+//	private EmailContentWriter writer;
+public void sendEmail(String emailAddress, EmailContentWriter writer) {
+	EmailContext context = new EmailContext(/*smtpConfig,etc*/);
+	int MAX_RETRIES = 3;
+	try {
+		for (int i = 0; i < MAX_RETRIES; i++) {
+			Email email = new Email(); // constructor generates new unique ID
+			email.setSender("noreply@corp.com");
+			email.setReplyTo("/dev/null");
+			email.setTo(emailAddress);
+			writer.writeContent(email);
+			boolean success = context.send(email);
+			if (success) break;
 		}
+	} catch (Exception e) {
+		throw new RuntimeException("Can't send email", e);
 	}
+}
 
 	interface EmailContentWriter {
 		void writeContent(Email email);
 	}
 }
+//@Service
+//@RequiredArgsConstructor
+//class A {
+//	private final B b;
+//}
+//@Service
+//@RequiredArgsConstructor
+//class B {
+//	private final A a;
+//}
 
 @Component
 class Emails {
