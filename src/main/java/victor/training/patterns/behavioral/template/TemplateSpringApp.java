@@ -20,11 +20,12 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new EmailService().sendOrderReceivedEmail("a@b.com");
+		new EmailService().sendOrderReceivedEmail("a@b.com", true);
 	}
 
 	private void shipOrder() {
 		// other logic
+		new EmailService().sendOrderReceivedEmail("a@b.com", false);
 		// TODO send order shipped email 'similar to how send order received was implemented'
 		// TODO URLEncoder.encode
 	}
@@ -32,17 +33,22 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 class EmailService {
 
-	public void sendOrderReceivedEmail(String emailAddress) {
+	public void sendOrderReceivedEmail(String emailAddress, boolean orderReceived) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
 		int MAX_RETRIES = 3;
 		try {
-			for (int i = 0; i < MAX_RETRIES; i++ ) {
+			for (int i = 0; i < MAX_RETRIES; i++) {
 				Email email = new Email(); // constructor generates new unique ID
 				email.setSender("noreply@corp.com");
 				email.setReplyTo("/dev/null");
 				email.setTo(emailAddress);
-				email.setSubject("Order Received!");
-				email.setBody("Thank you for your order");
+				if (orderReceived) {
+					email.setSubject("Order Received!");
+					email.setBody("Thank you for your order");
+				} else {
+					email.setSubject("Order Shipped!");
+					email.setBody("Vezi ca vine livrarea (cand tu nu esti acasa)");
+				}
 				boolean success = context.send(email);
 				if (success) break;
 			}
