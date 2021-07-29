@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -36,40 +39,57 @@ class CustomsService {
 	}
 
 	private TaxComputer selectTaxComputer(String originCountry) {
-		switch (originCountry) {
-			case "UK":
-				return new UKTaxComputer();
-			case "CN":
-				return new ChinaTaxComputer();
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO":
-				return new EUTaxComputer();
-			default:
-				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+
+		List<TaxComputer> toti = Arrays.asList(new EUTaxComputer(), new ChinaTaxComputer(), new UKTaxComputer());
+
+		for (TaxComputer taxComputer : toti) {
+			if (taxComputer.hasCountry(originCountry)) {
+				return taxComputer;
+			}
 		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+	}
+}
+
+class EUTaxComputer implements TaxComputer {
+
+	@Override
+	public boolean hasCountry(String isoCode) {
+		return Arrays.asList("RO", "FR", "ES").contains(isoCode);
+	}
+
+	public double computeTax(double tobaccoValue, double regularValueDegeaba) {
+		return tobaccoValue / 3;
 	}
 }
 
 class ChinaTaxComputer implements TaxComputer {
+	@Override
+	public boolean hasCountry(String isoCode) {
+		return "CN".equals(isoCode);
+	}
+
+	// "CN"
 	public double computeTax(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
 }
 
 class UKTaxComputer implements TaxComputer {
+	@Override
+	public boolean hasCountry(String isoCode) {
+		return "UK".equals(isoCode);
+	}
+
 	public double computeTax(double tobaccoValue, double regularValue) {
 		return tobaccoValue / 2 + regularValue;
 	}
 }
 
-class EUTaxComputer implements TaxComputer {
-	public double computeTax(double tobaccoValue, double regularValueDegeaba) {
-		return tobaccoValue / 3;
-	}
-
-}
-
 interface TaxComputer {
+	boolean hasCountry(String isoCode);
+
 	double computeTax(double tobaccoValue, double regularValue);
 }
+
+
