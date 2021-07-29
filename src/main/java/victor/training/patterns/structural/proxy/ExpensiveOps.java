@@ -1,6 +1,8 @@
 package victor.training.patterns.structural.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -23,14 +25,20 @@ class ExpensiveOpsCuCache implements ExpensiveOps {
       cache.put(n, prime);
       return prime;
    }
-
 }
 
 @Slf4j
-class ExpensiveOpsImpl implements ExpensiveOps {
+@Service
+class ExpensiveOpsImpl/* implements ExpensiveOps */ {
    private static final BigDecimal TWO = new BigDecimal("2");
 
+   @Cacheable("primes")
+//   @Transactional
+//   @PreAuthorized
+//   @Async
+//   @Retryable
    public Boolean isPrime(int n) {
+      new RuntimeException().printStackTrace();
       log.debug("Computing isPrime({})", n);
       BigDecimal number = new BigDecimal(n);
       if (number.compareTo(TWO) <= 0) {
@@ -47,6 +55,11 @@ class ExpensiveOpsImpl implements ExpensiveOps {
          }
       }
       return true;
+   }
+
+   public void altaMetoda() {
+      new RuntimeException().printStackTrace();
+
    }
 
 
