@@ -1,8 +1,10 @@
 package victor.training.patterns.behavioral.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,33 +17,36 @@ public class StrategySpringApp implements CommandLineRunner {
 			.run(args);
 	}
 
-	
+
 	private ConfigProvider configProvider = new ConfigFileProvider();
-	
+
+	@Autowired
+	CustomsService service;
+
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
+@Service
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxComputer taxComputer = selectTaxComputer(originCountry);
 		return taxComputer.computeTax(tobaccoValue, regularValue);
 	}
 
+	@Autowired
+	List<TaxComputer> toti;
+
 	private TaxComputer selectTaxComputer(String originCountry) {
-
-		List<TaxComputer> toti = Arrays.asList(new EUTaxComputer(), new ChinaTaxComputer(), new UKTaxComputer());
-
 		for (TaxComputer taxComputer : toti) {
 			if (taxComputer.hasCountry(originCountry)) {
 				return taxComputer;
@@ -51,8 +56,8 @@ class CustomsService {
 	}
 }
 
+@Service
 class EUTaxComputer implements TaxComputer {
-
 	@Override
 	public boolean hasCountry(String isoCode) {
 		return Arrays.asList("RO", "FR", "ES").contains(isoCode);
@@ -63,6 +68,7 @@ class EUTaxComputer implements TaxComputer {
 	}
 }
 
+@Service
 class ChinaTaxComputer implements TaxComputer {
 	@Override
 	public boolean hasCountry(String isoCode) {
@@ -75,6 +81,7 @@ class ChinaTaxComputer implements TaxComputer {
 	}
 }
 
+@Service
 class UKTaxComputer implements TaxComputer {
 	@Override
 	public boolean hasCountry(String isoCode) {
