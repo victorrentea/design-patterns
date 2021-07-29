@@ -13,7 +13,7 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
+	private ConfigProvider configProvider = new ConfigFileProvider();
 	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
@@ -31,13 +31,45 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		TaxComputer taxComputer = selectTaxComputer(originCountry);
+		return taxComputer.computeTax(tobaccoValue, regularValue);
 	}
+
+	private TaxComputer selectTaxComputer(String originCountry) {
+		switch (originCountry) {
+			case "UK":
+				return new UKTaxComputer();
+			case "CN":
+				return new ChinaTaxComputer();
+			case "FR":
+			case "ES": // other EU country codes...
+			case "RO":
+				return new EUTaxComputer();
+			default:
+				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		}
+	}
+}
+
+class ChinaTaxComputer implements TaxComputer {
+	public double computeTax(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+}
+
+class UKTaxComputer implements TaxComputer {
+	public double computeTax(double tobaccoValue, double regularValue) {
+		return tobaccoValue / 2 + regularValue;
+	}
+}
+
+class EUTaxComputer implements TaxComputer {
+	public double computeTax(double tobaccoValue, double regularValueDegeaba) {
+		return tobaccoValue / 3;
+	}
+
+}
+
+interface TaxComputer {
+	double computeTax(double tobaccoValue, double regularValue);
 }
