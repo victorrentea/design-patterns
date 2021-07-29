@@ -20,18 +20,23 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 	private void placeOrder() {
 		// other logic
-		new OrderReceivedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderReceivedEmailWriter()).sendEmail("a@b.com");
 	}
 
 	private void shipOrder() {
 		// other logic
-		new OrderShippedEmailSender().sendEmail("a@b.com");
+		new EmailSender(new OrderShippedEmailWriter()).sendEmail("a@b.com");
 		// TODO send order shipped email 'similar to how send order received was implemented'
 		// TODO URLEncoder.encode
 	}
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+	private final EmailContentWriter writer;
+
+	EmailSender(EmailContentWriter writer) {
+		this.writer = writer;
+	}
 
 	public void sendEmail(String emailAddress) {
 		EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -42,7 +47,7 @@ abstract class AbstractEmailSender {
 				email.setSender("noreply@corp.com");
 				email.setReplyTo("/dev/null");
 				email.setTo(emailAddress);
-				writeContent(email);
+				writer.writeContent(email);
 				boolean success = context.send(email);
 				if (success) break;
 			}
@@ -50,23 +55,25 @@ abstract class AbstractEmailSender {
 			throw new RuntimeException("Can't send email", e);
 		}
 	}
-
-	protected abstract void writeContent(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
-	protected void writeContent(Email email) {
+class OrderReceivedEmailWriter implements EmailContentWriter {
+	public void writeContent(Email email) {
 		email.setSubject("Order Received!");
 		email.setBody("Thank you for your order");
 	}
 }
 
-
-class OrderShippedEmailSender extends AbstractEmailSender {
-	protected void writeContent(Email email) {
+class OrderShippedEmailWriter implements EmailContentWriter {
+	public void writeContent(Email email) {
 		email.setSubject("Order Shipped!");
 		email.setBody("Vezi ca vine livrarea (cand tu nu esti acasa)");
 	}
+}
+
+
+interface EmailContentWriter {
+	void writeContent(Email email);
 }
 
 class EmailContext {
