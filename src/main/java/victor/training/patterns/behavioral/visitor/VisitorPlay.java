@@ -1,6 +1,7 @@
 package victor.training.patterns.behavioral.visitor;
 
 import victor.training.patterns.behavioral.visitor.model.Circle;
+import victor.training.patterns.behavioral.visitor.model.Rectangle;
 import victor.training.patterns.behavioral.visitor.model.Shape;
 import victor.training.patterns.behavioral.visitor.model.Square;
 
@@ -11,19 +12,32 @@ public class VisitorPlay {
 
 	public static void main(String[] args) {
 		List<Shape> shapes = Arrays.asList(
-				new Square(10), 
-				new Circle(5), 
-				new Square(5));
+			new Square(10),
+			new Circle(5),
+			new Square(5),
+			new Rectangle(2, 3));
 
-		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
+		double totalPerimeter = 0;
+		PerimeterCalculatorVisitor perimeter = new PerimeterCalculatorVisitor();
 		for (Shape shape : shapes) {
-			shape.accept(perimeterCalculator);
+			shape.accept(perimeter);
 		}
-		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
+		System.out.println("Total perimeter: " + perimeter.getTotal());
 
 
-		System.out.println("Total area: " + 0); // TODO
+		AreaVisitor areaVisitor = new AreaVisitor();
+		for (Shape shape : shapes) {
+			shape.accept(areaVisitor);
+		}
+
+		System.out.println("Total area: " + areaVisitor.getTotal()); // TODO
 
 	}
 
 }
+//interface X extends Shape {
+//
+//}
+//class XImpl implements X {
+//
+//}

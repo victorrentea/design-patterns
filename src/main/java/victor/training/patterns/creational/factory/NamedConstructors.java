@@ -21,9 +21,13 @@ public class NamedConstructors {
 
       List<String> listWrapped = Collections.unmodifiableList(list);
 
-      System.out.println(listWrapped.get(0));
+      extracted(listWrapped);
 
       departe(listWrapped);
+   }
+
+   private static void extracted(List<String> listWrapped) {
+      System.out.println(listWrapped.get(0));
    }
 
    private static void departe(List<String> list) {

@@ -10,11 +10,11 @@ public class Circle implements Shape {
 		this.radius = radius;
 	}
 
-	@Override
 	public void accept(ShapeVisitor visitor) {
 		visitor.visit(this);
 	}
-	
+
+
 	public int getRadius() {
 		return radius;
 	}
