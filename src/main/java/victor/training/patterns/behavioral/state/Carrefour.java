@@ -26,7 +26,7 @@ class ShoppingCart {
    }
 
    public void push() {
-      state = state.push();
+      state = state.park();
    }
 }
 
@@ -38,7 +38,7 @@ class LockedState implements ShoppingCartState {
    }
 
    @Override
-   public ShoppingCartState push() {
+   public ShoppingCartState park() {
       return this;
    }
 }
@@ -50,8 +50,8 @@ class UnlockedState implements ShoppingCartState {
    }
 
    @Override
-   public ShoppingCartState push() {
-      System.out.println("TODO: da moneda inapoi");
+   public ShoppingCartState park() {
+      System.out.println("TODO: recover the coin");
       return new LockedState();
    }
 }
@@ -59,5 +59,5 @@ class UnlockedState implements ShoppingCartState {
 interface ShoppingCartState {
    ShoppingCartState coin();
 
-   ShoppingCartState push();
+   ShoppingCartState park();
 }

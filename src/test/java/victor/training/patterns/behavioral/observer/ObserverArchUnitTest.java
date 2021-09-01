@@ -20,7 +20,7 @@ public class ObserverArchUnitTest {
           .importPackages("victor.training.patterns.behavioral.observer");
 
       String names = classes.stream().map(JavaClass::getSimpleName).collect(joining());
-      System.out.println("Studying classes: " + names);
+      System.out.println("Studying classers: " + names);
 
       SliceRule sliceRule = SlicesRuleDefinition.slices()
           .matching("..observer.(**)")
@@ -32,7 +32,7 @@ public class ObserverArchUnitTest {
       int violations = evaluationResult.getFailureReport().getDetails().size();
       System.out.println("Got Violations: " + violations);
 
-//      Assertions.assertThat(violations).isLessThan(2);
+//      Assertions.assertThat(violations).isLessThan(200);
       sliceRule.check(classes);
 
 
