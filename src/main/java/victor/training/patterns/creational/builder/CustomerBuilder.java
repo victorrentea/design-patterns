@@ -9,6 +9,9 @@ public class CustomerBuilder {
 	}
 
 	public Customer build() {
+//		if (customer.getName().length() <= 5) {
+//			throw new IllegalArgumentException("Name too short");
+//		}
 		return customer;
 	}
 }
