@@ -1,55 +1,47 @@
 package victor.training.patterns.creational.builder;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Value;
 
+import java.util.*;
+
+
+@Builder
+@Value // == @Data + all fields private final. @Value is better than @Data
+class ImmutableObj {
+	String a;
+	String b;
+}
+
+@Data
 public class Customer {
 	private Long id;
+	//	@NotNull
 	private String name;
 	private String phone;
 	private List<String> labels = new ArrayList<>();
 	private Address address;
 	private Date createDate;
 
-	public Address getAddress() {
-		return address;
+	public Customer() {
+	} // for love of Hibernate
+
+	public Customer(String name) {
+		setName(name);
 	}
 
-	public void setAddress(Address address) {
-		this.address = address;
+	public Customer setName(String name) {
+		this.name = Objects.requireNonNull(name);
+		return this;
 	}
 
-	public String getName() {
-		return name;
+	public Customer addLabels(String... labelsToAdd) {
+		labels.addAll(Arrays.asList(labelsToAdd));
+		return this;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
 }
+
+// How many fiels has that big entity of yours.
+// 100  - 23 mandatory
+// 25 fields - 5 mandatory
