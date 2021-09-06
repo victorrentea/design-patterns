@@ -1,22 +1,27 @@
-package victor.training.patterns.structural.adapter.domain;
+package victor.training.patterns.structural.adapter.infra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import victor.training.patterns.structural.adapter.infra.LdapUserDto;
-import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
+import victor.training.patterns.structural.adapter.domain.ILdapServiceAdapter;
+import victor.training.patterns.structural.adapter.domain.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class LdapServiceAdapter {
+public class LdapServiceAdapter implements ILdapServiceAdapter {
    @Autowired
    private LdapUserWebserviceClient wsClient;
 
+   @Override
    public List<User> searchByUsername(String username) {
       return wsClient.search(username.toUpperCase(), null, null)
           .stream().map(this::fromDto)
           .collect(Collectors.toList());
+   }
+
+   public LdapUserDto mistake(String username) {
+      return null;// DOTO
    }
 
    private String getFullName(LdapUserDto ldapUser) {

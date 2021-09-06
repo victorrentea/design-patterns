@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 // generated
+//JPMS Jigsaw - - Java module
 public class LdapUserDto {
 	private String uId;
 	private String fName;
@@ -20,6 +21,10 @@ public class LdapUserDto {
 		this.uId = uId;
 	}
 
+	public LdapUserDto setlName(String lName) {
+		this.lName = lName;
+		return this;
+	}
 
 	public String getfName() {
 		return fName;

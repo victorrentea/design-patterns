@@ -14,7 +14,7 @@ import java.util.List;
 public class UserService {
 
 	@Autowired
-	private LdapServiceAdapter adapter;
+	private ILdapServiceAdapter adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUsername(username);
@@ -22,6 +22,8 @@ public class UserService {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
 		User user = list.get(0);
+
+//		LdapUserDto dto = adapter.mistake("a");
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
