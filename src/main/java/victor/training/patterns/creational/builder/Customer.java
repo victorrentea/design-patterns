@@ -40,6 +40,16 @@ public class Customer {
 		labels.addAll(Arrays.asList(labelsToAdd));
 		return this;
 	}
+
+	public /*Immutable*/List<String> getLabels() {
+//		return new ArrayList<>(labels); // wasteful
+		return Collections.unmodifiableList(labels);
+	}
+
+	public Customer removeLabel(String label) {
+		labels.remove(label);
+		return this;
+	}
 }
 
 // How many fiels has that big entity of yours.
