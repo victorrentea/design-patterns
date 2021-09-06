@@ -15,5 +15,6 @@ public class AdapterArchUnitTest {
           .should()
           .dependOnClassesThat().resideInAPackage("..infra")
           .check(classes);
+
    }
 }
