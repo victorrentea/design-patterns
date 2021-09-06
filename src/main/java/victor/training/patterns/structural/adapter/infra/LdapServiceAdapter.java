@@ -2,14 +2,14 @@ package victor.training.patterns.structural.adapter.infra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import victor.training.patterns.structural.adapter.domain.ILdapServiceAdapter;
+import victor.training.patterns.structural.adapter.domain.ExternalUserService;
 import victor.training.patterns.structural.adapter.domain.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class LdapServiceAdapter implements ILdapServiceAdapter {
+public class LdapServiceAdapter implements ExternalUserService {
    @Autowired
    private LdapUserWebserviceClient wsClient;
 

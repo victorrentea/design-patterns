@@ -14,7 +14,7 @@ import java.util.List;
 public class UserService {
 
 	@Autowired
-	private ILdapServiceAdapter adapter;
+	private ExternalUserService adapter;
 
 	public void importUserFromLdap(String username) {
 		List<User> list = adapter.searchByUsername(username);
