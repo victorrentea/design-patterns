@@ -19,6 +19,5 @@ public class AdapterSpringApp implements CommandLineRunner {
 	
 	public void run(String... args) throws Exception {
 		userService.importUserFromLdap("jdoe");
-		log.debug("Found users: " + userService.searchUserInLdap("doe"));
 	}
 }

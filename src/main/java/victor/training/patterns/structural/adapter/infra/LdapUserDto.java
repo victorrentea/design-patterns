@@ -3,7 +3,7 @@ package victor.training.patterns.structural.adapter.infra;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+// generated
 public class LdapUserDto {
 	private String uId;
 	private String fName;
@@ -15,21 +15,24 @@ public class LdapUserDto {
 	public final String getuId() {
 		return uId;
 	}
+
 	public final void setuId(String uId) {
 		this.uId = uId;
 	}
-	public final String getfName() {
+
+
+	public String getfName() {
 		return fName;
 	}
+
 	public final void setfName(String fName) {
 		this.fName = fName;
 	}
+
 	public final String getlName() {
 		return lName;
 	}
-	public final void setlName(String lName) {
-		this.lName = lName;
-	}
+
 	public final Date getCreationDate() {
 		return creationDate;
 	}
