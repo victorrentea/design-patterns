@@ -6,6 +6,7 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.EvaluationResult;
 import com.tngtech.archunit.library.dependencies.SliceRule;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue;
@@ -32,7 +33,8 @@ public class ObserverArchUnitTest {
       int violations = evaluationResult.getFailureReport().getDetails().size();
       System.out.println("Got Violations: " + violations);
 
-      sliceRule.check(classes);
+//      sliceRule.check(classes);
+      Assertions.assertThat(evaluationResult.getFailureReport().getDetails()).hasSize(0);
 
 
    }

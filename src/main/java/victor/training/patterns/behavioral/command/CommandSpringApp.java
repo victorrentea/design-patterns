@@ -3,6 +3,7 @@ package victor.training.patterns.behavioral.command;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static java.util.Arrays.asList;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
@@ -27,10 +31,10 @@ public class CommandSpringApp {
    }
 
    @Bean
-   public ThreadPoolTaskExecutor executor() {
+   public ThreadPoolTaskExecutor executor(@Value("${barman.count}") int barmanCount) {
       ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-      executor.setCorePoolSize(1);
-      executor.setMaxPoolSize(1);
+      executor.setCorePoolSize(barmanCount);
+      executor.setMaxPoolSize(barmanCount);
       executor.setQueueCapacity(500);
       executor.setThreadNamePrefix("barman-");
       executor.initialize();
@@ -51,12 +55,27 @@ class Drinker implements CommandLineRunner {
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) {
+
+   @Autowired
+   ThreadPoolTaskExecutor pool;
+
+   //      static ExecutorService pool = Executors.newFixedThreadPool(200);
+   // 200 clients demanding drinks at the same time
+   public void run(String... args) throws ExecutionException, InterruptedException {
       log.debug("Submitting my order");
+
+
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
-      Beer beer = barman.pourBeer();
-      Vodka vodka = barman.pourVodka();
+
+      Future<Beer> futureBeer = pool.submit(() -> barman.pourBeer());
+      Future<Vodka> futureVodka = pool.submit(() -> barman.pourVodka());
+      log.debug("The waiter left with my order");
+      Beer beer = futureBeer.get();
+      Vodka vodka = futureVodka.get();
+
+//      Beer beer = barman.pourBeer();
+//      Vodka vodka = barman.pourVodka();
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
    }
@@ -65,15 +84,16 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
+   //   @Retryable(maxAttempts = 3, )
    public Beer pourBeer() {
       log.debug("Pouring Beer...");
-      sleepq(1000);
+      sleepq(1000); // 200 x 20 sec; we saw you attacking us and our DDOS protection banned your IP. We are sorry.
       return new Beer();
    }
 
    public Vodka pourVodka() {
       log.debug("Pouring Vodka...");
-      sleepq(1000);
+      sleepq(1000); // LONG query 5 or REST call or SOAP
       return new Vodka();
    }
 }
