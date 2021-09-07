@@ -8,16 +8,15 @@ import victor.training.patterns.structural.facade.repo.CustomerRepo;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service
-public class CustomerService {
+@Service // DOmain Service
+public class RegisterCustomerService { //Customer Entity has 60 fields
    private final CustomerRepo customerRepo;
+   private final CheckCustomerIsNewService checkCustomerIsNewService;
 
    public void registerCustomer(Customer customer) {
 
       // REST calls 10ms 0.01 cents
-      // Heavy business logic
-      // Heavy business logic
-      // Heavy business logic
+      checkCustomerIsNewService.checkUnique(customer);
 
       int discountPercentage = customer.getDiscountPercentage();
 
@@ -27,4 +26,7 @@ public class CustomerService {
       customerRepo.save(customer);
       // Heavy business logic
    }
+
 }
+
+
