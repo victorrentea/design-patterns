@@ -24,20 +24,57 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		TaxCalculator calculator = selectTaxCalculate(originCountry);
+		return calculator.calculate(tobaccoValue, regularValue);
 	}
+
+	private TaxCalculator selectTaxCalculate(String originCountry) {
+		switch (originCountry) {
+			case "UK":
+				return new UKTaxCalculator();
+			case "CN":
+				return new ChinaTaxCalculator();
+			case "FR":
+			case "ES": // other EU country codes...
+			case "RO":
+				return new EUTaxCalculator();
+			default:
+				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		}
+	}
+}
+
+class UKTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		//  LOGIC
+		//  LOGIC JOhn +3
+		return tobaccoValue / 2 + regularValue;
+	}
+}
+
+class ChinaTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
+		// LOGIC
+		// LOGIC
+		return tobaccoValue + regularValue;
+	}
+}
+
+class EUTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValueUNUSED_YUCK) {
+		// LOGIC
+		// LOGIC
+		return tobaccoValue / 3;
+	}
+}
+
+interface TaxCalculator {
+	double calculate(double tobaccoValue, double regularValue);
 }
