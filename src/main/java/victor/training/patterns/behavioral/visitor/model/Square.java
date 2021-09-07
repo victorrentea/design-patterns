@@ -19,4 +19,6 @@ public class Square implements Shape {
 		return edge;
 	}
 
+	/// 200 LOC today
+	// more
 }

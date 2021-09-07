@@ -16,9 +16,21 @@ public class VisitorPlay {
 				new Square(5));
 
 		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
+		double totalPerimeter = 0;
 		for (Shape shape : shapes) {
+//			if (shape instanceof Square) {
+//				Square s = (Square) shape;
+//				totalPerimeter += s.getEdge()*4;
+//			} else if (shape instanceof Circle) {
+//				Circle c = (Circle) shape;
+//				totalPerimeter += c.getRadius() * 2 * Math.PI;
+//			}
+
+//			totalPerimeter += shape.getPerimeter();
+
 			shape.accept(perimeterCalculator);
 		}
+		System.out.println("Total perimeter: " + totalPerimeter);
 		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
 
