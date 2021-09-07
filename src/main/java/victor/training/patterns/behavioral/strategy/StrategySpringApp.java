@@ -1,8 +1,13 @@
 package victor.training.patterns.behavioral.strategy;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import victor.training.patterns.behavioral.strategy.CustomsService.SupportedCountry;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -13,44 +18,75 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
-	
+	private ConfigProvider configProvider = new ConfigFileProvider();
+
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	// TODO [4] ConfigProvider: selected based on environment props, with Spring
+	@Autowired
+	CustomsService service;
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
-		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
-		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
-		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
+		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax(SupportedCountry.RO, 100, 100));
+		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax(SupportedCountry.CN, 100, 100));
+		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax(SupportedCountry.UK, 100, 100));
 
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
+@Service
 class CustomsService {
-	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+	@Autowired
+	ApplicationContext context;
+
+//	@Value("${}")
+//	private Map<String, TaxCalculator> map = new HashMap<>();
+//	{
+//		map.put("UK", new UKTaxCalculator());
+//		map.put("CN", new ChinaTaxCalculator());
+//		map.put("RO", new EUTaxCalculator());
+//		map.put("", new EUTaxCalculator());
+//		map.put("CN", new EUTaxCalculator());
+//	}
+
+	public double calculateCustomsTax(SupportedCountry originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		TaxCalculator calculator = selectTaxCalculate(originCountry);
 		return calculator.calculate(tobaccoValue, regularValue);
 	}
 
-	private TaxCalculator selectTaxCalculate(String originCountry) {
-		switch (originCountry) {
-			case "UK":
-				return new UKTaxCalculator();
-			case "CN":
-				return new ChinaTaxCalculator();
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO":
-				return new EUTaxCalculator();
-			default:
-				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+	private TaxCalculator selectTaxCalculate(SupportedCountry originCountry) {
+
+		return context.getBean(originCountry.calculatorClass);
+//
+//		switch (originCountry) {
+//			case UK: return new UKTaxCalculator();
+//			case CN: return new ChinaTaxCalculator();
+//			case FR:
+//			case ES: // other EU country codes...
+//			case RO: return new EUTaxCalculator();
+//			default:
+//				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//		}
+	}
+
+	enum SupportedCountry {
+		UK(UKTaxCalculator.class),
+		CN(ChinaTaxCalculator.class),
+
+		FR(EUTaxCalculator.class), ES(EUTaxCalculator.class), RO(EUTaxCalculator.class);//, RS(calculatorClass);
+
+		private final Class<? extends TaxCalculator> calculatorClass;
+
+		SupportedCountry(Class<? extends TaxCalculator> calculatorClass) {
+			this.calculatorClass = calculatorClass;
 		}
+
+//		public abstract void method();
 	}
 }
 
+@Component
 class UKTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		//  LOGIC
@@ -59,6 +95,7 @@ class UKTaxCalculator implements TaxCalculator {
 	}
 }
 
+@Component
 class ChinaTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValue) {
 		// LOGIC
@@ -67,6 +104,7 @@ class ChinaTaxCalculator implements TaxCalculator {
 	}
 }
 
+@Component
 class EUTaxCalculator implements TaxCalculator {
 	public double calculate(double tobaccoValue, double regularValueUNUSED_YUCK) {
 		// LOGIC
