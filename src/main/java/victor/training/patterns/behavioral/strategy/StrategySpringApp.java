@@ -57,32 +57,21 @@ class CustomsService {
 
 	private TaxCalculator selectTaxCalculate(SupportedCountry originCountry) {
 
-		return context.getBean(originCountry.calculatorClass);
+//		return context.getBean(originCountry.calculatorClass);
 //
-//		switch (originCountry) {
-//			case UK: return new UKTaxCalculator();
-//			case CN: return new ChinaTaxCalculator();
-//			case FR:
-//			case ES: // other EU country codes...
-//			case RO: return new EUTaxCalculator();
-//			default:
-//				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-//		}
+		return switch (originCountry) {
+			case UK -> new UKTaxCalculator();
+			case CN -> new ChinaTaxCalculator(); // other EU country codes...
+			case FR, ES, RO -> new EUTaxCalculator();
+//			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		};
 	}
 
 	enum SupportedCountry {
-		UK(UKTaxCalculator.class),
-		CN(ChinaTaxCalculator.class),
+		UK,
+		CN,
 
-		FR(EUTaxCalculator.class), ES(EUTaxCalculator.class), RO(EUTaxCalculator.class);//, RS(calculatorClass);
-
-		private final Class<? extends TaxCalculator> calculatorClass;
-
-		SupportedCountry(Class<? extends TaxCalculator> calculatorClass) {
-			this.calculatorClass = calculatorClass;
-		}
-
-//		public abstract void method();
+		FR, ES, RO, RS;//, RS(calculatorClass);
 	}
 }
 
