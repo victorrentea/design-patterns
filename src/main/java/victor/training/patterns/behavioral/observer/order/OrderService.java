@@ -28,6 +28,11 @@ public class OrderService {
       //entity Invoice invoice = invoiceService.generateInvoice(orderId);
 
 
-      publisher.publishEvent(new OrderPlacedEvent(orderId));
+      sendMessage(new OrderPlacedEvent(orderId));
+//      sendMessage(new CheckStockRequest(orderId));
+   }
+
+   private void sendMessage(OrderPlacedEvent event) {
+      publisher.publishEvent(event);
    }
 }

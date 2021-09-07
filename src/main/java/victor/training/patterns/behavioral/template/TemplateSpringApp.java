@@ -55,6 +55,7 @@ class EmailSender {
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
             composer.accept(email);
+
             boolean success = context.send(email);
             if (success) break;
          }
