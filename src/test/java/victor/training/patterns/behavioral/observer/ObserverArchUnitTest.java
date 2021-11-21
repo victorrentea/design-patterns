@@ -33,7 +33,9 @@ public class ObserverArchUnitTest {
       // Option 1 (existing code): progressively reducing the unwanted dependencies (eg strangling the monolith)
       EvaluationResult evaluationResult = sliceRule.evaluate(classes);
       List<String> violations = evaluationResult.getFailureReport().getDetails();
-      assertThat(violations).hasSizeLessThan(10);
+      assertThat(violations)
+          .describedAs("subdomains should not depend on eachother")
+          .hasSizeLessThan(10);
 
       // Option 2 (new project): fail at any deviation
       sliceRule.check(classes);
