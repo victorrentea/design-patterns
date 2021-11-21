@@ -8,9 +8,12 @@ import com.tngtech.archunit.library.dependencies.SliceRule;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 import org.junit.Test;
 
+import java.util.List;
+
 import static com.tngtech.archunit.base.DescribedPredicate.alwaysTrue;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static java.util.stream.Collectors.joining;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ObserverArchUnitTest {
 
@@ -27,13 +30,13 @@ public class ObserverArchUnitTest {
           .should().notDependOnEachOther()
           .ignoreDependency(alwaysTrue(), resideInAPackage("..events")); // allow dependencies to .events
 
-      // progressive strangling the monolith
+      // Option 1 (existing code): progressively reducing the unwanted dependencies (eg strangling the monolith)
       EvaluationResult evaluationResult = sliceRule.evaluate(classes);
-      int violations = evaluationResult.getFailureReport().getDetails().size();
-      System.out.println("Got Violations: " + violations);
+      List<String> violations = evaluationResult.getFailureReport().getDetails();
+      assertThat(violations).hasSizeLessThan(10);
 
+      // Option 2 (new project): fail at any deviation
       sliceRule.check(classes);
-
 
    }
 }

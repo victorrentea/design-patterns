@@ -46,6 +46,7 @@ public class CustomerFacade {
 		// Heavy business logic
 		// Heavy business logic
 		// Heavy business logic
+
 		int discountPercentage = 3;
 		if (customer.isGoldMember()) {
 			discountPercentage += 1;
