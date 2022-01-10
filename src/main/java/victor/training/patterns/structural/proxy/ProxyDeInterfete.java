@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-public class HaiSaNeJucam {
+public class ProxyDeInterfete {
 
    public static void main(String[] args) {
 
@@ -19,15 +19,15 @@ public class HaiSaNeJucam {
          }
       };
       Matematica proxyLaMatematica = (Matematica) Proxy.newProxyInstance(
-          HaiSaNeJucam.class.getClassLoader(),
+          ProxyDeInterfete.class.getClassLoader(),
           new Class<?>[]{Matematica.class},
           handler
       );
 
-      cumArata(proxyLaMatematica);
+      codulClient(proxyLaMatematica);
    }
 
-   private static void cumArata(Matematica m) {
+   private static void codulClient(Matematica m) {
       System.out.println(m.suma(1, 1));
       System.out.println(m.suma(2, 0));
       System.out.println(m.suma(3, -1));
@@ -35,22 +35,23 @@ public class HaiSaNeJucam {
 
       System.out.println(m.produs(2, 2));
    }
-}
 
-class MatematicaImpl implements Matematica {
-   @Override
-   public int suma(int a, int b) {
-      return a + b;
+   static class MatematicaImpl implements Matematica {
+      @Override
+      public int suma(int a, int b) {
+         return a + b;
+      }
+
+      @Override
+      public int produs(int a, int b) {
+         return a * b;
+      }
    }
 
-   @Override
-   public int produs(int a, int b) {
-      return a * b;
+   interface Matematica {
+      int suma(int a, int b);
+
+      int produs(int a, int b);
    }
 }
 
-interface Matematica {
-   int suma(int a, int b);
-
-   int produs(int a, int b);
-}
