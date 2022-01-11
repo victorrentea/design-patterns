@@ -2,7 +2,6 @@ package victor.training.patterns.creational.singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import victor.training.patterns.stuff.ThreadUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.io.Reader;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
 @Slf4j
-public class SingletonIntro {
+public class SingletonBasics {
    public static void main(String[] args) {
       log.debug("Start");
       log.debug("Out: " + new BizService().bizMethod());

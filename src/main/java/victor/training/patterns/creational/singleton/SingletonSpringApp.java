@@ -1,6 +1,5 @@
 package victor.training.patterns.creational.singleton;
 
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +13,15 @@ import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-
 import java.util.Locale;
 import java.util.Map;
 
-import static victor.training.patterns.stuff.ThreadUtils.sleepr;
-
-@Slf4j // if this doesn't compile:
-// IntelliJ: Settings>Plugins> install "Lombok" plugin + Restart
-// Eclipse: navigate to m2 repo/org/projectlombok/lombok/<latest> => run the .jar as java application (double click) -> "Lombok your Eclipse installation"
+import static victor.training.patterns.stuff.ThreadUtils.sleepABit;
 
 @EnableCaching
 @SpringBootApplication
 public class SingletonSpringApp implements CommandLineRunner{
+
 	@Bean
 	public static CustomScopeConfigurer defineThreadScope() {
 		CustomScopeConfigurer configurer = new CustomScopeConfigurer();
@@ -41,7 +36,7 @@ public class SingletonSpringApp implements CommandLineRunner{
 	@Autowired 
 	private OrderExporter exporter;
 
-	// TODO [0] Lombok
+	// TODO [0] Lombok (opt)
 	// TODO [1] state in a singleton is DANGEROUS https://rules.sonarsource.com/java/RSPEC-3749?search=injected
 	// TODO [2] instantiate manually, set dependencies, pass around; no AOP
 	// TODO [3] prototype scope + ObjectFactory or @Lookup. Did you say "Factory"? ...
@@ -102,7 +97,7 @@ class LabelService {
 	
 	public String getCountryName(String iso2Code) {
 		log.debug("getCountryName() in instance: " + this.hashCode());
-		sleepr();
+		sleepABit();
 		return countryNames.get(iso2Code.toUpperCase());
 	}
 }
