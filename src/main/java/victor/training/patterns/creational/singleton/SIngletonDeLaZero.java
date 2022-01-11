@@ -101,3 +101,6 @@ class SingletonAnii90 {
 
 // cu ce-l inlocuim: cu un dep injection framework (Spring, Guice, EJB.. )
 // o sa aiba grija frameworkul sa instantieze o singura data
+
+
+

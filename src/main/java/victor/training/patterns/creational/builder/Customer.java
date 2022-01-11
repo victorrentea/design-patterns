@@ -1,68 +1,66 @@
 package victor.training.patterns.creational.builder;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Customer {
-	private Long id;
-	private String name;
-	private String phone;
-	private List<String> labels = new ArrayList<>();
-	private Address address;
-	private Date createDate;
+	private final Long id;
+	private final String name;
+	private final String phone;
+	private final List<String> labels;
+	private final Address address;
+	private final Date createDate;
+
+	public Customer(Long id, String name, String phone, List<String> labels, Address address, Date createDate) {
+		this.id = id;
+		this.name = name;
+		this.phone = phone;
+		this.labels = labels;
+		this.address = address;
+		this.createDate = createDate;
+	}
+
+	public Customer(Long id, String name, Date createDate) {
+		this(id, name, null, Collections.emptyList(), null, createDate);
+		Objects.requireNonNull(name);
+	}
+
 
 	public Long getId() {
 		return id;
-	}
-
-	public Customer setId(Long id) {
-		this.id = id;
-		return this;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public Customer setName(String name) {
-		this.name = name;
-		return this;
-	}
 
 	public String getPhone() {
 		return phone;
 	}
 
-	public Customer setPhone(String phone) {
-		this.phone = phone;
-		return this;
-	}
 
 	public List<String> getLabels() {
 		return labels;
-	}
-
-	public Customer setLabels(List<String> labels) {
-		this.labels = labels;
-		return this;
 	}
 
 	public Address getAddress() {
 		return address;
 	}
 
-	public Customer setAddress(Address address) {
-		this.address = address;
-		return this;
-	}
-
 	public Date getCreateDate() {
 		return createDate;
 	}
 
-	public Customer setCreateDate(Date createDate) {
-		this.createDate = createDate;
-		return this;
+
+	// "wither"
+	public Customer withLabels(List<String> newLabels) {
+		return new Customer(id, name, phone, newLabels, address, createDate);
+	}
+
+	public Customer withAddress(Address address) {
+		return new Customer(id, name, phone, labels, address, createDate);
 	}
 }

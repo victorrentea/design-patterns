@@ -10,13 +10,13 @@ public class CustomerValidatorTest {
 
 	@Test
 	public void validCustomer_ok() {
-		Customer customer = new Customer();
-		customer.setName("John Doe");
-		Address address = new Address();
-		address.setCity("Bucharest");
-		address.setStreetName("Dristor 91");
-		customer.setAddress(address);
-		validator.validate(customer);
+//		Customer customer = new Customer(id, name, phone, labels, address, createDate);
+//		customer.setName("John Doe");
+//		Address address = new Address();
+//		address.setCity("Bucharest");
+//		address.setStreetName("Dristor 91");
+//		customer.setAddress(address);
+//		validator.validate(customer);
 	}
 
 }

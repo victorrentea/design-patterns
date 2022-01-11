@@ -1,26 +1,38 @@
 package victor.training.patterns.creational.builder;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class CustomerBuilder {
-   private final Customer customer = new Customer();
+   private Long id;
+   private String name;
+   private String phone;
+   private List<String> labels;
+   private Address address;
+   private Date createDate;
 
    public CustomerBuilder withName(String name) {
-      customer.setName(name);
+      this.name = name;
       return this;
    }
 
    public Customer build() {
-      return customer;
+      return new Customer(id, name, phone, labels, address, createDate);
    }
 
    public CustomerBuilder withLabels(String... labels) {
-      customer.setLabels(Arrays.asList(labels));
+      this.labels = Arrays.asList(labels);
       return this;
    }
 
    public CustomerBuilder withAddress(Address address) {
-      customer.setAddress(address);
+      this.address = address;
+      return this;
+   }
+
+   public CustomerBuilder withAddress(AddressBuilder address) {
+      this.address = address.build();
       return this;
    }
 }

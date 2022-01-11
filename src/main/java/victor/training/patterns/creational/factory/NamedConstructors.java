@@ -23,8 +23,13 @@ public class NamedConstructors {
       userTag.setAttributeNode(attr);
 
 
-//      Connection connection;
-//      connection.pre
+//      DataSource ds = oracle
+//      Connection connection1 = ds.getConnection();
+//      PreparedStatement ps = connection1.prepareStatement();
+//
+//      DataSource ds2 = pgDS
+//      Connection connection2 = ds2.getConnection();
+//      .
 
 
    }

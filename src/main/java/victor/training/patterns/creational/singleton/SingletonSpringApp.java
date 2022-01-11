@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -73,6 +71,7 @@ class OrderExporter  {
 @Service
 class InvoiceExporter {
 	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
+
 	private final LabelService labelService;
 
 	public InvoiceExporter(LabelService labelService) {
@@ -84,7 +83,28 @@ class InvoiceExporter {
 	}
 }
 
-@Service
+
+class LabelServiceFactory {
+	public LabelService createLabelService() {
+		LabelService labelService = new LabelService(new CountryRepo());
+		labelService.load(Locale.FRENCH); // uita, ca nu stie, ca e nou.
+		// "TEMPORAL COUPLING" design smell: ca trebuie sa tii minte sa faci un apel **inainte** de a folosi un obiect
+
+		return labelService;
+	}
+
+}
+
+
+class CodClient2 {
+	//@Autowired
+//	LabelService labelService;
+	public void method() {
+		LabelServiceFactory labelServiceFactory = new LabelServiceFactory();
+		LabelService objInitializatGataDeFolosit = labelServiceFactory.createLabelService();
+	}
+}
+
 class LabelService {
 	private static final Logger log = LoggerFactory.getLogger(LabelService.class);
 	private final CountryRepo countryRepo;
@@ -94,10 +114,9 @@ class LabelService {
 		this.countryRepo = countryRepo;
 	}
 
-	@PostConstruct
-	public void load() {
+	public void load(Locale locale) {
 		log.debug("load() map in instance: " + this.hashCode());
-		countryNames = countryRepo.loadCountryNamesAsMap(Locale.ENGLISH);
+		countryNames = countryRepo.loadCountryNamesAsMap(locale);
 	}
 	
 	public String getCountryName(String iso2Code) {

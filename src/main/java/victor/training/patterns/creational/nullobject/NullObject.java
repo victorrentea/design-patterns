@@ -10,7 +10,7 @@ public class NullObject {
     public static void main(String[] args) {
         // 1
         PriceService priceService = new PriceService();
-        Customer customer = new Customer().setCard(new MemberCard(10));
+        Customer customer = new Customer();
         double price = priceService.computePrice(100, customer); // TODO null it
         System.out.println(price);
 
@@ -26,15 +26,20 @@ public class NullObject {
 
 
 class MemberCard {
+    public static final MemberCard NO_CARD = new MemberCard(0);
+
     private String email;
     private String mailAddress;
     private boolean hipster;
     private boolean withChildren;
     private int points;
+
     public MemberCard(int points) {
         this.points = points;
     }
-    public MemberCard() {}
+
+    public MemberCard() {
+    }
 
     public MemberCard setPoints(int points) {
         this.points = points;
@@ -49,7 +54,7 @@ class MemberCard {
 @Entity
 class Customer {
     private String fullName;
-    private MemberCard card;
+    private MemberCard card = MemberCard.NO_CARD;
 
     public Customer setCard(MemberCard card) {
         this.card = card;
