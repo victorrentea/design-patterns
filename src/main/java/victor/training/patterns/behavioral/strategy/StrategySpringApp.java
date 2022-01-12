@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,11 +42,12 @@ class CustomsService {
 		return taxCalculator.calculate(tobaccoValue, regularValue);
 	}
 
-	private TaxCalculator selectCalculator(String originCountry) {
-		List<TaxCalculator> toti = Arrays.asList(new BrexitTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
+	private TaxCalculator selectCalculator(String originCountry) { //  ~ factory method.
+		// rolul ei: sa iti dea o implem de TaxCalculator (nu stii pe care)
+		List<TaxCalculator> filtre = Arrays.asList(new BrexitTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
 
-		for (TaxCalculator taxCalculator : toti) {
-			if (taxCalculator.isApplicable(originCountry)) {
+		for (TaxCalculator taxCalculator : filtre) {
+			if (taxCalculator.supports(originCountry)) {
 				return taxCalculator;
 			}
 		}
@@ -53,7 +57,7 @@ class CustomsService {
 
 class ChinaTaxCalculator implements TaxCalculator {
 	@Override
-	public boolean isApplicable(String originCountry) {
+	public boolean supports(String originCountry) {
 		return "CN".equals(originCountry);
 	}
 
@@ -64,7 +68,7 @@ class ChinaTaxCalculator implements TaxCalculator {
 
 class BrexitTaxCalculator implements TaxCalculator {
 	@Override
-	public boolean isApplicable(String originCountry) {
+	public boolean supports(String originCountry) {
 		return "UK".equals(originCountry);
 	}
 
@@ -75,8 +79,8 @@ class BrexitTaxCalculator implements TaxCalculator {
 
 class EUTaxCalculator implements TaxCalculator {
 	@Override
-	public boolean isApplicable(String originCountry) {
-		return Arrays.asList("RO", "ES", "FR").contains(originCountry);
+	public boolean supports(String originCountry) {
+		return Arrays.asList("RO", "ES", "FR", "CH").contains(originCountry);
 	}
 
 	public double calculate(double tobaccoValue, double degeabaRegularValue) {
@@ -84,8 +88,21 @@ class EUTaxCalculator implements TaxCalculator {
 	}
 }
 
+class SecurityFilter implements Filter {
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		String authorization = httpRequest.getHeader("Authorization");
+		// il purici daca nu e bun throw
+		if (authorization == null)
+			throw new ServletException("Cine esti frate!!?");
+
+		chain.doFilter(request, response);
+	}
+}
+
 interface TaxCalculator {
-	boolean isApplicable(String originCountry);
+	boolean supports(String originCountry);
 
 	double calculate(double tobaccoValue, double regularValue);
 }
