@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -37,39 +40,52 @@ class CustomsService {
 	}
 
 	private TaxCalculator selectCalculator(String originCountry) {
-		switch (originCountry) {
-			case "UK":
-				return new BrexitTaxCalculator();
-			case "CN":
-				return new ChinaTaxCalculator();
-			case "FR":
-			case "ES":
-			case "RO":
-				return new EUTaxCalculator();
-			default:
-				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		List<TaxCalculator> toti = Arrays.asList(new BrexitTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
+
+		for (TaxCalculator taxCalculator : toti) {
+			if (taxCalculator.isApplicable(originCountry)) {
+				return taxCalculator;
+			}
 		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 	}
 }
 
 class ChinaTaxCalculator implements TaxCalculator {
+	@Override
+	public boolean isApplicable(String originCountry) {
+		return "CN".equals(originCountry);
+	}
+
 	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
 }
 
 class BrexitTaxCalculator implements TaxCalculator {
+	@Override
+	public boolean isApplicable(String originCountry) {
+		return "UK".equals(originCountry);
+	}
+
 	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue / 2 + regularValue;
 	}
 }
 
 class EUTaxCalculator implements TaxCalculator {
+	@Override
+	public boolean isApplicable(String originCountry) {
+		return Arrays.asList("RO", "ES", "FR").contains(originCountry);
+	}
+
 	public double calculate(double tobaccoValue, double degeabaRegularValue) {
 		return tobaccoValue / 3;
 	}
 }
 
 interface TaxCalculator {
+	boolean isApplicable(String originCountry);
+
 	double calculate(double tobaccoValue, double regularValue);
 }
