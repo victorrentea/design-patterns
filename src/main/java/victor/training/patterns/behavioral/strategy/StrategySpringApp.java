@@ -31,49 +31,45 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		// other EU country codes...
+		TaxCalculator taxCalculator = selectCalculator(originCountry);
+
+		return taxCalculator.calculate(tobaccoValue, regularValue);
+	}
+
+	private TaxCalculator selectCalculator(String originCountry) {
 		switch (originCountry) {
 			case "UK":
-				return calculateUkTax(tobaccoValue, regularValue);
+				return new BrexitTaxCalculator();
 			case "CN":
-				return calculateChinaTax(tobaccoValue, regularValue);
+				return new ChinaTaxCalculator();
 			case "FR":
 			case "ES":
 			case "RO":
-				return calculateEUTax(tobaccoValue);
+				return new EUTaxCalculator();
+			default:
+				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
-		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 	}
+}
 
-	private double calculateEUTax(double tobaccoValue) {
-		return tobaccoValue / 3;
-	}
-
-	private double calculateChinaTax(double tobaccoValue, double regularValue) {
-		// complexitate mare
-		// complexitate mare
-		// complexitate mare
-		// complexitate mare
-		// complexitate mare
-		// complexitate mare
+class ChinaTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
+}
 
-	private double calculateUkTax(double tobaccoValue, double regularValue) {
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
-		//20 linii de hard core logic
+class BrexitTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double regularValue) {
 		return tobaccoValue / 2 + regularValue;
 	}
+}
+
+class EUTaxCalculator implements TaxCalculator {
+	public double calculate(double tobaccoValue, double degeabaRegularValue) {
+		return tobaccoValue / 3;
+	}
+}
+
+interface TaxCalculator {
+	double calculate(double tobaccoValue, double regularValue);
 }
