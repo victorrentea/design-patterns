@@ -25,7 +25,7 @@ public class CustomerFacade {
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
-		return customerMapper.toDto(customer);
+		return new CustomerDto(customer);
 	}
 
 
