@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserService { // DOmain Logic ! Gradina imparatului. ZEN . Ying si Yang.
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	@Autowired
-	private LdapUserServiceAdapter ldapUserServiceAdapter;
+	private ILdapUserServiceAdapter ldapUserServiceAdapter;
 
 	public void importUserFromLdap(String username) {
 		User user = ldapUserServiceAdapter.findOneByUsername(username);
