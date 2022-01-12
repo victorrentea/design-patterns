@@ -6,7 +6,7 @@ import javax.annotation.PostConstruct;
 
 public class GuiceShowcase {
    public static void main(String[] args) {
-      Injector injector = Guice.createInjector(new AbstractModule() {
+      Injector guice = Guice.createInjector(new AbstractModule() {
          @Override
          protected void configure() {
             // optional customization
@@ -14,11 +14,12 @@ public class GuiceShowcase {
             bind(Config.class).toProvider(() -> Config.readFromFile()).in(Scopes.SINGLETON);
          }
       });
-      A instance = injector.getInstance(A.class);
+
+      A instance = guice.getInstance(A.class);
       instance.methodA();
 
-      injector.getInstance(B.class).methodB();
-      injector.getInstance(B.class).methodB();
+      guice.getInstance(B.class).methodB();
+      guice.getInstance(B.class).methodB();
    }
 }
 
