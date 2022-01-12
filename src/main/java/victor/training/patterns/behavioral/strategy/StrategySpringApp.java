@@ -31,13 +31,49 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		// other EU country codes...
+		switch (originCountry) {
+			case "UK":
+				return calculateUkTax(tobaccoValue, regularValue);
+			case "CN":
+				return calculateChinaTax(tobaccoValue, regularValue);
+			case "FR":
+			case "ES":
+			case "RO":
+				return calculateEUTax(tobaccoValue);
+		}
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+	}
+
+	private double calculateEUTax(double tobaccoValue) {
+		return tobaccoValue / 3;
+	}
+
+	private double calculateChinaTax(double tobaccoValue, double regularValue) {
+		// complexitate mare
+		// complexitate mare
+		// complexitate mare
+		// complexitate mare
+		// complexitate mare
+		// complexitate mare
+		return tobaccoValue + regularValue;
+	}
+
+	private double calculateUkTax(double tobaccoValue, double regularValue) {
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		//20 linii de hard core logic
+		return tobaccoValue / 2 + regularValue;
 	}
 }

@@ -15,6 +15,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.*;
+
 import static java.util.Arrays.asList;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
@@ -51,12 +53,33 @@ class Drinker implements CommandLineRunner {
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) {
+   public void run(String... args) throws ExecutionException, InterruptedException {
       log.debug("Submitting my order");
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
-      Beer beer = barman.pourBeer();
-      Vodka vodka = barman.pourVodka();
+
+      ExecutorService executor = Executors.newFixedThreadPool(2);
+
+      Callable<Beer> comandaDeBere = new Callable<Beer>() {
+         @Override
+         public Beer call() throws Exception {
+            return barman.pourBeer();
+         }
+      };
+      Callable<Vodka> comandaDeVodka = new Callable<Vodka>() {
+         @Override
+         public Vodka call() throws Exception {
+            return barman.pourVodka();
+         }
+      };
+
+      Future<Beer> futureBeer = executor.submit(comandaDeBere);
+      Future<Vodka> futureVodka = executor.submit(comandaDeVodka);
+
+      log.debug("A plecat fata cu comanda");
+      Beer beer = futureBeer.get();
+      Vodka vodka = futureVodka.get();
+
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
    }
