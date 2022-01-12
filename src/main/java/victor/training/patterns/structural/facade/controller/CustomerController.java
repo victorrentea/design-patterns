@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import victor.training.patterns.structural.facade.facade.CustomerFacade;
 import victor.training.patterns.structural.facade.facade.dto.CustomerDto;
 
+import javax.validation.Valid;
+
 @RestController //faking it
 @RequiredArgsConstructor
 public class CustomerController {
@@ -16,7 +18,7 @@ public class CustomerController {
    }
 
    @PostMapping
-   public void register(@RequestBody CustomerDto customerDto) {
+   public void register(@RequestBody @Valid CustomerDto customerDto) {
       customerFacade.register(customerDto);
    }
 }

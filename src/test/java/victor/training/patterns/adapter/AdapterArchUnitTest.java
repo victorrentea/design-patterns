@@ -16,4 +16,15 @@ public class AdapterArchUnitTest {
           .dependOnClassesThat().resideInAPackage("..infra")
           .check(classes);
    }
+
+   @Test
+   public void ServiceNuDepindeDeFacade() {
+      JavaClasses classes = new ClassFileImporter().importPackages("victor.training.patterns.structural.adapter");
+
+      ArchRuleDefinition.noClasses()
+          .that().resideInAPackage("..service")
+          .should()
+          .dependOnClassesThat().resideInAPackage("..facade")
+          .check(classes);
+   }
 }

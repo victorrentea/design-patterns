@@ -8,12 +8,10 @@ import victor.training.patterns.structural.facade.facade.dto.CustomerDto;
 import victor.training.patterns.structural.facade.infra.EmailClient;
 import victor.training.patterns.structural.facade.repo.CustomerRepo;
 import victor.training.patterns.structural.facade.repo.EmailRepo;
-import victor.training.patterns.structural.facade.repo.SiteRepo;
+import victor.training.patterns.structural.facade.service.RegisterCustomerService;
 
 @Facade
 public class CustomerFacade {
-	@Autowired
-	private CustomerMapper customerMapper;
 	@Autowired
 	private CustomerRepo customerRepo;
 	@Autowired
@@ -21,42 +19,32 @@ public class CustomerFacade {
 	@Autowired
 	private EmailRepo emailRepo;
 	@Autowired
-	private SiteRepo siteRepo;
+	RegisterCustomerService customerDomainService;
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
 		return new CustomerDto(customer);
 	}
 
-
 	public void register(CustomerDto dto) {
-		Customer customer = new Customer();
-		customer.setEmail(dto.email);
-		customer.setName(dto.name);
-		customer.setSite(siteRepo.getReference(dto.countryId));
+		Customer customer = dto.toEntity();
 
+		//3 linii merg si aici
+		validate(customer);
+
+		customerDomainService.register(customer);
+
+		sendRegistrationEmail(customer.getEmail());
+	}
+
+
+	private void validate(Customer customer) {
 		if (customer.getName().trim().length() <= 5) {
 			throw new IllegalArgumentException("Name too short");
 		}
-
 		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
 			throw new IllegalArgumentException("Email already registered");
 		}
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
-
-		int discountPercentage = 3;
-		if (customer.isGoldMember()) {
-			discountPercentage += 1;
-		}
-		System.out.println("Biz Logic with discount " + discountPercentage);
-		// Heavy business logic
-		// Heavy business logic
-		customerRepo.save(customer);
-		// Heavy business logic
-
-		sendRegistrationEmail(customer.getEmail());
 	}
 
 	private void sendRegistrationEmail(String emailAddress) {

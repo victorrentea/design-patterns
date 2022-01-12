@@ -18,7 +18,9 @@ public class LdapUserServiceAdapter implements ILdapUserServiceAdapter {
       if (list.size() != 1) {
          throw new IllegalArgumentException("There is no single user matching username " + username);
       }
-      return fromDto(list.get(0));
+      LdapUserDto dto = list.get(0);
+//      if (dto.getuId() == null) throw new IllegalArgumentException();
+      return fromDto(dto);
    }
 
    private User fromDto(LdapUserDto ldapUser) {
