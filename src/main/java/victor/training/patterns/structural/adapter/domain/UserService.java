@@ -1,28 +1,23 @@
 package victor.training.patterns.structural.adapter.domain;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import victor.training.patterns.structural.adapter.infra.LdapUserDto;
 import victor.training.patterns.structural.adapter.infra.LdapUserWebserviceClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+
 @Service
-public class UserService {
+public class UserService { // DOmain Logic ! Gradina imparatului. ZEN . Ying si Yang.
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	@Autowired
 	private LdapUserWebserviceClient wsClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
-		if (list.size() != 1) {
-			throw new IllegalArgumentException("There is no single user matching username " + username);
-		}
-		LdapUserDto ldapUser = list.get(0);
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
+		User user = findOneByUsername(username);
 
 		if (user.getWorkEmail() != null) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -32,15 +27,17 @@ public class UserService {
 		log.debug("Check user status in permission manager");
 	}
 
-	public List<User> searchUserInLdap(String username) {
+	private User findOneByUsername(String username) {
 		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
-		List<User> results = new ArrayList<>();
-		for (LdapUserDto ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
+		if (list.size() != 1) {
+			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		return results.subList(0, 5);
+		return fromDto(list.get(0));
+	}
+
+	private User fromDto(LdapUserDto ldapUser) {
+		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
+		return new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 	}
 
 }
