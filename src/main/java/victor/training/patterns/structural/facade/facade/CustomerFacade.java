@@ -1,6 +1,6 @@
 package victor.training.patterns.structural.facade.facade;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import victor.training.patterns.structural.facade.Facade;
 import victor.training.patterns.structural.facade.entity.Customer;
 import victor.training.patterns.structural.facade.entity.Email;
@@ -10,25 +10,24 @@ import victor.training.patterns.structural.facade.repo.CustomerRepo;
 import victor.training.patterns.structural.facade.repo.EmailRepo;
 import victor.training.patterns.structural.facade.repo.SiteRepo;
 
-import java.text.SimpleDateFormat;
-
 @Facade
-@RequiredArgsConstructor
 public class CustomerFacade {
-	private final CustomerRepo customerRepo;
-	private final EmailClient emailClient;
-	private final EmailRepo emailRepo;
-	private final SiteRepo siteRepo;
+	@Autowired
+	private CustomerMapper customerMapper;
+	@Autowired
+	private CustomerRepo customerRepo;
+	@Autowired
+	private EmailClient emailClient;
+	@Autowired
+	private EmailRepo emailRepo;
+	@Autowired
+	private SiteRepo siteRepo;
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
-		CustomerDto dto = new CustomerDto();
-		dto.name = customer.getName();
-		dto.email = customer.getEmail();
-		dto.creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
-		dto.id = customer.getId();
-		return dto;
+		return customerMapper.toDto(customer);
 	}
+
 
 	public void register(CustomerDto dto) {
 		Customer customer = new Customer();
