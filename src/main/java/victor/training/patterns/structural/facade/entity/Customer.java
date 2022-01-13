@@ -18,7 +18,8 @@ import java.time.LocalDate;
 public class Customer {
 	@Setter(AccessLevel.NONE)
 	private Long id;
-	private String name;
+//	@Size(min = 5)
+private String name;
 	private String email;
 	//	private UserIdentificatiob;
 	private Site site;
@@ -31,5 +32,14 @@ public class Customer {
 
 	public void setGoldMember(boolean goldMember) {
 		this.goldMember = goldMember;
+	}
+
+	// must be general purpose and small 3-7-10 lines and dependency-free
+	public int getDiscountPercentage() { // Feature Envy
+		int discountPercentage = 3;
+		if (isGoldMember()) {
+			discountPercentage += 1;
+		}
+		return discountPercentage;
 	}
 }
