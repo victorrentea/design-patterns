@@ -4,6 +4,7 @@ package victor.training.patterns.creational.builder;
 //import java.util.List; // INITIAL
 
 import java.util.Arrays;
+import java.util.Date;
 
 public class BuilderPlay {
 
@@ -15,22 +16,36 @@ public class BuilderPlay {
 		// 2 ) immutables
 
 
-		Customer customer = new CustomerBuilder()
-			.withName("John")
-			.withLabels("Label1")
-			.withAddress(new AddressBuilder()
-				.withStreetName("Viorele")
-				.withCity("Bucharest")
-				.build())
-			.build();
+//		Customer customer = new CustomerBuilder()
+//			.withName("John")
+//			.withLabels("Label1")
+//			.withAddress(new AddressBuilder()
+//				.withStreetName("Viorele")
+//				.withCity("Bucharest")
+//				.build())
+//			.build();
 
+//		new Customer.CustomerBuilder()
+//			.address("aa")
+//			.name("aaa")
+//			.phone("name")
+//			.build();
 
-		customer = new Customer()
-			.setName("John")
-			.setLabels(Arrays.asList("Label"))
-			.setAddress(new Address()
+		Customer customer = new Customer(
+			null,
+			null,
+			Arrays.asList("Label"),
+			new Address()
 				.setStreetName("Viorele")
-				.setCity("Bucharest"))
+				.setCity("Bucharest"));
+
+		if (true) {
+			customer = customer
+				.withPhone("aa")
+				.withCreateDate(new Date());
+//				.withPhone(new Phone("aaa", new Date()));
+//				.withCreateDate(new Date());
+		}
 		;
 
 		System.out.println("Customer name: " + customer.getName());
