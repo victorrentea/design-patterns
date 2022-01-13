@@ -11,6 +11,9 @@ import victor.training.patterns.structural.facade.repo.EmailRepo;
 import victor.training.patterns.structural.facade.repo.SiteRepo;
 
 import java.text.SimpleDateFormat;
+class NewClass {
+
+}
 
 @Facade
 @RequiredArgsConstructor

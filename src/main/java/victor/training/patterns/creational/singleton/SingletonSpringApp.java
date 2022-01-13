@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -66,9 +67,15 @@ class OrderExporter  {
 }
 
 @Service
-class InvoiceExporter {
+//@Scope("prototype") // dangerous if injected in another singleton
+@Scope("request")
+//@Scope("session") // REST is statleess
+
+class InvoiceExporter { // 1 instance
 	private static final Logger log = LoggerFactory.getLogger(InvoiceExporter.class);
-	private final LabelService labelService;
+
+	private LabelService labelService;
+	private String currentUsername;
 
 	public InvoiceExporter(LabelService labelService) {
 		this.labelService = labelService;
@@ -78,6 +85,8 @@ class InvoiceExporter {
 		log.debug("Invoice Country: " + labelService.getCountryName("ES"));
 	}
 }
+// dev psychology
+
 
 @Service
 class LabelService {

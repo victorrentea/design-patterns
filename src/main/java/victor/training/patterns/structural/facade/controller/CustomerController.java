@@ -12,6 +12,7 @@ public class CustomerController {
 
    @GetMapping("{customerId}")
    public CustomerDto findById(@PathVariable long customerId) {
+//   public Customer findById(@PathVariable long customerId) {
       return customerFacade.findById(customerId);
    }
 
