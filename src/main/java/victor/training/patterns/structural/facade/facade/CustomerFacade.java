@@ -1,6 +1,7 @@
 package victor.training.patterns.structural.facade.facade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import victor.training.patterns.structural.facade.Facade;
 import victor.training.patterns.structural.facade.entity.Customer;
 import victor.training.patterns.structural.facade.entity.Email;
@@ -10,8 +11,20 @@ import victor.training.patterns.structural.facade.repo.CustomerRepo;
 import victor.training.patterns.structural.facade.repo.EmailRepo;
 import victor.training.patterns.structural.facade.service.CustomerService;
 
+//class RegisterCustomerApplicationService {
+//
+//}
+//class FindCustomerApplicationService {
+//	public CustomerDto findById(long customerId) {
+//		Customer customer = customerRepo.findById(customerId);
+//		return new CustomerDto(customer);
+//	}
+//
+//
+//}
 @Facade
 @RequiredArgsConstructor
+@Transactional // when could this be bad ? > when huge no of || tx.
 public class CustomerFacade {
 	private final CustomerRepo customerRepo;
 	private final EmailClient emailClient;
@@ -21,6 +34,7 @@ public class CustomerFacade {
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
+		// http request taking 2 seconds
 		return new CustomerDto(customer);
 	}
 
