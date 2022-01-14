@@ -1,9 +1,12 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -18,22 +21,40 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
+   @Autowired
+   EmailSender emailSender;
+   @Autowired
+   AllEmails allEmails;
+
    private void placeOrder() {
       // more logic
-      new OrderPlacedEmailSender().sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", allEmails::composeOrderPlacedEmail);
    }
 
    private void shipOrder() {
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+//      List<Integer> list = List.of(1, 2);
+//      list.stream()
+      emailSender.sendEmail("a@b.com", allEmails::composeOrderShippedEmail);
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
+
    }
+//   WebMvcConfigurer
 }
 
-abstract class AbstractEmailSender {
+//interface Topmost{}
+//abstract class CommonBase implements Topmost{}
+//class Imp1 extends CommonBase implements Topmost {commonDep}
+//class Imp2 extends CommonBase implements Topmost {commonDep}
+//class Imp3 extends CommonBase implements Topmost {commonDep}
+//class Imp4Black implements Topmost {}
+// only use default methods if you want to ADD an extra convenience method to an interface implemented by unknown developers. NEVER>
+//class MyImpl1 implements EmailSender extends BaseImpl {}
+@Service
+class EmailSender {
 
-   public void sendEmail(String emailAddress) {
+   public void sendEmail(String emailAddress, EmailComposer emailComposer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -42,7 +63,7 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo("a@b.com");
-            compose(email);
+            emailComposer.compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -51,24 +72,24 @@ abstract class AbstractEmailSender {
       }
    }
 
-   protected abstract void compose(Email email);
-
 }
 
-class OrderPlacedEmailSender extends AbstractEmailSender {
-   protected void compose(Email email) {
+@Component
+class AllEmails {
+   public void composeOrderPlacedEmail(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
 //    email.addAttachment(invoice)
    }
-}
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-   @Override
-   protected void compose(Email email) {
+   public void composeOrderShippedEmail(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("We shipped you. Hope it gets to you this time");
    }
+}
+
+interface EmailComposer {
+   void compose(Email email);
 }
 
 class EmailContext {
