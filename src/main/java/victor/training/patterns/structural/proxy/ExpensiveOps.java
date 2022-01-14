@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -24,17 +26,22 @@ public /*final*/ class ExpensiveOps {
       return isPrime(n);
    }
 
-//   @Transactional
+   //   @Transactional
 //   @PreAuthorized
 //   @Retryable
 //   @RolesAllowed
 //   @Async
 //   @Timed
 //   @
+   @Autowired
+   CacheManager cacheManager;
 
    @Cacheable("primes")
 //   @Transactional(propagation =  Propagation.REQUIRES_NEW)
    public /*final ingores THIS method*/ Boolean isPrime(int n) {
+
+//      Object cachedValue = cacheManager.getCache("primes").get(n).get(); // there is always a programmatic alternaitve alternative to Spring annotation
+
       log.debug("Computing isPrime({})", n);
       BigDecimal number = new BigDecimal(n);
       if (number.compareTo(TWO) <= 0) {

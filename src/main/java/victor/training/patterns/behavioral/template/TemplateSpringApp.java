@@ -19,6 +19,8 @@ public class TemplateSpringApp implements CommandLineRunner {
    public void run(String... args) {
       placeOrder();
       shipOrder();
+//      new BufferedWriter(new FileWriter());
+//      new JdbcTemplate().query("", (rs, rowNum) -> null)
    }
 
    @Autowired
