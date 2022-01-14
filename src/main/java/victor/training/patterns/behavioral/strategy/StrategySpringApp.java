@@ -7,6 +7,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @SpringBootApplication
@@ -112,4 +115,15 @@ interface TaxCalculator {
 	boolean isApplicable(String countryCode);
 
 	double compute(double tobaccoValue, double regularValue);
+}
+
+
+class MyFilterLikeIn2008 implements Filter {
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest httpRequst = (HttpServletRequest) request;
+//		httpRequst.getHeader("Authorization")
+		chain.doFilter(request, response);
+	}
 }
