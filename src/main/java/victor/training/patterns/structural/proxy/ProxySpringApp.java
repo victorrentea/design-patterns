@@ -48,3 +48,4 @@ public class ProxySpringApp implements CommandLineRunner {
 	}
 	
 }
+// google "@Aspect spring"
