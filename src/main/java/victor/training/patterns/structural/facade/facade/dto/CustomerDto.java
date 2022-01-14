@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 public class CustomerDto {
    public Long id;
    @Size(min = 5)
+//   @AllowedFor("APP1", "APP2")
    public String name;
    public String email;
    public Long countryId;

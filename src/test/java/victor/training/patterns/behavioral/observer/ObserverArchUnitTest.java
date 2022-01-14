@@ -35,7 +35,7 @@ public class ObserverArchUnitTest {
       List<String> violations = evaluationResult.getFailureReport().getDetails();
       assertThat(violations)
           .describedAs("subdomains should not depend on eachother")
-          .hasSizeLessThan(10);
+          .hasSizeLessThan(300);
 
       // Option 2 (new project): fail at any deviation
       sliceRule.check(classes);
