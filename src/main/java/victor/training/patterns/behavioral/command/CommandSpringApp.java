@@ -10,10 +10,13 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.*;
 
 import static java.util.Arrays.asList;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
@@ -51,12 +54,17 @@ class Drinker implements CommandLineRunner {
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) {
+   public void run(String... args) throws ExecutionException, InterruptedException {
       log.debug("Submitting my order");
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
-      Beer beer = barman.pourBeer();
-      Vodka vodka = barman.pourVodka();
+      ExecutorService pool = Executors.newFixedThreadPool(2);
+      Future<Beer> futureBeer = barman.pourBeer();
+      Future<Vodka> futureVodka = pool.submit(() -> barman.pourVodka());
+      log.debug("The waiter left with my commands");
+
+      Beer beer = futureBeer.get();
+      Vodka vodka = futureVodka.get();
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
    }
@@ -65,15 +73,16 @@ class Drinker implements CommandLineRunner {
 @Slf4j
 @Service
 class Barman {
-   public Beer pourBeer() {
+   @Async
+   public CompletableFuture<Beer> pourBeer() {
       log.debug("Pouring Beer...");
-      sleepq(1000);
-      return new Beer();
+      sleepq(1000); // micros
+      return CompletableFuture.completedFuture(new Beer());
    }
 
    public Vodka pourVodka() {
       log.debug("Pouring Vodka...");
-      sleepq(1000);
+      sleepq(1000); // long query or 2nd microserivce
       return new Vodka();
    }
 }

@@ -9,7 +9,10 @@ import victor.training.patterns.behavioral.observer.events.OrderPlacedEvent;
 public class OrderService { // 2k
    @Autowired
    private ApplicationEventPublisher publisher;
-//@Transactional propagates to all listeners via current thread.
+
+//   @Transactional
+//   propagates to all listeners via current thread.
+
    public void placeOrder(Long orderId) {
       System.out.println("persist the order!");
       publisher.publishEvent(new OrderPlacedEvent(orderId)); // all listeners are invoker sync and sequentially
