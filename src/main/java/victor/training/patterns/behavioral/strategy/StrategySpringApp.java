@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Map;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -35,19 +37,30 @@ class CustomsService {
 		return taxCalculator.compute(tobaccoValue, regularValue);
 	}
 
+	private static final Map<String, TaxCalculator> calculators =
+//		readFromFile("tax-calculators.properties"); // OK
+		Map.of(
+			"UK", new UKTaxCalculator(),
+			"CN", new ChinaTaxCalculator(),
+			"FR", new EUTaxCalculator(),
+			"ES", new EUTaxCalculator(),
+			"RO", new EUTaxCalculator()
+		);
+
 	private TaxCalculator selectCalculatorFor(String originCountry) { // factory method
-		switch (originCountry) {
-			case "UK":
-				return new UKTaxCalculator();
-			case "CN":
-				return new ChinaTaxCalculator();
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO":
-				return new EUTaxCalculator();
-			default:
-				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
+		return calculators.get(originCountry); // intoarce NULL daca nu gaseste.
+//		switch (originCountry) {
+//			case "UK":
+//				return new UKTaxCalculator();
+//			case "CN":
+//				return new ChinaTaxCalculator();
+//			case "FR":
+//			case "ES": // other EU country codes...
+//			case "RO":
+//				return new EUTaxCalculator();
+//			default:
+//				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//		}
 	}
 }
 
