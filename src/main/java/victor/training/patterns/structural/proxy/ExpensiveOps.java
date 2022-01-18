@@ -5,6 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.jooq.lambda.Unchecked;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -13,11 +17,21 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 
 @Slf4j
+@Component
 public class ExpensiveOps {
 
    private static final BigDecimal TWO = new BigDecimal("2");
 
+
+   public Boolean altaMetodaLocala(int n) {
+      return isPrime(n);
+   }
+
+   //   @RolesAllowed("ADMIN")
+   @Transactional(propagation = Propagation.REQUIRES_NEW)
+   @Cacheable("primes")
    public Boolean isPrime(int n) {
+      new RuntimeException().printStackTrace();
       log.debug("Computing isPrime({})", n);
       BigDecimal number = new BigDecimal(n);
       if (number.compareTo(TWO) <= 0) {
