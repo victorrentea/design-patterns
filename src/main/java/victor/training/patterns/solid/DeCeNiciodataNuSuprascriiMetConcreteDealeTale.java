@@ -22,7 +22,6 @@ class Adolescent {
 
 class AdolescentEmancipat extends Adolescent {
 
-   @Override
    public boolean mamaDaBani() {
       return true;
    }
