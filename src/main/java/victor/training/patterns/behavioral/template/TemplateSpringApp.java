@@ -20,20 +20,21 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new EmailService().sendOrderPlacedEmail("a@b.com");
+      new OrderPlacedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
-      // TODO implement 'similar to how order placed email was implemented'
+      new OrderShippedEmailSender().sendEmail("a@b.com");
+      // TODO evolutie: implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
 }
 
-class EmailService {
+abstract class AbstractEmailSender {
 
-   public void sendOrderPlacedEmail(String emailAddress) {
-      EmailContext context = new EmailContext(/*smtpConfig,etc*/);
+   public void sendEmail(String emailAddress) {
+      EmailContext context = new EmailContext(/*smtpConfig,etc*/); // interactiune stateful cu o compo extern
       int MAX_RETRIES = 3;
       try {
          for (int i = 0; i < MAX_RETRIES; i++) {
@@ -41,14 +42,32 @@ class EmailService {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Received!");
-            email.setBody("Thank you for your order");
+            writeEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
+   }
+
+   protected abstract void writeEmail(Email email);
+
+}
+
+class OrderPlacedEmailSender extends AbstractEmailSender {
+   protected void writeEmail(Email email) {
+      email.setSubject("Order Received!");
+      email.setBody("Thank you for your order");
+   }
+}
+
+class OrderShippedEmailSender extends AbstractEmailSender {
+   @Override
+   protected void writeEmail(Email email) {
+//      email.digitalySign();
+      email.setSubject("Order Shipped!");
+      email.setBody("We've shipped you your order.");
    }
 }
 

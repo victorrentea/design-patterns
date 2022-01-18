@@ -19,6 +19,9 @@ public class ProxyuriDeClase {
 //            return matematica.suma(a, b); // niciodata super.suma()
 //         }
 //      };
+
+//      java.lang.reflect.Proxy permite sa generezi implem dinamice de interfete
+
       Callback invocationHandler = new InvocationHandler() {
          @Override
          public Object invoke(Object o, Method method, Object[] args) throws Throwable {
