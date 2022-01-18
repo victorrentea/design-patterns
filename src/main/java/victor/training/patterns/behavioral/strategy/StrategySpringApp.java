@@ -4,7 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import java.util.Map;
+import java.util.List;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -37,18 +37,27 @@ class CustomsService {
 		return taxCalculator.compute(tobaccoValue, regularValue);
 	}
 
-	private static final Map<String, TaxCalculator> calculators =
-//		readFromFile("tax-calculators.properties"); // OK
-		Map.of(
-			"UK", new UKTaxCalculator(),
-			"CN", new ChinaTaxCalculator(),
-			"FR", new EUTaxCalculator(),
-			"ES", new EUTaxCalculator(),
-			"RO", new EUTaxCalculator()
-		);
+//	private static final Map<String, TaxCalculator> calculators =
+////		readFromFile("tax-calculators.properties"); // OK
+//		Map.of(
+//			"UK", new UKTaxCalculator(),
+//			"CN", new ChinaTaxCalculator(),
+//			"FR", new EUTaxCalculator(),
+//			"ES", new EUTaxCalculator(),
+//			"RO", new EUTaxCalculator()
+//		);
 
 	private TaxCalculator selectCalculatorFor(String originCountry) { // factory method
-		return calculators.get(originCountry); // intoarce NULL daca nu gaseste.
+		List<TaxCalculator> toate = List.of(new UKTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
+
+		for (TaxCalculator calculator : toate) {
+			if (calculator.canComputeFor(originCountry)) {
+				return calculator;
+			}
+		}
+
+//		return calculators.get(originCountry); // intoarce NULL daca nu gaseste.
+
 //		switch (originCountry) {
 //			case "UK":
 //				return new UKTaxCalculator();
@@ -59,7 +68,7 @@ class CustomsService {
 //			case "RO":
 //				return new EUTaxCalculator();
 //			default:
-//				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 //		}
 	}
 }
@@ -69,12 +78,20 @@ class ChinaTaxCalculator implements TaxCalculator {
 		// complex
 		return tobaccoValue + regularValue;
 	}
+
+	public boolean canComputeFor(String originCountry) {
+		return "CN".equals(originCountry);
+	}
 }
 
 class UKTaxCalculator implements TaxCalculator {
 	public double compute(double tobaccoValue, double regularValue) {
 		// complex
 		return tobaccoValue / 2 + regularValue;
+	}
+
+	public boolean canComputeFor(String originCountry) {
+		return "UK".equals(originCountry);
 	}
 }
 
@@ -83,9 +100,16 @@ class EUTaxCalculator implements TaxCalculator {
 		// complex
 		return tobaccoValue / 3;
 	}
+
+	@Override
+	public boolean canComputeFor(String originCountry) {
+		return List.of("RO", "FR", "ES").contains(originCountry);
+	}
 }
 
 interface TaxCalculator {
 	double compute(double tobaccoValue, double regularValue);
+
+	boolean canComputeFor(String originCountry);
 }
 
