@@ -31,41 +31,48 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		TaxCalculator taxCalculator;
 		switch (originCountry) {
 			case "UK":
-				return new UKTaxCalculator().computeUKTax(tobaccoValue, regularValue);
+				taxCalculator = new UKTaxCalculator();
+				break;
 			case "CN":
-				return new ChinaTaxCalculator().computeChinaTax(tobaccoValue, regularValue);
+				taxCalculator = new ChinaTaxCalculator();
+				break;
 			case "FR":
 			case "ES": // other EU country codes...
 			case "RO":
-				return new EUTaxCalculator().computeEuTax(tobaccoValue);
+				taxCalculator = new EUTaxCalculator();
+				break;
 			default:
 				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
+		return taxCalculator.compute(tobaccoValue, regularValue);
 	}
-
-
 }
 
-class ChinaTaxCalculator {
-	public double computeChinaTax(double tobaccoValue, double regularValue) {
+class ChinaTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue, double regularValue) {
 		// complex
 		return tobaccoValue + regularValue;
 	}
 }
 
-class UKTaxCalculator {
-	public double computeUKTax(double tobaccoValue, double regularValue) {
+class UKTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue, double regularValue) {
 		// complex
 		return tobaccoValue / 2 + regularValue;
 	}
 }
 
-class EUTaxCalculator {
-	public double computeEuTax(double tobaccoValue) {
+class EUTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue, double regularValueUnused) { // pierdere de specificitate. am luat un param degeaba
 		// complex
 		return tobaccoValue / 3;
 	}
+}
+
+interface TaxCalculator {
+	double compute(double tobaccoValue, double regularValue);
 }
 
