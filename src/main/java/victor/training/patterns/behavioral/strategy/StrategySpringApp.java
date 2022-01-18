@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @SpringBootApplication
@@ -47,8 +50,13 @@ class CustomsService {
 //			"RO", new EUTaxCalculator()
 //		);
 
+
 	private TaxCalculator selectCalculatorFor(String originCountry) { // factory method
 		List<TaxCalculator> toate = List.of(new UKTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
+		// cum poti gasi toate impl
+		// A) le listezi intr-un fisier (eg web.xml) > poti controla ORDINEA (eg sa permiti un DefaultHandler sa vina ultimul)
+		// B) scanare de clase la startup (cum face springul) - toate care implem interfata
+		// daca gasesi in classpath iei in calcul.
 
 		for (TaxCalculator calculator : toate) {
 			if (calculator.canComputeFor(originCountry)) {
@@ -83,6 +91,16 @@ class ChinaTaxCalculator implements TaxCalculator {
 		return "CN".equals(originCountry);
 	}
 }
+//class DefaultTaxCalculator implements TaxCalculator {
+//	public double compute(double tobaccoValue, double regularValue) {
+//		// complex
+//		return tobaccoValue + regularValue;
+//	}
+//
+//	public boolean canComputeFor(String originCountry) {
+//		return true;
+//	}
+//}
 
 class UKTaxCalculator implements TaxCalculator {
 	public double compute(double tobaccoValue, double regularValue) {
@@ -113,3 +131,14 @@ interface TaxCalculator {
 	boolean canComputeFor(String originCountry);
 }
 
+
+class MyFilter implements Filter {
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		String header = httpRequest.getHeader("Authorization");
+//		if (!valid) throw new IllegalArgumentException("not authorized");
+		chain.doFilter(request, response);
+		// dupa handlingul requestului aici
+	}
+}
