@@ -1,6 +1,5 @@
 package victor.training.patterns.behavioral.template;
 
-import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -78,12 +77,3 @@ class EmailContext {
    }
 }
 
-@Data
-class Email {
-   private final long id = new Random(System.nanoTime()).nextLong();
-   private String subject;
-   private String body;
-   private String sender;
-   private String replyTo;
-   private String to;
-}

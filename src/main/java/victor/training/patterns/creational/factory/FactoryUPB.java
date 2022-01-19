@@ -1,4 +1,4 @@
-package victor.training.patterns.creational;
+package victor.training.patterns.creational.factory;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -19,8 +19,6 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 
 	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
-	
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
@@ -31,7 +29,6 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
 		
-		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 

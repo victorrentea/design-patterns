@@ -1,6 +1,5 @@
 package victor.training.patterns.behavioral.observer;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,22 +9,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
-@Slf4j
 @SpringBootApplication
 public class ObserverSpringApp {
 	public static void main(String[] args) {
 		SpringApplication.run(ObserverSpringApp.class, args);
 	}
-
-//	@Bean
-//    public ApplicationEventMulticaster applicationEventMulticaster() {
-//        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
-//        eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
-//        return eventMulticaster;
-//    }
-
-	@Autowired
-	private ObserverTransaction afterTransaction;
 
 	@Autowired
 	private OrderService orderService;

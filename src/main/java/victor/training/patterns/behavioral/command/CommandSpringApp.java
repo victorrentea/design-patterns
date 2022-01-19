@@ -1,7 +1,7 @@
 package victor.training.patterns.behavioral.command;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -42,13 +42,11 @@ public class CommandSpringApp {
 
 }
 
-@Slf4j
 @Component
 class Drinker implements CommandLineRunner {
+   private static final Logger log = LoggerFactory.getLogger(Drinker.class);
    @Autowired
    private Barman barman;
-   @Autowired
-   private ServiceActivatorPattern serviceActivatorPattern;
 
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
@@ -85,9 +83,10 @@ class Drinker implements CommandLineRunner {
    }
 }
 
-@Slf4j
 @Service
 class Barman {
+   private static final Logger log = LoggerFactory.getLogger(Barman.class);
+
    public Beer pourBeer() {
       log.debug("Pouring Beer...");
       sleepq(1000);
@@ -101,12 +100,24 @@ class Barman {
    }
 }
 
-@Data
 class Beer {
    private final String type = "BLOND";
+
+   @Override
+   public String toString() {
+      return "Beer{" +
+             "type='" + type + '\'' +
+             '}';
+   }
 }
 
-@Data
 class Vodka {
    private final String make = "STALINSKAYA";
+
+   @Override
+   public String toString() {
+      return "Vodka{" +
+             "make='" + make + '\'' +
+             '}';
+   }
 }

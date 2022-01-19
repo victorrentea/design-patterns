@@ -1,14 +1,15 @@
 package victor.training.patterns.structural.adapter.domain;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
 public class UserService {
 
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	private final ExternalUserService adapter;
 
 	public UserService(ExternalUserService adapter) {
