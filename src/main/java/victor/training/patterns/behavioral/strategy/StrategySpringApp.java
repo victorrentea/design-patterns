@@ -31,13 +31,39 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		switch (originCountry) {
+			case "UK":
+				return new UKTaxCalculator().calculateTax(tobaccoValue, regularValue);
+			case "CN":
+				return new ChinaTaxCalculator().calculateTax(tobaccoValue, regularValue);
+			case "FR":
+			case "BE":
+			case "NL":
+			case "ES": // other EU country codes...
+			case "RO":
+				return new EUTaxCalculator().calculateTax(tobaccoValue);
+			default:
+				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		}
 	}
+}
+
+class ChinaTaxCalculator {
+	public double calculateTax(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+}
+
+class UKTaxCalculator {
+	public double calculateTax(double tobaccoValue, double regularValue) {
+		// heavy logic
+		return tobaccoValue / 2 + regularValue;
+	}
+}
+
+class EUTaxCalculator {
+	public double calculateTax(double tobaccoValue) {
+		return tobaccoValue / 3;
+	}
+
 }
