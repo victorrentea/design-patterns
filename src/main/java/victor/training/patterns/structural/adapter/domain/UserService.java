@@ -9,9 +9,9 @@ import java.util.List;
 // Emperor's garden. THE ZEN PLACE.
 public class UserService {
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(UserService.class);
-	private final LdapAdapter ldapAdapter;
+	private final ExternalUserService ldapAdapter;
 
-	public UserService(LdapAdapter ldapAdapter) {
+	public UserService(ExternalUserService ldapAdapter) {
 		this.ldapAdapter = ldapAdapter;
 	}
 

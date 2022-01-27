@@ -8,7 +8,8 @@ import org.junit.Test;
 public class AdapterArchUnitTest {
    @Test
    public void dependencyInversionTest() {
-      JavaClasses classes = new ClassFileImporter().importPackages("victor.training.patterns.structural.adapter");
+      JavaClasses classes = new ClassFileImporter()
+          .importPackages("victor.training.patterns.structural.adapter");
 
       ArchRuleDefinition.noClasses()
           .that().resideInAPackage("..domain")
