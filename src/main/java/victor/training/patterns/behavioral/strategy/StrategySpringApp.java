@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +104,19 @@ class ChinaTaxCalculator implements TaxCalculator {
 }
 
 @Component
+@Order(19919319)
+class DefaultTaxCalculator implements TaxCalculator {
+	public double calculateTax(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+
+	@Override
+	public boolean accepts(String originCountry) {
+		return true;
+	}
+}
+
+@Component
 class UKTaxCalculator implements TaxCalculator {
 	public double calculateTax(double tobaccoValue, double regularValue) {
 		// heavy logic
@@ -128,4 +145,26 @@ interface TaxCalculator {
 	double calculateTax(double tobaccoValue, double regularValue);
 
 	boolean accepts(String originCountry);
+}
+
+@Component
+class MyFilter implements Filter {
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		if (httpRequest.getHeader("Weird") == null) {
+			throw new IllegalArgumentException("OUT!");
+		}
+		ServletRequestWrapper servletRequestWrapper = new ServletRequestWrapper(request) {
+			@Override
+			public String getParameter(String name) {
+				if (name.equals("thatparam")) return "WAS ON REQUEST (you lie)";
+				return super.getParameter(name);
+			}
+		};
+
+
+		chain.doFilter(servletRequestWrapper, response);
+		// audit measure
+	}
 }
