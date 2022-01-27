@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Map;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -24,13 +26,22 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("MX", 100, 100));
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
 
 class CustomsService {
+	private static final Map<?, TaxCalculator> MAP = Map.of(
+		"UK", new UKTaxCalculator(),
+		"CN", new ChinaTaxCalculator(),
+		"BE", new EUTaxCalculator()
+	);
+
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+
+//		return MAP.get(originCountry).calculateTax(tobaccoValue, regularValue);
 		switch (originCountry) {
 			case "UK":
 				return new UKTaxCalculator().calculateTax(tobaccoValue, regularValue);
@@ -48,22 +59,25 @@ class CustomsService {
 	}
 }
 
-class ChinaTaxCalculator {
+class ChinaTaxCalculator implements TaxCalculator {
 	public double calculateTax(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
 }
 
-class UKTaxCalculator {
+class UKTaxCalculator implements TaxCalculator {
 	public double calculateTax(double tobaccoValue, double regularValue) {
 		// heavy logic
 		return tobaccoValue / 2 + regularValue;
 	}
 }
 
-class EUTaxCalculator {
-	public double calculateTax(double tobaccoValue) {
+class EUTaxCalculator implements TaxCalculator {
+	public double calculateTax(double tobaccoValue/*, double regularValueUNUSED_WHY_IT_THIS_HERE_YOU_WONDER_IN_2_YEARS*/) { // loss of precision.
 		return tobaccoValue / 3;
 	}
+}
 
+interface TaxCalculator {
+	double calculateTax(double tobaccoValue, double regularValue);
 }
