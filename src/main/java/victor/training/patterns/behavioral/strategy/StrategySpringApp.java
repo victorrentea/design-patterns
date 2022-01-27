@@ -37,22 +37,33 @@ class CustomsService {
 		"UK", new UKTaxCalculator(),
 		"CN", new ChinaTaxCalculator(),
 		"BE", new EUTaxCalculator()
+		//47 countries ==> externalize in a property file. >> here MAP WINS!
 	);
 
-	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+	static {
+//		MAP = readFromProperties
+	}
 
+	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 //		return MAP.get(originCountry).calculateTax(tobaccoValue, regularValue);
+//		MAP.compute(originCountry, (k,b) -> ); // TODO
+
+		TaxCalculator calculator = selectCalculator(originCountry);
+		return calculator.calculateTax(tobaccoValue, regularValue);
+	}
+
+	private TaxCalculator selectCalculator(String originCountry) {
 		switch (originCountry) {
 			case "UK":
-				return new UKTaxCalculator().calculateTax(tobaccoValue, regularValue);
+				return new UKTaxCalculator();
 			case "CN":
-				return new ChinaTaxCalculator().calculateTax(tobaccoValue, regularValue);
+				return new ChinaTaxCalculator();
 			case "FR":
 			case "BE":
 			case "NL":
 			case "ES": // other EU country codes...
 			case "RO":
-				return new EUTaxCalculator().calculateTax(tobaccoValue);
+				return new EUTaxCalculator();
 			default:
 				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
@@ -73,7 +84,7 @@ class UKTaxCalculator implements TaxCalculator {
 }
 
 class EUTaxCalculator implements TaxCalculator {
-	public double calculateTax(double tobaccoValue/*, double regularValueUNUSED_WHY_IT_THIS_HERE_YOU_WONDER_IN_2_YEARS*/) { // loss of precision.
+	public double calculateTax(double tobaccoValue, double regularValueUNUSED_WHY_IT_THIS_HERE_YOU_WONDER_IN_2_YEARS) { // loss of precision.
 		return tobaccoValue / 3;
 	}
 }
