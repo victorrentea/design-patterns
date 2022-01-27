@@ -16,5 +16,11 @@ public class AdapterArchUnitTest {
           .should()
           .dependOnClassesThat().resideInAPackage("..infra")
           .check(classes);
+
+//      ArchRuleDefinition.noClasses()
+//          .that().resideInAPackage("..service")
+//          .should()
+//          .dependOnClassesThat().resideInAPackage("..facade")
+//          .check(classes);
    }
 }

@@ -9,19 +9,21 @@ import victor.training.patterns.structural.facade.infra.EmailClient;
 import victor.training.patterns.structural.facade.repo.CustomerRepo;
 import victor.training.patterns.structural.facade.repo.EmailRepo;
 import victor.training.patterns.structural.facade.repo.SiteRepo;
+import victor.training.patterns.structural.facade.service.RegisterCustomerDomainService;
 
 import java.text.SimpleDateFormat;
 
 @Facade
 @RequiredArgsConstructor
-public class CustomerFacade {
-	private final CustomerRepo customerRepo;
+public class CustomerServiceImpl /*implements MyInterfaceFromApiJar*/ {
 	private final EmailClient emailClient;
 	private final EmailRepo emailRepo;
 	private final SiteRepo siteRepo;
+	private final CustomerRepo customerRepo;
+	private final RegisterCustomerDomainService registerCustomerService;
 
 	public CustomerDto findById(long customerId) {
-		Customer customer = customerRepo.findById(customerId);
+		Customer customer = registerCustomerService.customerRepo.findById(customerId);
 		CustomerDto dto = new CustomerDto();
 		dto.name = customer.getName();
 		dto.email = customer.getEmail();
@@ -43,19 +45,8 @@ public class CustomerFacade {
 		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
 			throw new IllegalArgumentException("Email already registered");
 		}
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
 
-		int discountPercentage = 3;
-		if (customer.isGoldMember()) {
-			discountPercentage += 1;
-		}
-		System.out.println("Biz Logic with discount " + discountPercentage);
-		// Heavy business logic
-		// Heavy business logic
-		customerRepo.save(customer);
-		// Heavy business logic
+		registerCustomerService.registerCustomer(customer);
 
 		sendRegistrationEmail(customer.getEmail());
 	}
