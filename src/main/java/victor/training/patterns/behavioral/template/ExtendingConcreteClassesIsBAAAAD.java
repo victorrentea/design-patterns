@@ -25,10 +25,13 @@ class Student {
 }
 
 class CSHacker extends Student {
-   @Override
    public boolean mamaGIvesMoney() {
       return true;
    }
+
+//   public void drink() {
+//
+//   }
 
    public void method() {
       inheritedMEthod();

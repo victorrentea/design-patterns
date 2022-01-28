@@ -20,12 +20,12 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new OrderReceivedEmailSender().sendEmail("a@b.com");
+      new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
@@ -35,7 +35,13 @@ public class TemplateSpringApp implements CommandLineRunner {
 //   ORDER_PLACED("Subj", "Body")
 //}
 
-abstract class AbstractEmailSender {
+class EmailSender {
+   private final EmailComposer composer;
+
+   protected EmailSender(EmailComposer composer) {
+      this.composer = composer;
+   }
+
    public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       try {
@@ -45,7 +51,7 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            composeEmail(email);
+            composer.composeEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -54,24 +60,27 @@ abstract class AbstractEmailSender {
       }
    }
 
-   protected abstract void composeEmail(Email email);
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
+class OrderReceivedEmailComposer implements EmailComposer {
    @Override
-   protected void composeEmail(Email email) {
+   public void composeEmail(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
 //      encrypt(email)
    }
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
+class OrderShippedEmailComposer implements EmailComposer {
    @Override
-   protected void composeEmail(Email email) {
+   public void composeEmail(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("We've shipped your your groceries.");
    }
+}
+
+interface EmailComposer {
+   void composeEmail(Email email);
 }
 
 class EmailContext {
