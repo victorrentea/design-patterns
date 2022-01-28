@@ -1,11 +1,20 @@
 package victor.training.patterns.structural.proxy;
 
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Component
 public class TwoPatternsInOneExample {
 
+   @EventListener(ApplicationStartedEvent.class)
+   public void method() {
+
+   }
 
    public static void main(String[] args) {
       MyImmutableObjMadeWithLove obj = new MyImmutableObjMadeWithLove();

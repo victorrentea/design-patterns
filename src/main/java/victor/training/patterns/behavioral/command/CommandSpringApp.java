@@ -15,6 +15,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static java.util.Arrays.asList;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
@@ -51,14 +56,30 @@ class Drinker implements CommandLineRunner {
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) {
+   public void run(String... args) throws ExecutionException, InterruptedException {
       log.debug("Submitting my order");
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
-      Beer beer = barman.pourBeer();
-      Vodka vodka = barman.pourVodka();
-      long t1 = System.currentTimeMillis();
-      log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
+
+      ExecutorService threadPool = Executors.newFixedThreadPool(2);
+
+//      Beer beer = barman.pourBeer();
+//      Vodka vodka = barman.pourVodka();
+
+      CompletableFuture<Beer> futureBeer = CompletableFuture.supplyAsync(() -> barman.pourBeer());
+      CompletableFuture<Vodka> futureVodka = CompletableFuture.supplyAsync(() -> barman.pourVodka());
+
+//      Beer beer = futureBeer.get();
+//      Vodka vodka = futureVodka.get();
+
+      CompletableFuture<String> feelingFuture = futureBeer.thenCombineAsync(futureVodka, (beer, vodka) -> {
+         long t1 = System.currentTimeMillis();
+         log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
+         return "happy";
+      });
+
+
+      sleepq(5000); // keep the app running a bit
    }
 }
 
@@ -67,13 +88,13 @@ class Drinker implements CommandLineRunner {
 class Barman {
    public Beer pourBeer() {
       log.debug("Pouring Beer...");
-      sleepq(1000);
+      sleepq(1000); // HTTP
       return new Beer();
    }
 
    public Vodka pourVodka() {
       log.debug("Pouring Vodka...");
-      sleepq(1000);
+      sleepq(1000); // LARGE OLD
       return new Vodka();
    }
 }
