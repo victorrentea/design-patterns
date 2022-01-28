@@ -43,14 +43,15 @@ class EmailSender {
       email.setBody("We've shipped your your groceries.");
    }
 
+
+   public void sendOrderShippedEmail(String emailAddress) {
+      sendEmail(emailAddress, EmailSender::composeOrderShippedEmail);
+   }
+
    private static void composeOrderReceivedEmail(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
 //      encrypt(email)
-   }
-
-   public void sendOrderShippedEmail(String emailAddress) {
-      sendEmail(emailAddress, EmailSender::composeOrderShippedEmail);
    }
 
    public void sendOrderPlacedEmail(String emailAddress) {
