@@ -20,35 +20,57 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new EmailService().sendOrderPlacedEmail("a@b.com");
+      new OrderReceivedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
+      new OrderShippedEmailSender().sendEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
 }
 
-class EmailService {
+//enum EmailType {
+//   ORDER_PLACED("Subj", "Body")
+//}
 
-   public void sendOrderPlacedEmail(String emailAddress) {
+abstract class AbstractEmailSender {
+   public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
-      int MAX_RETRIES = 3;
       try {
+         int MAX_RETRIES = 3;
          for (int i = 0; i < MAX_RETRIES; i++) {
             Email email = new Email(); // constructor generates new unique ID
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Received!");
-            email.setBody("Thank you for your order");
+            composeEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
+   }
+
+   protected abstract void composeEmail(Email email);
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+   @Override
+   protected void composeEmail(Email email) {
+      email.setSubject("Order Received!");
+      email.setBody("Thank you for your order");
+//      encrypt(email)
+   }
+}
+
+class OrderShippedEmailSender extends AbstractEmailSender {
+   @Override
+   protected void composeEmail(Email email) {
+      email.setSubject("Order Shipped!");
+      email.setBody("We've shipped your your groceries.");
    }
 }
 
