@@ -1,9 +1,11 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -18,14 +20,17 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
+   @Autowired
+   private EmailSender emailSender;
+
    private void placeOrder() {
       // more logic
-      new EmailSender(new OrderReceivedEmailComposer()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderReceivedEmailComposer());
    }
 
    private void shipOrder() {
       // more logic
-      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderShippedEmailComposer());
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
@@ -35,14 +40,13 @@ public class TemplateSpringApp implements CommandLineRunner {
 //   ORDER_PLACED("Subj", "Body")
 //}
 
+//@Service // IMPOSSIBLE as there is use-case specific logic ! >>> this is STATEFUL !
+
+
+@Service
 class EmailSender {
-   private final EmailComposer composer;
 
-   protected EmailSender(EmailComposer composer) {
-      this.composer = composer;
-   }
-
-   public void sendEmail(String emailAddress) {
+   public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       try {
          int MAX_RETRIES = 3;
