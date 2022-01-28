@@ -39,13 +39,13 @@ public class TemplateSpringApp implements CommandLineRunner {
 class EmailSender {
 
 
-   public void sendOrderPlacedEmail(String emailAddress) {
-      sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
+   private static void composeOrderShippedEmail(Email email) {
+      email.setSubject("Order  Shipped!");
+      email.setBody("We've  shipped your your groceries.");
    }
 
-   private static void composeOrderShippedEmail(Email email) {
-      email.setSubject("Order Shipped!");
-      email.setBody("We've shipped your your groceries.");
+   public void sendOrderPlacedEmail(String emailAddress) {
+      sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
    }
 
    public void sendOrderShippedEmail(String emailAddress) {
@@ -58,6 +58,7 @@ class EmailSender {
 
 //      encrypt(email)
    }
+
    private void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       try {
