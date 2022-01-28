@@ -51,6 +51,7 @@ class EmailSender {
    private static void composeOrderReceivedEmail(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
+
 //      encrypt(email)
    }
 
