@@ -38,15 +38,15 @@ public class TemplateSpringApp implements CommandLineRunner {
 @Service
 class EmailSender {
 
-   private static void composeOrderShippedEmail(Email email) {
-      email.setSubject("Order Shipped!");
-      email.setBody("We've shipped your your groceries.");
-   }
 
    public void sendOrderPlacedEmail(String emailAddress) {
       sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
    }
 
+   private static void composeOrderShippedEmail(Email email) {
+      email.setSubject("Order Shipped!");
+      email.setBody("We've shipped your your groceries.");
+   }
 
    public void sendOrderShippedEmail(String emailAddress) {
       sendEmail(emailAddress, EmailSender::composeOrderShippedEmail);
