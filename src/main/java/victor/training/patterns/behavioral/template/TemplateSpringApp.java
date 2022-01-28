@@ -43,6 +43,10 @@ class EmailSender {
       email.setBody("We've shipped your your groceries.");
    }
 
+   public void sendOrderPlacedEmail(String emailAddress) {
+      sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
+   }
+
 
    public void sendOrderShippedEmail(String emailAddress) {
       sendEmail(emailAddress, EmailSender::composeOrderShippedEmail);
@@ -54,11 +58,6 @@ class EmailSender {
 
 //      encrypt(email)
    }
-
-   public void sendOrderPlacedEmail(String emailAddress) {
-      sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
-   }
-
    private void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       try {
