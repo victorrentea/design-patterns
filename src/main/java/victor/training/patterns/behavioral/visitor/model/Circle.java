@@ -14,8 +14,13 @@ public class Circle implements Shape {
 	public void accept(ShapeVisitor visitor) {
 		visitor.visit(this);
 	}
-	
+
 	public int getRadius() {
 		return radius;
 	}
 }
+
+// if this appears tomorrow i get a runtime error in my VisitorPlay
+//class Ellipsis implements Shape {
+//
+//}
