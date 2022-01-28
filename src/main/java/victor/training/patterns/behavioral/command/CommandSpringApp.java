@@ -66,7 +66,9 @@ class Drinker implements CommandLineRunner {
 //      Beer beer = barman.pourBeer();
 //      Vodka vodka = barman.pourVodka();
 
-      CompletableFuture<Beer> futureBeer = CompletableFuture.supplyAsync(() -> barman.pourBeer());
+      CompletableFuture<Beer> futureBeer = CompletableFuture.supplyAsync(() -> barman.pourBeer())
+//          .exceptionally(e -> dummyBeer)
+          ;
       CompletableFuture<Vodka> futureVodka = CompletableFuture.supplyAsync(() -> barman.pourVodka());
 
 //      Beer beer = futureBeer.get();
@@ -87,6 +89,7 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
    public Beer pourBeer() {
+//      if (true) throw new IllegalArgumentException("Out of beer");
       log.debug("Pouring Beer...");
       sleepq(1000); // HTTP
       return new Beer();
