@@ -25,20 +25,39 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      emailSender.sendEmail("a@b.com", AllEmails::composeOrderReceivedEmail);
+      emailSender.sendOrderPlacedEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
-      emailSender.sendEmail("a@b.com", AllEmails::composeOrderShippedEmail);
-      // TODO implement 'similar to how order placed email was implemented'
+      emailSender.sendOrderShippedEmail("a@b.com");
       // TODO URLEncoder.encode
    }
 }
 
 @Service
 class EmailSender {
-   public void sendEmail(String emailAddress, EmailComposer composer) {
+
+   private static void composeOrderShippedEmail(Email email) {
+      email.setSubject("Order Shipped!");
+      email.setBody("We've shipped your your groceries.");
+   }
+
+   private static void composeOrderReceivedEmail(Email email) {
+      email.setSubject("Order Received!");
+      email.setBody("Thank you for your order");
+//      encrypt(email)
+   }
+
+   public void sendOrderShippedEmail(String emailAddress) {
+      sendEmail(emailAddress, EmailSender::composeOrderShippedEmail);
+   }
+
+   public void sendOrderPlacedEmail(String emailAddress) {
+      sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
+   }
+
+   private void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       try {
          int MAX_RETRIES = 3;
@@ -59,16 +78,7 @@ class EmailSender {
 }
 
 class AllEmails {
-   public static void composeOrderReceivedEmail(Email email) {
-      email.setSubject("Order Received!");
-      email.setBody("Thank you for your order");
-//      encrypt(email)
-   }
 
-   public static void composeOrderShippedEmail(Email email) {
-      email.setSubject("Order Shipped!");
-      email.setBody("We've shipped your your groceries.");
-   }
 }
 
 interface EmailComposer {
