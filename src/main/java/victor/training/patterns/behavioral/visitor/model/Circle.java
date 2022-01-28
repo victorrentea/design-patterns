@@ -12,7 +12,7 @@ public class Circle implements Shape {
 
 	@Override
 	public void accept(ShapeVisitor visitor) {
-		visitor.visit(this);
+		visitor.visit(this); // piece2 <<<<<
 	}
 
 	public int getRadius() {
@@ -20,7 +20,5 @@ public class Circle implements Shape {
 	}
 }
 
-// if this appears tomorrow i get a runtime error in my VisitorPlay
-//class Ellipsis implements Shape {
-//
-//}
+
+

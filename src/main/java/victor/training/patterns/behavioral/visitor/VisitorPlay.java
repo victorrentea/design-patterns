@@ -15,21 +15,48 @@ public class VisitorPlay {
 				new Circle(5), 
 				new Square(5));
 
-		double totalPerimeter = 0;
+		PerimeterCalculatorVisitor perimeterVisitor = new PerimeterCalculatorVisitor();
 		for (Shape shape : shapes) {
-			if (shape instanceof Circle c) {
-				totalPerimeter += c.getRadius() * 2 * Math.PI;
-			} else if (shape instanceof Square s) {
-				totalPerimeter += s.getEdge() * 4;
-			} else {
-				throw new RuntimeException("NO " + shape.getClass());
-			}
+			shape.accept(perimeterVisitor);
+
+//			if (shape instanceof Circle c) {
+//				totalPerimeter += c.getRadius() * 2 * Math.PI;
+//			} else if (shape instanceof Square s) {
+//				totalPerimeter += s.getEdge() * 4;
+//			} else {
+//				throw new RuntimeException("NO " + shape.getClass());
+//			}
+
+//			totalPerimeter += switch (shape) {
+//				case Circle(radius) -> radius * 2 + Math.PI;
+//				case Square(radius) -> radius * 2 + Math.PI;
+//				case Ellipsis(radius) -> radius * 2 + Math.PI;
+//			}
+//			if (shape instanceof Circle c) {
+//				totalPerimeter += c.getRadius() * 2 * Math.PI;
+//			} else if (shape instanceof Square s) {
+//				totalPerimeter += s.getEdge() * 4;
+//			} else {
+//				throw new RuntimeException("NO " + shape.getClass());
+//			}
+
 		}
-		System.out.println("Total perimeter: " + totalPerimeter);
+		System.out.println("Total perimeter: " + perimeterVisitor.getTotal());
 
+		AreaCalculatorVisitor areaVisitor = new AreaCalculatorVisitor();
+		for (Shape shape : shapes) {
+			shape.accept(areaVisitor);
+		}
 
-		System.out.println("Total area: " + 0); // TODO
+		System.out.println("Total area: " + areaVisitor.getTotal()); // TODO
 
 	}
 
 }
+//			if (shape instanceof Circle c) {
+//				totalPerimeter += c.getRadius() * 2 * Math.PI;
+//			} else if (shape instanceof Square s) {
+//				totalPerimeter += s.getEdge() * 4;
+//			} else {
+//				throw new RuntimeException("NO " + shape.getClass());
+//			}
