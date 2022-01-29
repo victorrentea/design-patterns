@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -45,6 +46,7 @@ class EmailSender {
    }
 
    public void sendOrderPlacedEmail(String emailAddress) {
+
       sendEmail(emailAddress, EmailSender::composeOrderReceivedEmail);
    }
 
@@ -59,7 +61,7 @@ class EmailSender {
 //      encrypt(email)
    }
 
-   private void sendEmail(String emailAddress, EmailComposer composer) {
+   private void sendEmail(String emailAddress, Consumer<Email> composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       try {
          int MAX_RETRIES = 3;
@@ -68,9 +70,14 @@ class EmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            composer.composeEmail(email);
+            composer.accept(email);
             boolean success = context.send(email);
             if (success) break;
+
+//            ClientHttpRequestFactory factory ;
+//
+//            client.addFilter()
+//            RestTemplate restTemplate = new RestTemplate(factory);
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
