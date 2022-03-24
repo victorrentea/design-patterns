@@ -20,19 +20,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new EmailService().sendOrderPlacedEmail("a@b.com");
+      new OrderReceivedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
+      new OrderShippedEmailSender().sendEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
 }
 
-class EmailService {
-
-   public void sendOrderPlacedEmail(String emailAddress) {
+abstract class AbstractEmailSender {
+   public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -41,14 +41,31 @@ class EmailService {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Received!");
-            email.setBody("Thank you for your order");
+            postProcess(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
+   }
+
+   protected abstract void postProcess(Email email);
+
+}
+
+class OrderReceivedEmailSender extends AbstractEmailSender {
+   protected void postProcess(Email email) {
+      email.setSubject("Order Received!");
+      email.setBody("Thank you for your order");
+   }
+}
+
+class OrderShippedEmailSender extends AbstractEmailSender {
+   protected void postProcess(Email email) {
+      email.setSubject("Order Shipped!");
+      email.setBody("Order shipped!!! BODY");
+      email.encrypt();//EXTRA CODE, only when we
    }
 }
 
@@ -67,4 +84,8 @@ class Email {
    private String sender;
    private String replyTo;
    private String to;
+
+   public void encrypt() {
+
+   }
 }
