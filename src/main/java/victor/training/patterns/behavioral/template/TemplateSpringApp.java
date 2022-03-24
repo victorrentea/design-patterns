@@ -20,18 +20,24 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new OrderReceivedEmailSender().sendEmail("a@b.com");
+      new EmailSender(new OrderReceivedEmailPostprocessor()).sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+      new EmailSender(new OrderShippedEmailPostprocessor()).sendEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+   private final EmailPostProcessor processor;
+
+   EmailSender(EmailPostProcessor processor) {
+      this.processor = processor;
+   }
+
    public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
@@ -41,7 +47,7 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            postProcess(email);
+            processor.postProcess(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -49,20 +55,21 @@ abstract class AbstractEmailSender {
          throw new RuntimeException("Can't send email", e);
       }
    }
-
-   protected abstract void postProcess(Email email);
-
 }
 
-class OrderReceivedEmailSender extends AbstractEmailSender {
-   protected void postProcess(Email email) {
+interface EmailPostProcessor {
+   void postProcess(Email email);
+}
+
+class OrderReceivedEmailPostprocessor implements EmailPostProcessor {
+   public void postProcess(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-   protected void postProcess(Email email) {
+class OrderShippedEmailPostprocessor implements EmailPostProcessor {
+   public void postProcess(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("Order shipped!!! BODY");
       email.encrypt();//EXTRA CODE, only when we
