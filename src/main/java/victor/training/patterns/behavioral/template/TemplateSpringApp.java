@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import victor.training.patterns.behavioral.template.EmailSender.EmailPostProcessor;
 
 import java.util.Random;
 
@@ -22,14 +24,26 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    @Autowired
    EmailSender emailSender;
+   @Autowired
+   private Emails emails;
+
    private void placeOrder() {
       // more logic
-      emailSender.sendEmail("a@b.com", new OrderReceivedEmailPostprocessor());
+      emailSender.sendEmail("a@b.com", new EmailPostProcessor() {
+         @Override
+         public void postProcess(Email email) {
+            emails.composeOrderReceived(email);
+         }
+      });
+   }
+
+   public void any(Email e) {
+
    }
 
    private void shipOrder() {
       // more logic
-      emailSender.sendEmail("a@b.com", new OrderShippedEmailPostprocessor());
+      emailSender.sendEmail("a@b.com", emails::composeOrderShipped);
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
@@ -37,6 +51,10 @@ public class TemplateSpringApp implements CommandLineRunner {
 
 @Service // impossible because it has STATE related to the current workflow. in a Singleton
 class EmailSender {
+   @FunctionalInterface
+   interface EmailPostProcessor {
+      void postProcess(Email email);
+   }
 
    public void sendEmail(String emailAddress, EmailPostProcessor processor) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -57,23 +75,22 @@ class EmailSender {
    }
 }
 
-interface EmailPostProcessor {
-   void postProcess(Email email);
-}
 
-class OrderReceivedEmailPostprocessor implements EmailPostProcessor {
-   public void postProcess(Email email) {
+@Component
+class Emails {
+   public void composeOrderReceived(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
-}
-class OrderShippedEmailPostprocessor implements EmailPostProcessor {
-   public void postProcess(Email email) {
+
+   public void composeOrderShipped(Email email) {
       email.setSubject("Order Shipped!");
       email.setBody("Order shipped!!! BODY");
       email.encrypt();//EXTRA CODE, only when we
    }
+
 }
+
 
 class EmailContext {
    public boolean send(Email email) {
