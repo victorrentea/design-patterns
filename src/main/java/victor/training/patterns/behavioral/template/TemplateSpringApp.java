@@ -1,9 +1,11 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -18,27 +20,25 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
+   @Autowired
+   EmailSender emailSender;
    private void placeOrder() {
       // more logic
-      new EmailSender(new OrderReceivedEmailPostprocessor()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderReceivedEmailPostprocessor());
    }
 
    private void shipOrder() {
       // more logic
-      new EmailSender(new OrderShippedEmailPostprocessor()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderShippedEmailPostprocessor());
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
    }
 }
 
+@Service // impossible because it has STATE related to the current workflow. in a Singleton
 class EmailSender {
-   private final EmailPostProcessor processor;
 
-   EmailSender(EmailPostProcessor processor) {
-      this.processor = processor;
-   }
-
-   public void sendEmail(String emailAddress) {
+   public void sendEmail(String emailAddress, EmailPostProcessor processor) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -67,7 +67,6 @@ class OrderReceivedEmailPostprocessor implements EmailPostProcessor {
       email.setBody("Thank you for your order");
    }
 }
-
 class OrderShippedEmailPostprocessor implements EmailPostProcessor {
    public void postProcess(Email email) {
       email.setSubject("Order Shipped!");
