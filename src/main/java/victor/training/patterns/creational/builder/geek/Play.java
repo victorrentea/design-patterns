@@ -5,7 +5,8 @@ public class Play {
       UserConfiguration config1 = StepBuilder.newBuilder()
           .name("aaa")
           .onRemotehost("http://localhost:9080")
-          .credentials("a", "p").build();
+          .credentials("a", "p")
+          .build();
 
       UserConfiguration config2 = StepBuilder.newBuilder()
           .name("aaa")
