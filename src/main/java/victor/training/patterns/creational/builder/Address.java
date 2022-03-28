@@ -11,7 +11,7 @@ public class Address {
 
 	// minimal constructor
 	public Address(String streetName, String city, String country) {
-		this(streetName, city, country, null);
+		this(streetName, city, country, null); //all other constructors delegate to the canonical one
 	}
 
 	// canonical constructor
