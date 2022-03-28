@@ -3,8 +3,7 @@ package victor.training.patterns.creational.builder;
 //import java.util.ArrayList; // INITIAL
 //import java.util.List; // INITIAL
 
-import java.util.ArrayList;
-import java.util.List;
+import static java.util.Arrays.asList;
 
 public class BuilderPlay {
 
@@ -12,9 +11,7 @@ public class BuilderPlay {
 
 		Customer customer = new Customer();
 		customer.setName("John Doe");
-		List<String> labels = new ArrayList<>();
-		labels.add("Label1");
-		customer.setLabels(labels);
+		customer.setLabels(asList("Label1"));
 		Address address = new Address();
 		address.setStreetName("Viorele");
 		address.setCity("Bucharest");
