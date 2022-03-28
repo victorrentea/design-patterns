@@ -15,8 +15,7 @@ public class ProxySpringApp implements CommandLineRunner {
 		SpringApplication.run(ProxySpringApp.class, args);
 	}
 
-
-	// TODO [1] implement decorator 
+	// TODO [1] implement decorator
 	// TODO [2] apply decorator via Spring
 	// TODO [3] generic java.lang.reflect.Proxy 
 	// TODO [4] Spring aspect 
