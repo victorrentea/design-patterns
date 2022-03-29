@@ -1,9 +1,11 @@
 package victor.training.patterns.behavioral.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -18,27 +20,26 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
+   @Autowired
+   private EmailSender emailSender;
+
+
    private void placeOrder() {
       // more logic
-      new EmailSender(new OrderPlacedEmailComposer()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderPlacedEmailComposer());
    }
 
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
-      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
+      emailSender.sendEmail("a@b.com", new OrderShippedEmailComposer());
    }
 }
-
+@Service
 class EmailSender {
-   private final EmailComposer emailComposer;
 
-   protected EmailSender(EmailComposer emailComposer) {
-      this.emailComposer = emailComposer;
-   }
-
-   public void sendEmail(String emailAddress) {
+   public void sendEmail(String emailAddress, EmailComposer composer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -47,7 +48,7 @@ class EmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            emailComposer.writeEmail(email);
+            composer.compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -59,17 +60,17 @@ class EmailSender {
 }
 
 interface EmailComposer {
-    void writeEmail(Email email);
+    void compose(Email email);
 }
 class OrderPlacedEmailComposer implements  EmailComposer {
-   public void writeEmail(Email email) {
+   public void compose(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
 }
 
 class OrderShippedEmailComposer implements  EmailComposer {
-   public void writeEmail(Email email) {  // NEVER DO THAT: override concrete method > creates confusion and panic
+   public void compose(Email email) {  // NEVER DO THAT: override concrete method > creates confusion and panic
       email.setSubject("Order Shipped!");
       email.setBody("We've shipped the order to you");
       email.encrypt();
