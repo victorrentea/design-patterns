@@ -3,11 +3,14 @@ package victor.training.patterns.behavioral.strategy;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -35,14 +38,17 @@ public class StrategySpringApp implements CommandLineRunner {
 }
 
 class TaxFormulas {
+//	@HandlerFor("UK")
 	public static double computeUK(double tobaccoValue, double regularValue) {
 		return 1;
 	}
 
+//	@HandlerFor("CN")
 	public static double computeCN(double tobaccoValue, double regularValue) {
 		return 1;
 	}
 
+//	@HandlerFor({"FR","ES","RO"})
 	public static double computeEU(double tobaccoValue, double regularValue) {
 		return 1;
 	}
@@ -142,7 +148,7 @@ class EUTaxArea implements TaxArea {
 }
 
 
-
+@Component
 class MyFilterLike10YearsAgo implements Filter {
 
 	@Override
@@ -152,3 +158,35 @@ class MyFilterLike10YearsAgo implements Filter {
 		// stuff after the http request handling is finished
 	}
 }
+
+//@FunctionalInterface
+//interface RequestInspector {
+//	Optional<RequestProcessor> getProcessor(HttpServletRequest request);
+//}
+//
+//
+//interface RequestProcessor {
+//
+//	String getRequestId();
+//
+//	void storeRequestId(String requestId);
+//
+//	default void execute() {
+//		storeRequestId(getRequestId());
+//	}
+//}
+//
+//class Explore {
+//	public static void main(String[] args) {
+//		HttpServletRequest request = null;
+//		RequestInspector inspector;
+//		RequestProcessor requestProcessor = new Xyy().getProcessor(request)
+//			.or(() -> new Xyy2().getProcessor(request))
+//			.or(() -> new Xyy3().getProcessor(request))
+//			.orElse(new DefaultProcessor());
+//
+//		requestProcessor.getRequestId()
+//	}
+//}
+//
+//class Xyy implements RequestInspector {}
