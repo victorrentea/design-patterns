@@ -1,5 +1,7 @@
 package victor.training.patterns.behavioral.visitor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import victor.training.patterns.behavioral.visitor.model.Circle;
 import victor.training.patterns.behavioral.visitor.model.Shape;
 import victor.training.patterns.behavioral.visitor.model.Square;
@@ -8,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VisitorPlay {
+	private static final Logger log = LoggerFactory.getLogger(VisitorPlay.class); // MULTI-TON
 
 	public static void main(String[] args) {
 		List<Shape> shapes = Arrays.asList(

@@ -29,15 +29,60 @@ public class StrategySpringApp implements CommandLineRunner {
 	}
 }
 
+
 class CustomsService {
-	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+	public double calculateCustomsTax(String originCountryCode, double tobaccoValue, double regularValue) {
+		// the mapper;
+		TaxArea taxArea = selectTaxArea(originCountryCode);
+		return calculateCustomsTax(taxArea, tobaccoValue, regularValue);
+	}
+
+	private TaxArea selectTaxArea(String originCountryCode) {
+		switch (originCountryCode) {
+			case "UK":
+				return new UKTaxArea();
+			case "CN":
+				return new ChinaTaxArea();
+			case "FR":
+			case "ES": // other EU country codes...
+			case "RO":
+				return new EUTaxArea();
+			default:
+				throw new IllegalStateException("Unexpected value: " + originCountryCode);
+		}
+	}
+	/// ---------- below: domain
+
+	public double calculateCustomsTax(TaxArea originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		return originCountry.calculateTax(tobaccoValue, regularValue);
+	}
+}
+
+// Strategy Pattern
+interface TaxArea {
+	double calculateTax(double tobaccoValue, double regularValue);
+}
+
+class UKTaxArea implements TaxArea {
+	public double calculateTax(double tobaccoValue, double regularValue) {
+		// lots of complexity
+		return tobaccoValue / 2 + regularValue;
+	}
+
+}
+
+class ChinaTaxArea implements TaxArea {
+	public double calculateTax(double tobaccoValue, double regularValue) {
+		// lots of complexity
+		return tobaccoValue + regularValue;
+	}
+}
+
+class EUTaxArea implements TaxArea {
+	public double calculateTax(double tobaccoValue, double regularValue_uselessParam) {
+		// a formal contract put in front of classes can lead to a loss in specificity.
+
+		// lots of complexity
+		return tobaccoValue / 3;
 	}
 }

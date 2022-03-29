@@ -19,7 +19,6 @@ public class ImmutableObject {
    }
 
    public List<String> getPhoneNumbers() {
-
       SAXParserFactory saxParserFactory = SAXParserFactory.newInstance(); // the actual type returned to you depends on what LIBRARIES jar you have in classpath
 
 //      return new ArrayList<>(phoneNumbers); // malloc allocates memory clones the list  = waste of memory.
@@ -27,6 +26,9 @@ public class ImmutableObject {
       // static factory method instead of a construtor call can hide the type returned
       // they allow freedom about what type they (the framework) retrn
 
+//      asd
+//      asdsada
+//      a
       return Collections.unmodifiableList(phoneNumbers);
    }
 }
