@@ -56,6 +56,10 @@ enum Country {
 		this.taxArea = taxArea;
 	}
 }
+// Q1: can you find yet another way to associate enums withbehavior?
+
+// Q2: CHANGE REQUEST: I want to apply a LOW-TAX tax calculator for every package with tobacco zero and regular < 10
+// decouple the selection of the proper tax calculator
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountryCode, double tobaccoValue, double regularValue) {
