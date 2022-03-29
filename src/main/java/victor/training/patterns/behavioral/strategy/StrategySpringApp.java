@@ -24,11 +24,43 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
+//class TaxFormulas {
+//	public static double computeUK(double tobaccoValue, double regularValue) {return 1;}
+//	public static double computeCN(double tobaccoValue, double regularValue) {return 1;}
+//	public static double computeEU(double tobaccoValue, double regularValue) {return 1;}
+//}
 
+enum Country {
+	UK {
+		@Override
+		public double computeTax(double tobaccoValue, double regularValue) {
+			return 0;
+		}
+	},
+	CN {
+		@Override
+		public double computeTax(double tobaccoValue, double regularValue) {
+			return 0;
+		}
+	},
+	FR {
+		@Override
+		public double computeTax(double tobaccoValue, double regularValue) {
+			return 0; // here same code
+		}
+	}, ES {
+		@Override
+		public double computeTax(double tobaccoValue, double regularValue) {
+			return 0; // here same code DRY violation
+		}
+	};
+
+	public abstract double computeTax(double tobaccoValue, double regularValue);
+}
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountryCode, double tobaccoValue, double regularValue) {
