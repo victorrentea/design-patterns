@@ -4,6 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.List;
+import java.util.Map;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -43,30 +46,42 @@ class TaxFormulas {
 	}
 }
 
-enum Country {
-	UK(TaxFormulas::computeUK),
-	CN(TaxFormulas::computeCN),
-	FR(TaxFormulas::computeEU),
-	ES(TaxFormulas::computeEU),
-	RO(TaxFormulas::computeEU);
-
-	public final TaxArea taxArea;
-
-	Country(TaxArea taxArea) {
-		this.taxArea = taxArea;
-	}
-}
+//enum NoEUCountry implements TaxableCountry {}
+//enum Country {
+//	UK(TaxFormulas::computeUK),
+//	CN(TaxFormulas::computeCN),
+//	FR(TaxFormulas::computeEU),
+//	ES(TaxFormulas::computeEU),
+//	RO(TaxFormulas::computeEU);
+//
+//	public final TaxArea taxArea;
+//
+//	Country(TaxArea taxArea) {
+//		this.taxArea = taxArea;
+//	}
+//}
 // Q1: can you find yet another way to associate enums withbehavior?
 
-// Q2: CHANGE REQUEST: I want to apply a LOW-TAX tax calculator for every package with tobacco zero and regular < 10
+// Q2: CHANGE REQUEST: I want to apply a LOW-TAX tax calculator (returning 0) for every package
+// with tobacco zero and regular < 10
 // decouple the selection of the proper tax calculator
 
 class CustomsService {
+
+	public static final List<TaxArea> ALL_AREAS = List.of(new LowTaxArea(), new UKTaxArea(), new ChinaTaxArea(), new EUTaxArea());
+
 	public double calculateCustomsTax(String originCountryCode, double tobaccoValue, double regularValue) {
-		// the mapper;
-		TaxArea taxArea = Country.valueOf(originCountryCode).taxArea;
+		TaxArea taxArea = selectTaxArea(originCountryCode, tobaccoValue, regularValue);
 		return calculateCustomsTax(taxArea, tobaccoValue, regularValue);
 	}
+
+	private TaxArea selectTaxArea(String originCountryCode, double tobaccoValue, double regularValue) {
+		return ALL_AREAS.stream()
+			.filter(area -> area.shouldApplyTo(originCountryCode, tobaccoValue, regularValue))
+			.findFirst()
+			.orElseThrow();
+	}
+	// only use if the enum in not editable
 
 	/// ---------- below: domain
 
@@ -74,22 +89,36 @@ class CustomsService {
 		return originCountry.calculateTax(tobaccoValue, regularValue);
 	}
 }
-
 // Strategy Pattern
-@FunctionalInterface
 interface TaxArea {
+	boolean shouldApplyTo(String originCountryCode, double tobaccoValue, double regularValue);
 	double calculateTax(double tobaccoValue, double regularValue);
 }
-
+class LowTaxArea implements TaxArea {
+	public boolean shouldApplyTo(String originCountryCode, double tobaccoValue, double regularValue) {
+		return tobaccoValue == 0 && regularValue < 10;
+	}
+	public double calculateTax(double tobaccoValue, double regularValue) {
+		return 0;
+	}
+}
 class UKTaxArea implements TaxArea {
+	public boolean shouldApplyTo(String originCountryCode, double tobaccoValue, double regularValue) {
+		return "UK".equals(originCountryCode);
+	}
+
 	public double calculateTax(double tobaccoValue, double regularValue) {
 		// lots of complexity
 		return tobaccoValue / 2 + regularValue;
 	}
-
 }
 
 class ChinaTaxArea implements TaxArea {
+	@Override
+	public boolean shouldApplyTo(String originCountryCode, double tobaccoValue, double regularValue) {
+		return "CN".equals(originCountryCode);
+	}
+
 	public double calculateTax(double tobaccoValue, double regularValue) {
 		// lots of complexity
 		return tobaccoValue + regularValue;
@@ -97,6 +126,11 @@ class ChinaTaxArea implements TaxArea {
 }
 
 class EUTaxArea implements TaxArea {
+	@Override
+	public boolean shouldApplyTo(String originCountryCode, double tobaccoValue, double regularValue) {
+		return List.of("RO","ES","FR").contains(originCountryCode);
+	}
+
 	public double calculateTax(double tobaccoValue, double regularValue_uselessParam) {
 		// a formal contract put in front of classes can lead to a loss in specificity.
 
