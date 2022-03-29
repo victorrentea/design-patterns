@@ -20,18 +20,24 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new OrderPlacedEmailSender().sendEmail("a@b.com");
+      new EmailSender(new OrderPlacedEmailComposer()).sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
-      new OrderShippedEmailSender().sendEmail("a@b.com");
+      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
    }
 }
 
-abstract class AbstractEmailSender {
+class EmailSender {
+   private final EmailComposer emailComposer;
+
+   protected EmailSender(EmailComposer emailComposer) {
+      this.emailComposer = emailComposer;
+   }
+
    public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
@@ -41,7 +47,7 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            writeEmail(email);
+            emailComposer.writeEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -49,17 +55,21 @@ abstract class AbstractEmailSender {
          throw new RuntimeException("Can't send email", e);
       }
    }
-   protected abstract void writeEmail(Email email);
+
 }
-class OrderPlacedEmailSender extends AbstractEmailSender {
-   protected void writeEmail(Email email) {
+
+interface EmailComposer {
+    void writeEmail(Email email);
+}
+class OrderPlacedEmailComposer implements  EmailComposer {
+   public void writeEmail(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
 }
 
-class OrderShippedEmailSender extends AbstractEmailSender {
-   protected void writeEmail(Email email) {  // NEVER DO THAT: override concrete method > creates confusion and panic
+class OrderShippedEmailComposer implements  EmailComposer {
+   public void writeEmail(Email email) {  // NEVER DO THAT: override concrete method > creates confusion and panic
       email.setSubject("Order Shipped!");
       email.setBody("We've shipped the order to you");
       email.encrypt();
