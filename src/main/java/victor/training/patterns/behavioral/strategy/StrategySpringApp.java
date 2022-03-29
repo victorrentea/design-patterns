@@ -28,61 +28,42 @@ public class StrategySpringApp implements CommandLineRunner {
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
-//class TaxFormulas {
-//	public static double computeUK(double tobaccoValue, double regularValue) {return 1;}
-//	public static double computeCN(double tobaccoValue, double regularValue) {return 1;}
-//	public static double computeEU(double tobaccoValue, double regularValue) {return 1;}
-//}
+
+class TaxFormulas {
+	public static double computeUK(double tobaccoValue, double regularValue) {
+		return 1;
+	}
+
+	public static double computeCN(double tobaccoValue, double regularValue) {
+		return 1;
+	}
+
+	public static double computeEU(double tobaccoValue, double regularValue) {
+		return 1;
+	}
+}
 
 enum Country {
-	UK {
-		@Override
-		public double computeTax(double tobaccoValue, double regularValue) {
-			return 0;
-		}
-	},
-	CN {
-		@Override
-		public double computeTax(double tobaccoValue, double regularValue) {
-			return 0;
-		}
-	},
-	FR {
-		@Override
-		public double computeTax(double tobaccoValue, double regularValue) {
-			return 0; // here same code
-		}
-	}, ES {
-		@Override
-		public double computeTax(double tobaccoValue, double regularValue) {
-			return 0; // here same code DRY violation
-		}
-	};
+	UK(TaxFormulas::computeUK),
+	CN(TaxFormulas::computeCN),
+	FR(TaxFormulas::computeEU),
+	ES(TaxFormulas::computeEU),
+	RO(TaxFormulas::computeEU);
 
-	public abstract double computeTax(double tobaccoValue, double regularValue);
+	public final TaxArea taxArea;
+
+	Country(TaxArea taxArea) {
+		this.taxArea = taxArea;
+	}
 }
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountryCode, double tobaccoValue, double regularValue) {
 		// the mapper;
-		TaxArea taxArea = selectTaxArea(originCountryCode);
+		TaxArea taxArea = Country.valueOf(originCountryCode).taxArea;
 		return calculateCustomsTax(taxArea, tobaccoValue, regularValue);
 	}
 
-	private TaxArea selectTaxArea(String originCountryCode) {
-		switch (originCountryCode) {
-			case "UK":
-				return new UKTaxArea();
-			case "CN":
-				return new ChinaTaxArea();
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO":
-				return new EUTaxArea();
-			default:
-				throw new IllegalStateException("Unexpected value: " + originCountryCode);
-		}
-	}
 	/// ---------- below: domain
 
 	public double calculateCustomsTax(TaxArea originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
@@ -91,6 +72,7 @@ class CustomsService {
 }
 
 // Strategy Pattern
+@FunctionalInterface
 interface TaxArea {
 	double calculateTax(double tobaccoValue, double regularValue);
 }
