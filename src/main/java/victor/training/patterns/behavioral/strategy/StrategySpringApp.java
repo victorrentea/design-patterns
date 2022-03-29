@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import javax.servlet.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -136,5 +138,17 @@ class EUTaxArea implements TaxArea {
 
 		// lots of complexity
 		return tobaccoValue / 3;
+	}
+}
+
+
+
+class MyFilterLike10YearsAgo implements Filter {
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		//stuff before (tweaking or checking the request)
+		chain.doFilter(request, response);
+		// stuff after the http request handling is finished
 	}
 }
