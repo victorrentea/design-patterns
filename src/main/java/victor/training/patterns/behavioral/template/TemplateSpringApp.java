@@ -21,19 +21,21 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 
    @Autowired
+   private Emails emails;
+   @Autowired
    private EmailSender emailSender;
 
 
    private void placeOrder() {
       // more logic
-      emailSender.sendEmail("a@b.com", new OrderPlacedEmailComposer());
+      emailSender.sendEmail("a@b.com", emails::composeOrderReceivedEmail);
    }
 
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
       // TODO URLEncoder.encode
-      emailSender.sendEmail("a@b.com", new OrderShippedEmailComposer());
+      emailSender.sendEmail("a@b.com", email -> emails.composeOrderShippedEmail(email));
    }
 }
 @Service
@@ -58,19 +60,17 @@ class EmailSender {
    }
 
 }
-
 interface EmailComposer {
     void compose(Email email);
 }
-class OrderPlacedEmailComposer implements  EmailComposer {
-   public void compose(Email email) {
+
+@Service
+class Emails {
+   public void composeOrderReceivedEmail(Email email) {
       email.setSubject("Order Received!");
       email.setBody("Thank you for your order");
    }
-}
-
-class OrderShippedEmailComposer implements  EmailComposer {
-   public void compose(Email email) {  // NEVER DO THAT: override concrete method > creates confusion and panic
+   public void composeOrderShippedEmail(Email email) {  // NEVER DO THAT: override concrete method > creates confusion and panic
       email.setSubject("Order Shipped!");
       email.setBody("We've shipped the order to you");
       email.encrypt();
