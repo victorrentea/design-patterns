@@ -66,13 +66,13 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
    public Beer pourBeer() {
-      log.debug("Pouring Beer...");
+      log.debug("Pouring Beer (1 second)...");
       sleepq(1000);
       return new Beer();
    }
 
    public Vodka pourVodka() {
-      log.debug("Pouring Vodka...");
+      log.debug("Pouring Vodka (1 second)...");
       sleepq(1000);
       return new Vodka();
    }

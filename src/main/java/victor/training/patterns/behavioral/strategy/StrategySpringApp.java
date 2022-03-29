@@ -18,7 +18,6 @@ public class StrategySpringApp implements CommandLineRunner {
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
-	// TODO [4] ConfigProvider: selected based on environment props, with Spring
 	public void run(String... args) {
 		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));

@@ -26,7 +26,6 @@ public class TemplateSpringApp implements CommandLineRunner {
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
-      // TODO URLEncoder.encode
    }
 }
 
@@ -41,7 +40,7 @@ class EmailService {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Received!");
+            email.setSubject("Order Placed");
             email.setBody("Thank you for your order");
             boolean success = context.send(email);
             if (success) break;
