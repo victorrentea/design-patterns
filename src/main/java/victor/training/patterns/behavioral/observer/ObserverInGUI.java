@@ -16,6 +16,8 @@ public class ObserverInGUI {
 				JOptionPane.showMessageDialog(null, "Button clicked");
 			}
 		});
+		myFrame.jButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "Button clicked"));
+		myFrame.jButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "Button clicked"));
 	}
 }
 
