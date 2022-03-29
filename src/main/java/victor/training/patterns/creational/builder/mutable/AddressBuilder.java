@@ -1,4 +1,4 @@
-package victor.training.patterns.creational.builder;
+package victor.training.patterns.creational.builder.mutable;
 
 // AVOID this style of builder (on mutable entities): replace with fluent setters (returning this)
 public class AddressBuilder {
@@ -11,6 +11,11 @@ public class AddressBuilder {
 
 	public AddressBuilder withCity(String city) {
 		address.setCity(city);
+		return this;
+	}
+
+	public AddressBuilder withCountry(String country) {
+		address.setCountry(country);
 		return this;
 	}
 

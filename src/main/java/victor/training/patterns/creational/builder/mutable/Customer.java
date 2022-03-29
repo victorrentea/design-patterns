@@ -1,16 +1,13 @@
-package victor.training.patterns.creational.builder;
+package victor.training.patterns.creational.builder.mutable;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Customer {
-	private Long id;
 	private String name;
-	private String phone;
 	private List<String> labels = new ArrayList<>();
 	private Address address;
-	private Date createDate;
 
 	public Address getAddress() {
 		return address;
@@ -28,14 +25,6 @@ public class Customer {
 		this.name = name;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
 	public List<String> getLabels() {
 		return labels;
 	}
@@ -44,12 +33,12 @@ public class Customer {
 		this.labels = labels;
 	}
 
-	public Date getCreateDate() {
-		return createDate;
+	@Override
+	public String toString() {
+		return "Customer{" +
+				 "name='" + name + '\'' +
+				 ", labels=" + labels +
+				 ", address=" + address +
+				 '}';
 	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
 }

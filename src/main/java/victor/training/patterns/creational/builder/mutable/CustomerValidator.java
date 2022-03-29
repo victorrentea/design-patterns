@@ -1,6 +1,8 @@
-package victor.training.patterns.creational.builder;
+package victor.training.patterns.creational.builder.mutable;
 
 import org.apache.commons.lang.StringUtils;
+import victor.training.patterns.creational.builder.mutable.Address;
+import victor.training.patterns.creational.builder.mutable.Customer;
 
 public class CustomerValidator {
 

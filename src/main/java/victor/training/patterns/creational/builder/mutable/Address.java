@@ -1,4 +1,4 @@
-package victor.training.patterns.creational.builder;
+package victor.training.patterns.creational.builder.mutable;
 
 public class Address {
 	private String streetName;
@@ -29,4 +29,12 @@ public class Address {
 		this.country = country;
 	}
 
+	@Override
+	public String toString() {
+		return "Address{" +
+				 "streetName='" + streetName + '\'' +
+				 ", city='" + city + '\'' +
+				 ", country='" + country + '\'' +
+				 '}';
+	}
 }

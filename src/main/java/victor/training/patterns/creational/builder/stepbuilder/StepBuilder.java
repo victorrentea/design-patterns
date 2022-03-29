@@ -1,4 +1,4 @@
-package victor.training.patterns.creational.builder.geek;
+package victor.training.patterns.creational.builder.stepbuilder;
 
 /**
  * "Step Builder"
