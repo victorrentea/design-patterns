@@ -26,8 +26,6 @@ class BizService {
    @Autowired
    ConfigManager configManager;
 
-   private String currentUsername;
-
 
 
    public int bizMethod() {
