@@ -2,6 +2,9 @@ package victor.training.patterns.creational.singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,7 +21,15 @@ public class SingletonBasics {
    }
 }
 
+@Service
 class BizService {
+   @Autowired
+   ConfigManager configManager;
+
+   private String currentUsername;
+
+
+
    public int bizMethod() {
       // Think about testing
       // TODO keep loaded config in ConfigManager field
@@ -26,7 +37,6 @@ class BizService {
       // TODO push life mgmt to ConfigManager (getInstance)
       // TODO Test it
       // TODO Introduce ServiceLocator
-      ConfigManager configManager = new ConfigManager();
       String config = configManager.getConfig();
       if (config.equals("NOOP")) {
          return -1;
@@ -36,11 +46,20 @@ class BizService {
 }
 
 
+@Service
 class ConfigManager {
+//   private static ConfigManager INSTANCE;
+//   public static ConfigManager getInstance() {
+//      if (INSTANCE == null) {
+//         INSTANCE = new ConfigManager();
+//      }
+//      return INSTANCE;
+//   }
+
 
    private final String config;
 
-   public ConfigManager() {
+   private ConfigManager() {
       try (Reader reader = new FileReader("f.txt")) {
          config = IOUtils.toString(reader); // takes time
          sleepq(1000);
@@ -49,6 +68,7 @@ class ConfigManager {
       }
    }
 
+//   @Cacheable("din-cache")
    public String getConfig() {
       return config;
    }
