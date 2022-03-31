@@ -3,9 +3,6 @@ package victor.training.patterns.behavioral.strategy;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import victor.training.patterns.behavioral.strategy.TaxCalculator.ChinaTaxCalculator;
-import victor.training.patterns.behavioral.strategy.TaxCalculator.EUTaxCalculator;
-import victor.training.patterns.behavioral.strategy.TaxCalculator.UKTaxCalculator;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
