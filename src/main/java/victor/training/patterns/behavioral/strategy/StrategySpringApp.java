@@ -77,7 +77,7 @@ class UKTaxCalculator implements TaxCalculator {
 	}
 }
 class EUTaxCalculator implements TaxCalculator {
-	public double calculate(double tobaccoValue) {
+	public double calculate(double tobaccoValue, double regularValue) { // pret platit de minoritatile dintr-o tara
 		return tobaccoValue / 3;
 	}
 }
