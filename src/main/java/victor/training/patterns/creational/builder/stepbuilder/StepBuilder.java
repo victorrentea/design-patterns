@@ -14,7 +14,7 @@ public class StepBuilder {
    public interface NameStep {
       ServerStep name(String name);
    }
-
+// geek stuff
    public interface ServerStep {
       BuildStep onLocalhost();
       CredentialsStep onRemotehost(String host);
