@@ -24,7 +24,7 @@ public class ProxySpringApp implements CommandLineRunner {
 	// TODO [5] Spring cache support
 	// TODO [6] Back to singleton (are you still alive?)
 	public void run(String... args) {
-		ExpensiveOps ops = new ExpensiveOps(); 
+		ExpensiveOps ops = new ExpensiveOpsImpl();
 
 		log.debug("\n");
 		log.debug("---- CPU Intensive ~ memoization?");

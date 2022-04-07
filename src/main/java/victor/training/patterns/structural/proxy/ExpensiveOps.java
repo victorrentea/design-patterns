@@ -1,20 +1,93 @@
 package victor.training.patterns.structural.proxy;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
-import org.jooq.lambda.Unchecked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.MessageDigest;
+import java.util.*;
 
-public class ExpensiveOps {
+
+@Slf4j
+class Scena1_nrMici {
+//   public static void main(String[] args) {
+//      System.out.println(new ExpensiveOps().isPrime(107));
+//      log.debug("is prime : " + new ExpensiveOps().isPrime(10_000_169));
+//   }
+}
+
+class ObiectImutabil {
+   private final String name;
+   private final List<String> phones;
+
+   ObiectImutabil(String name, List<String> phones) {
+      this.name = name;
+      this.phones = phones;
+   }
+
+   public List<String> getPhones() {
+//      return new ArrayList<>(phones); //waste of mem
+//      return new UnmodifiableList<>(phones); // cupleaza codul tau la clasa concreta construita
+      return Collections.unmodifiableList(phones); // static factory method returning a decorator
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   @Override
+   public String toString() {
+      return "ObiectImutabil{" + "name='" + name + '\'' + ", phones=" + phones + '}';
+   }
+}
+
+@Slf4j
+class Scena1_nrMari {
+   public static void main(String[] args) {
+      ObiectImutabil obj = new ObiectImutabil("nume", new ArrayList<>());
+      System.out.println(obj);
+
+      obj.getPhones().add("las si io aicea ca e tarziu...");
+
+      System.out.println(obj);
+
+      codClient(new ExpensiveOpsImpl());
+      codClient(new ExpensiveOpsCuCache(new ExpensiveOpsImpl()));
+   }
+
+   private static void codClient(ExpensiveOps una) {
+      log.debug("is prime : " + una.isPrime(10_000_169));
+
+      log.debug("is prime : " + una.isPrime(10_000_169));
+   }
+}
+
+// Decorator Pattern
+class ExpensiveOpsCuCache implements ExpensiveOps {
+   private final ExpensiveOps delegate;
+
+   // DOAMNE FERESTE SA PUI ASTA-N PROD
+   private final Map<Integer, Boolean> cacheLaTara = new HashMap<>();
+
+   ExpensiveOpsCuCache(ExpensiveOps delegate) {
+      this.delegate = delegate;
+   }
+
+   public Boolean isPrime(int n) {
+      if (cacheLaTara.containsKey(n)) {
+         return cacheLaTara.get(n);
+      }
+      Boolean r = delegate.isPrime(n);
+      cacheLaTara.put(n, r);
+      return r;
+   }
+}
+
+public interface ExpensiveOps {
+   Boolean isPrime(int n);
+}
+
+class ExpensiveOpsImpl implements ExpensiveOps {
    private static final Logger log = LoggerFactory.getLogger(ExpensiveOps.class);
 
    private static final BigDecimal TWO = new BigDecimal("2");
