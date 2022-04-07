@@ -9,6 +9,7 @@ public class CustomerBuilder {
 		customer.setName(name);
 		return this;
 	}
+
 	public CustomerBuilder withLabels(List<String> labels) {
 		customer.setLabels(labels);
 		return this;
@@ -16,5 +17,10 @@ public class CustomerBuilder {
 
 	public Customer build() {
 		return customer;
+	}
+
+	public CustomerBuilder withAddress(Address address) {
+		customer.setAddress(address);
+		return this;
 	}
 }

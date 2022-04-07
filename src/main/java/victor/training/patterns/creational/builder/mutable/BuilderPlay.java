@@ -4,19 +4,28 @@ import static java.util.Arrays.asList;
 
 public class BuilderPlay {
 
+	private Customer customer = new Customer();
+
 	public static void main(String[] args) {
 
+
 		// fragmented, hard to read:
-		Customer customer = new Customer();
-		customer.setName("John Doe");
-		customer.setLabels(asList("Label1"));
-		Address address = new Address();
-		address.setStreetName("La Rambla");
-		address.setCity("Barcelona");
-		address.setCountry("Spain");
-		customer.setAddress(address);
+
+		Customer customer = aCustomer().build();
+		Customer customerFaraNume = aCustomer().withName(null).build();
 
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
+	}
+
+	private static CustomerBuilder aCustomer() {
+		return new CustomerBuilder()
+			.withName("John Doe")
+			.withLabels(asList("Label1"))
+			.withAddress(new AddressBuilder()
+				.withStreetName("La Rambla")
+				.withCity("Barcelona")
+				.withCountry("Spain")
+				.build());
 	}
 }
