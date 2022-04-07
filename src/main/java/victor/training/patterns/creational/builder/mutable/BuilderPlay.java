@@ -9,6 +9,9 @@ public class BuilderPlay {
 	public static void main(String[] args) {
 
 
+		Customer customer1 = aCustomerFaraBuilder();
+		Customer customer2 = aCustomerFaraBuilder();
+
 		// fragmented, hard to read:
 
 		Customer customer = aCustomer().build();
@@ -16,6 +19,18 @@ public class BuilderPlay {
 
 		System.out.println("Customer name: " + customer.getName());
 		System.out.println("Customer address: " + customer.getAddress().getStreetName());
+	}
+
+	private static Customer aCustomerFaraBuilder() {
+		return new Customer()
+			.setName("John Doe")
+			.setLabels(asList("Label1"))
+			.setAddress(new Address()
+				.setStreetName("Viorele")
+				.setCity("Bucharest")
+				.setStreetName("La Rambla")
+				.setCity("Barcelona")
+				.setCountry("Spain"));
 	}
 
 	private static CustomerBuilder aCustomer() {
