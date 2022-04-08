@@ -17,13 +17,6 @@ public class OrderService {
 //      stockManagementService.reserveStock(orderId);
 //      invoiceService.generateInvoice(orderId);
       // TODO call invoicing too
-
-//      try {
-//         // biz code
-//         eventPublisher.publishEvent("m-am conectat");
-//      } catch (e) {
-//         eventPublisher.publishEvent("io am murit");
-//      }
       eventPublisher.publishEvent(new OrderPlacedEvent(orderId));
    }
 
