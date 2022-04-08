@@ -15,6 +15,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.*;
+
 import static java.util.Arrays.asList;
 import static victor.training.patterns.stuff.ThreadUtils.sleepq;
 
@@ -29,8 +31,8 @@ public class CommandSpringApp {
    @Bean
    public ThreadPoolTaskExecutor executor() {
       ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-      executor.setCorePoolSize(1);
-      executor.setMaxPoolSize(1);
+      executor.setCorePoolSize(2);
+      executor.setMaxPoolSize(2);
       executor.setQueueCapacity(500);
       executor.setThreadNamePrefix("barman-");
       executor.initialize();
@@ -47,16 +49,24 @@ class Drinker implements CommandLineRunner {
    private Barman barman;
    @Autowired
    private ServiceActivatorPattern serviceActivatorPattern;
+   @Autowired
+   private ThreadPoolTaskExecutor threadPool;
 
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) {
+   public void run(String... args) throws ExecutionException, InterruptedException {
       log.debug("Submitting my order");
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
-      Beer beer = barman.pourBeer();
-      Vodka vodka = barman.pourVodka();
+
+      Future<Beer> futureBeer = threadPool.submit(() -> barman.pourBeer());
+      Future<Vodka> futureVodka = threadPool.submit(() -> barman.pourVodka());
+
+      Beer beer = futureBeer.get(); // 1 secunda sta main blocat aici
+      Vodka vodka = futureVodka.get(); // ~0 secunde sta main blocat aici
+
+
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
    }
@@ -66,13 +76,13 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
    public Beer pourBeer() {
-      log.debug("Pouring Beer (1 second)...");
+      log.debug("Pouring Beer (1 second) REST CALL ...");
       sleepq(1000);
       return new Beer();
    }
 
    public Vodka pourVodka() {
-      log.debug("Pouring Vodka (1 second)...");
+      log.debug("Pouring Vodka (1 second) SOAP/RMI/DB...");
       sleepq(1000);
       return new Vodka();
    }
