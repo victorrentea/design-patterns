@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
 import java.util.concurrent.*;
 
 import static java.util.Arrays.asList;
@@ -66,12 +67,21 @@ class Drinker {
       Future<Beer> futureBeer = threadPool.submit(() -> barman.pourBeer());
       Future<Vodka> futureVodka = threadPool.submit(() -> barman.pourVodka());
 
+      String correlationId = UUID.randomUUID().toString();
+//      beerReqQueue.send(new BeerCommand("blonda"));
+//
       Beer beer = futureBeer.get(); // 1 secunda sta main blocat aici
       Vodka vodka = futureVodka.get(); // ~0 secunde sta main blocat aici
-
+//
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying ", t1 - t0);
    }
+//   }
+//   @MessgeListener("beerResponseQueue")
+//   public void method(bere) {
+//
+//
+//   }
 }
 
 @Slf4j
