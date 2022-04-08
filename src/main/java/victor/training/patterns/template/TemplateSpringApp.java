@@ -1,11 +1,9 @@
 package victor.training.patterns.template;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -20,67 +18,54 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
-   @Autowired
-   private EmailSender emailSender;
-
    private void placeOrder() {
       // more logic
-      EmailComposer composer = EmailComposers::composePlacedEmail;
-      emailSender.sendEmail("a@b.com", composer);
+      new OrderPlacedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
-      EmailComposer emailComposer = email -> EmailComposers.composeShippedEmail(email);
-      emailSender.sendEmail("a@b.com", emailComposer);
+      new OrderShippedEmailSender().sendEmail("a@b.com");
    }
 }
 
-@Service
-class EmailSender {
-   public void sendEmail(String emailAddress, EmailComposer composer) { //6 teste
+abstract class EmailSender {
+   public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
-      init();
       try {
          for (int i = 0; i < MAX_RETRIES; i++) {
             Email email = new Email(); // constructor generates new unique ID
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            composer.composeEmail(email);
+            customizeEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
-         sendNotification();
          throw new RuntimeException("Can't send email", e);
       }
    }
 
-   public void init() {
-      System.out.println("Eu");
-   }
+   protected abstract void customizeEmail(Email email);
 
-   protected void sendNotification() {
-      // hook methods: subclasele POT sa opteze sa suprascrie metoda asta.
+   public String encodeSubject(String s) {
+      return s.toUpperCase();
    }
 }
 
-interface EmailComposer {
-   void composeEmail(Email email);
-}
-
-class EmailComposers {
-   public static void composePlacedEmail(Email email) {
-      // 15 linii de cod ce necesita 7 teste total
-      email.setSubject("Order Placed");
+class OrderPlacedEmailSender extends EmailSender {
+   protected void customizeEmail(Email email) {
+      email.setSubject(encodeSubject("Order Placed"));
       email.setBody("Thank you for your order");
    }
+}
 
-   public static void composeShippedEmail(Email email) {
-      email.setSubject("Order Shipped");
+class OrderShippedEmailSender extends EmailSender {
+   protected void customizeEmail(Email email) {
+      email.setSubject(encodeSubject("Order Shipped"));
       email.setBody("Ti-am trimas!");
    }
 }
