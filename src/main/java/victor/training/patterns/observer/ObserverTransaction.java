@@ -25,7 +25,7 @@ public class ObserverTransaction {
 		// TODO What if an exception?...
 	}
 
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)
+	@TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
 	public void runAfterTransaction(DeleteFilesEvent event) {
 		System.out.println("Cleaning files: " + event.fileNames);
 
