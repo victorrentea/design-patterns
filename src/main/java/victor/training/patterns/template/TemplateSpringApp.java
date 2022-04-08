@@ -20,18 +20,18 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      new EmailService().sendOrderPlacedEmail("a@b.com");
+      new OrderPlacedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
+      new OrderShippedEmailSender().sendEmail("a@b.com");
    }
 }
 
-class EmailService {
-
-   public void sendOrderPlacedEmail(String emailAddress) {
+abstract class EmailSender {
+   public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -40,14 +40,29 @@ class EmailService {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Placed");
-            email.setBody("Thank you for your order");
+            customizeEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
+   }
+
+   protected abstract void customizeEmail(Email email);
+}
+
+class OrderPlacedEmailSender extends EmailSender {
+   protected void customizeEmail(Email email) {
+      email.setSubject("Order Placed");
+      email.setBody("Thank you for your order");
+   }
+}
+
+class OrderShippedEmailSender extends EmailSender {
+   protected void customizeEmail(Email email) {
+      email.setSubject("Order Shipped");
+      email.setBody("Ti-am trimas!");
    }
 }
 
