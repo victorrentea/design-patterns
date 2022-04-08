@@ -19,12 +19,12 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 
    private void placeOrder() {
-      // more logic
+      // logic
       new EmailService().sendOrderPlacedEmail("a@b.com");
    }
 
    private void shipOrder() {
-      // more logic
+      // logic
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
