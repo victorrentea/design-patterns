@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class ObserverTransaction {
 		// TODO What if an exception?...
 	}
 
-	@TransactionalEventListener
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION)
 	public void runAfterTransaction(DeleteFilesEvent event) {
 		System.out.println("Cleaning files: " + event.fileNames);
 
