@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.observer;
+package victor.training.patterns.observer;
 
 import victor.training.patterns.stuff.MyFrame;
 

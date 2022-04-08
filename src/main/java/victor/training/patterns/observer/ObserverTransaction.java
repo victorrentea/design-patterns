@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.observer;
+package victor.training.patterns.observer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

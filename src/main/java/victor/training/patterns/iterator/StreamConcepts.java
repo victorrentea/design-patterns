@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.iterator;
+package victor.training.patterns.iterator;
 
 import java.util.stream.Stream;
 

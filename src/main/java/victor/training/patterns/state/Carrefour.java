@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.state;
+package victor.training.patterns.state;
 
 import lombok.Data;
 

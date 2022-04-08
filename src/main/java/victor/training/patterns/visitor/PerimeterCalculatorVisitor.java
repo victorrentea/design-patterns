@@ -1,7 +1,7 @@
-package victor.training.patterns.behavioral.visitor;
+package victor.training.patterns.visitor;
 
-import victor.training.patterns.behavioral.visitor.model.Circle;
-import victor.training.patterns.behavioral.visitor.model.Square;
+import victor.training.patterns.visitor.model.Circle;
+import victor.training.patterns.visitor.model.Square;
 
 public class PerimeterCalculatorVisitor implements ShapeVisitor {
 

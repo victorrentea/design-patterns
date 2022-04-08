@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.observer;
+package victor.training.patterns.observer;
 //
 //import org.springframework.cloud.stream.annotation.Input;
 //import org.springframework.cloud.stream.annotation.Output;

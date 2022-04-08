@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.strategy;
+package victor.training.patterns.strategy;
 
 import lombok.SneakyThrows;
 

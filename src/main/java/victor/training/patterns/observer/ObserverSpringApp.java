@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.observer;
+package victor.training.patterns.observer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

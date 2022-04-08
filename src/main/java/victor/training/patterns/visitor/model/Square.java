@@ -1,6 +1,6 @@
-package victor.training.patterns.behavioral.visitor.model;
+package victor.training.patterns.visitor.model;
 
-import victor.training.patterns.behavioral.visitor.ShapeVisitor;
+import victor.training.patterns.visitor.ShapeVisitor;
 
 public class Square implements Shape {
 

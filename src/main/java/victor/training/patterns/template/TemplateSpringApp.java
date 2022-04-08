@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.template;
+package victor.training.patterns.template;
 
 import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
