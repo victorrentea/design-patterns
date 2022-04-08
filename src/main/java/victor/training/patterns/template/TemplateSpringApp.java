@@ -25,24 +25,20 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // more logic
-      emailSender.sendEmail("a@b.com", new OrderPlacedEmailComposer());
+      EmailComposer composer = EmailComposers::composePlacedEmail;
+      emailSender.sendEmail("a@b.com", composer);
    }
 
    private void shipOrder() {
       // more logic
       // TODO implement 'similar to how order placed email was implemented'
-      emailSender.sendEmail("a@b.com", new OrderShippedEmailComposer());
+      EmailComposer emailComposer = email -> EmailComposers.composeShippedEmail(email);
+      emailSender.sendEmail("a@b.com", emailComposer);
    }
 }
 
 @Service
 class EmailSender {
-//   private final EmailComposer composer;
-//
-//   public EmailSender(EmailComposer composer) {
-//      this.composer = composer;
-//   }
-
    public void sendEmail(String emailAddress, EmailComposer composer) { //6 teste
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
@@ -76,16 +72,14 @@ interface EmailComposer {
    void composeEmail(Email email);
 }
 
-class OrderPlacedEmailComposer implements EmailComposer {
-   public void composeEmail(Email email) {
+class EmailComposers {
+   public static void composePlacedEmail(Email email) {
       // 15 linii de cod ce necesita 7 teste total
       email.setSubject("Order Placed");
       email.setBody("Thank you for your order");
    }
-}
 
-class OrderShippedEmailComposer implements EmailComposer {
-   public void composeEmail(Email email) {
+   public static void composeShippedEmail(Email email) {
       email.setSubject("Order Shipped");
       email.setBody("Ti-am trimas!");
    }
