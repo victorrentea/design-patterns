@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import static victor.training.patterns.stuff.ThreadUtils.sleepq;
+import static victor.training.patterns.util.ThreadUtils.sleepq;
 
 @Slf4j
 public class SingletonBasics {

@@ -1,6 +1,6 @@
 package victor.training.patterns.nullobject;
 
-import victor.training.patterns.stuff.pretend.Entity;
+import victor.training.patterns.util.pretend.Entity;
 
 import java.util.Arrays;
 import java.util.List;

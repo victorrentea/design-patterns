@@ -1,4 +1,4 @@
-package victor.training.patterns.behavioral.observer;
+package victor.training.patterns.observer;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;

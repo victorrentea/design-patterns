@@ -1,6 +1,6 @@
 package victor.training.patterns.factory;
 
-import victor.training.patterns.stuff.ThreadUtils;
+import victor.training.patterns.util.ThreadUtils;
 
 import java.util.Objects;
 

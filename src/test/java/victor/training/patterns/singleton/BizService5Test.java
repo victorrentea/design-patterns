@@ -1,4 +1,4 @@
-package victor.training.patterns.creational.singleton;
+package victor.training.patterns.singleton;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import static java.util.Arrays.asList;
-import static victor.training.patterns.stuff.ThreadUtils.sleepq;
+import static victor.training.patterns.util.ThreadUtils.sleepq;
 
 @EnableAsync
 @SpringBootApplication

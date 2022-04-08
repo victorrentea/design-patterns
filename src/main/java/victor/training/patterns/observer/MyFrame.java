@@ -1,4 +1,4 @@
-package victor.training.patterns.stuff;
+package victor.training.patterns.observer;
 
 import javax.swing.*;
 import java.awt.*;

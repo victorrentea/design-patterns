@@ -1,4 +1,4 @@
-package victor.training.patterns.guice;
+package victor.training.patterns.singleton.guice;
 
 import com.google.inject.*;
 

@@ -1,4 +1,4 @@
-package victor.training.patterns.stuff;
+package victor.training.patterns.util;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

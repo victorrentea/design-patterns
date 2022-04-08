@@ -1,4 +1,4 @@
-package victor.training.patterns.creational.singleton;
+package victor.training.patterns.singleton;
 
 //@RunWith(PowerMockRunner.class)
 //@PrepareForTest(ConfigManager.class)

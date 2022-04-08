@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.Locale;
 import java.util.Map;
 
-import static victor.training.patterns.stuff.ThreadUtils.sleepABit;
+import static victor.training.patterns.util.ThreadUtils.sleepABit;
 
 @EnableCaching
 @SpringBootApplication

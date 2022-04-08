@@ -3,7 +3,7 @@ package victor.training.patterns.singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import victor.training.patterns.stuff.ThreadUtils;
+import victor.training.patterns.util.ThreadUtils;
 
 import java.util.HashMap;
 import java.util.Locale;
