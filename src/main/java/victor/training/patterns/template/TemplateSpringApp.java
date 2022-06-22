@@ -30,7 +30,7 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 }
 
-abstract class EmailSender {
+abstract class AbstractEmailSender {
 
    public void sendOrderPlacedEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
@@ -46,28 +46,44 @@ abstract class EmailSender {
             boolean success = context.send(email);
             if (success) break;
          }
+         hookEmptyMethod();
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
    }
 
+   protected void hookEmptyMethod() { // #2
+   }
+
+   public String encodeSubject(String s) { // #1
+      return s.toUpperCase();
+   }
+
    abstract protected void writeEmail(Email email);
 
 }
-class OrderPlacedEmailSender extends EmailSender {
+class Util1 {
+ // forgotten and then reimplemented
+}
+class OrderPlacedEmailSender extends AbstractEmailSender {
    protected void writeEmail(Email email) {
       // ARBITRRAY CODE BELOW
-      email.setSubject("Order Placed");
+      email.setSubject(encodeSubject("Order Placed"));
       email.setBody("Thank you for your order");
       // perhaps attach an attachemtn
    }
 }
-class OrderShippedEmailSender extends EmailSender {
+class OrderShippedEmailSender extends AbstractEmailSender {
    protected void writeEmail(Email email) {
       // ARBITRRAY CODE BELOW
-      email.setSubject("Order Shipped");
+      email.setSubject(encodeSubject("Order Shipped"));
       email.setBody("WE sent you the jogger.");
       // perhaps attach an attachemtn
+   }
+
+   @Override
+   protected void hookEmptyMethod() {
+      System.out.println("My stuff");
    }
 }
 
