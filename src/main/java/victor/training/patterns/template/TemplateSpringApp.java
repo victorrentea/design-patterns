@@ -1,9 +1,12 @@
 package victor.training.patterns.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
@@ -18,21 +21,40 @@ public class TemplateSpringApp implements CommandLineRunner {
       shipOrder();
    }
 
+   @Autowired
+   private EmailSender emailSender;
+
+   @Autowired
+   private ApplicationEventPublisher eventPublisher;
+
    private void placeOrder() {
-      // logic
-      new OrderPlacedEmailSender().sendOrderPlacedEmail("a@b.com");
+      emailSender.sendOrderPlacedEmail("a@b.com"); // a bit strange to have senders in front of my client.
+      // it couples my clients to Senders.
+
+//      new OrderPlacedEmailSender().sendOrderPlacedEmail("a@b.com");
    }
 
    private void shipOrder() {
       // logic
-      new OrderShippedEmailSender().sendOrderPlacedEmail("a@b.com");
+     emailSender.sendOrderShippedEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
+@Service
+class EmailSender {
 
-abstract class AbstractEmailSender {
+   @FunctionalInterface
+   interface  EmailComposer {
+      void compose(Email email);
+   }
 
+   public void sendOrderShippedEmail(String emailAddress) {
+      sendEmail(emailAddress, this::composeOrderShipped);
+   }
    public void sendOrderPlacedEmail(String emailAddress) {
+      sendEmail(emailAddress, this::composeOrderPlaced);
+   }
+   private void sendEmail(String emailAddress, EmailComposer emailComposer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -42,50 +64,30 @@ abstract class AbstractEmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            writeEmail(email);
+            emailComposer.compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
-         hookEmptyMethod();
+//         hookEmptyMethod();
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
    }
+   public void composeOrderShipped(Email email) {
 
-   protected void hookEmptyMethod() { // #2
-   }
-
-   public String encodeSubject(String s) { // #1
-      return s.toUpperCase();
-   }
-
-   abstract protected void writeEmail(Email email);
-
-}
-class Util1 {
- // forgotten and then reimplemented
-}
-class OrderPlacedEmailSender extends AbstractEmailSender {
-   protected void writeEmail(Email email) {
       // ARBITRRAY CODE BELOW
-      email.setSubject(encodeSubject("Order Placed"));
+      email.setSubject("Order Shipped");
+      email.setBody("WE sent you the jogger.");
+      // perhaps attach an attachemtn
+   }
+   public void composeOrderPlaced(Email email) {
+      // ARBITRRAY CODE BELOW
+      email.setSubject("Order Placed");
       email.setBody("Thank you for your order");
       // perhaps attach an attachemtn
    }
 }
-class OrderShippedEmailSender extends AbstractEmailSender {
-   protected void writeEmail(Email email) {
-      // ARBITRRAY CODE BELOW
-      email.setSubject(encodeSubject("Order Shipped"));
-      email.setBody("WE sent you the jogger.");
-      // perhaps attach an attachemtn
-   }
 
-   @Override
-   protected void hookEmptyMethod() {
-      System.out.println("My stuff");
-   }
-}
 
 class EmailContext {
    public boolean send(Email email) {
