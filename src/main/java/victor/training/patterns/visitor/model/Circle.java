@@ -2,7 +2,7 @@ package victor.training.patterns.visitor.model;
 
 import victor.training.patterns.visitor.ShapeVisitor;
 
-public class Circle implements Shape {
+public final class Circle implements Shape {
 
 	private final int radius;
 

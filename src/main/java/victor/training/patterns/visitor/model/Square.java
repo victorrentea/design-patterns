@@ -2,7 +2,7 @@ package victor.training.patterns.visitor.model;
 
 import victor.training.patterns.visitor.ShapeVisitor;
 
-public class Square implements Shape {
+public final class Square implements Shape {
 
 	private final int edge;
 
@@ -19,4 +19,5 @@ public class Square implements Shape {
 		return edge;
 	}
 
+ // line 800
 }

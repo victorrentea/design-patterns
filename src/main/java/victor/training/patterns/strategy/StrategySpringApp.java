@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -84,6 +85,18 @@ class ChinaTaxCalculator implements TaxCalculator {
     }
 
 }
+//@Component
+//class DefaultTaxCalculator implements TaxCalculator {
+//    public double calculate(double tobaccoValue, double regularValue) {
+//        return 0;
+//    }
+//
+//    @Override
+//    public boolean match(String countryCode) {
+//        return true;
+//    }
+//
+//}
 
 @Component
 class BrexitTaxCalculator implements TaxCalculator {

@@ -1,5 +1,6 @@
 package victor.training.patterns.command;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ class Drinker implements CommandLineRunner {
 @Service
 class Barman {
    public Beer pourBeer() {
+
+//      Caffeine
       log.debug("Pouring Beer (1 second)...");
       sleepq(1000);
       return new Beer();
