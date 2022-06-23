@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class MyFrame extends JFrame {
 
-	public JButton jButton = new JButton("Press Me");
+	public JButton oldLady = new JButton("Press Me");
 	public JPanel panel1 = new JPanel();
 	public JPanel panel2 = new JPanel();
 	public JTextArea textArea = new JTextArea(3, 8);
@@ -14,7 +14,7 @@ public class MyFrame extends JFrame {
 	public MyFrame() {
 
 		getContentPane().setLayout(new GridLayout(1, 2, 20, 20));
-		getContentPane().add(jButton);
+		getContentPane().add(oldLady);
 		getContentPane().add(panel1);
 		panel1.add(panel2);
 		panel2.add(textArea);

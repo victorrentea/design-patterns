@@ -7,8 +7,10 @@ import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,12 @@ import static victor.training.patterns.util.ThreadUtils.sleepABit;
 @EnableCaching
 @SpringBootApplication
 public class SingletonSpringApp implements CommandLineRunner{
+
+
+	@EventListener(ApplicationStartedEvent.class)
+	public void method() {
+		// startup
+	}
 
 	@Bean
 	public static CustomScopeConfigurer defineThreadScope() {
