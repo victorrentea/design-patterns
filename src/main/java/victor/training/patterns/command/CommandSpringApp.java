@@ -14,6 +14,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import static java.util.Arrays.asList;
 import static victor.training.patterns.util.ThreadUtils.sleepq;
@@ -55,6 +59,12 @@ class Drinker implements CommandLineRunner {
       log.debug("Submitting my order");
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
+      ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+
+//      Mono.fromRunnable(() -> barman.pourBeer())
+//      Callable<Beer> commandFOrBeer = () -> barman.pourBeer();
+//      Mono<Beer> submit = pool.submit(commandFOrBeer);
+
       Beer beer = barman.pourBeer();
       Vodka vodka = barman.pourVodka();
       long t1 = System.currentTimeMillis();

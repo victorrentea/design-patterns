@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import victor.training.patterns.observer.events.OrderPlacedEvent;
 
@@ -50,17 +49,19 @@ class OrderService { // 4k lines of code
 
 	public void placeOrder(Long orderId) {
 		System.out.println("Halo!");
-		eventPublisher.publishEvent(new OrderPlacedEvent(orderId));
+		eventPublisher.publishEvent(new OrderPlacedEvent(orderId)); // 0..n; past; owner by SENDER
+//		eventPublisher.publishEvent(new CheckStockCommand(orderId)); // 1 receiver; future; part of the API of RECEIVER
 	}
 }
 
 @Service
 class StockManagementService { // 3000 lines opf code
 	@EventListener
-	@Order(1)
-	public void checkStock(OrderPlacedEvent event) {
+	public OrderInStockEvent checkStock(OrderPlacedEvent event) {
 		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
+
+		return new OrderInStockEvent(event.getOrderId());
 	}
 }
 
@@ -69,8 +70,7 @@ class InvoiceService { // 5000 LOC
 
 //	@Async // horror
 	@EventListener
-	@Order(2)
-	public void generateInvoice(OrderPlacedEvent event) {
+	public void generateInvoice(OrderInStockEvent event) {
 		System.out.println("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
 //		 throw new RuntimeException("thrown from generate invoice");
