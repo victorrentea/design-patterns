@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import victor.training.patterns.observer.events.OrderPlacedEvent;
@@ -45,26 +46,20 @@ public class ObserverSpringApp {
 @Service
 class OrderService { // 4k lines of code
 	@Autowired
-	private StockManagementService stockManagementService;
-//	@Autowired
-//	private InvoiceService invoiceService; // coupling together 2 HUGE unrelated modules.
-@Autowired
-private ApplicationEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	public void placeOrder(Long orderId) {
 		System.out.println("Halo!");
-		stockManagementService.checkStock(orderId);
-		// TODO call invoicing too
-//		invoiceService.generateInvoice(orderId);
 		eventPublisher.publishEvent(new OrderPlacedEvent(orderId));
-		// here all the listeners have already RAN
 	}
 }
 
 @Service
 class StockManagementService { // 3000 lines opf code
-	public void checkStock(long orderId) {
-		System.out.println("Checking stock for products in order " + orderId);
+	@EventListener
+	@Order(1)
+	public void checkStock(OrderPlacedEvent event) {
+		System.out.println("Checking stock for products in order " + event.getOrderId());
 		System.out.println("If something goes wrong - throw an exception");
 	}
 }
@@ -74,6 +69,7 @@ class InvoiceService { // 5000 LOC
 
 //	@Async // horror
 	@EventListener
+	@Order(2)
 	public void generateInvoice(OrderPlacedEvent event) {
 		System.out.println("Generating invoice for order id: " + event.getOrderId());
 		// TODO what if...
