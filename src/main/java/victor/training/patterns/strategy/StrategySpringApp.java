@@ -1,8 +1,12 @@
 package victor.training.patterns.strategy;
 
+import lombok.SneakyThrows;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.Map;
+import java.util.function.BiFunction;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -28,6 +32,15 @@ public class StrategySpringApp implements CommandLineRunner {
 }
 
 class CustomsService {
+
+//    Map<String, Class< ? extends TaxCalculator>> calculators = Map.of(
+//            "UK", BrexitTaxCalculator.class,
+//            "CN", ChinaTaxCalculator.class,
+//            "RO", EUTaxCalculator.class,
+//            "ES", EUTaxCalculator.class,
+//            "FR", EUTaxCalculator.class
+//    );
+    @SneakyThrows
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
         TaxCalculator calculator = switch (originCountry) {
             case "UK" -> new BrexitTaxCalculator();
@@ -35,6 +48,7 @@ class CustomsService {
             case "FR", "ES", "RO" -> new EUTaxCalculator();
             default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
         };
+//        TaxCalculator calculator = calculators.get(originCountry).newInstance();
         return calculator.calculate(tobaccoValue, regularValue);
     }
 }

@@ -1,0 +1,3 @@
+tax.calculators:
+  RO: victor.training.patterns.strategy.EUTaxCalculator
+  ES: victor.training.patterns.strategy.EUTaxCalculator
