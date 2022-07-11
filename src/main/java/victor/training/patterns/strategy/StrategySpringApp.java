@@ -29,14 +29,41 @@ public class StrategySpringApp implements CommandLineRunner {
 }
 
 class CustomsService {
+
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK": return tobaccoValue/2 + regularValue;
-		case "CN": return tobaccoValue + regularValue;
-		case "FR": 
-		case "ES": // other EU country codes...
-		case "RO": return tobaccoValue/3;
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		return selectCalculator(originCountry).calculate(tobaccoValue, regularValue);
+	}
+
+	private TaxCalculator selectCalculator(String originCountry) {
+		switch (originCountry) {
+			case "UK": return new UKTaxCalculator();
+			case "CN": return new ChinaTaxCalculator();
+			case "FR":
+			case "ES": // other EU country codes...
+			case "RO": return new EUTaxCalculator();
+			default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		}
+	}
+}
+interface TaxCalculator {
+	double calculate(double tobaccoValue, double regularValue);
+}
+class ChinaTaxCalculator implements TaxCalculator{
+	public double calculate(double tobaccoValue, double regularValue) {
+		// multa logica grea
+		return tobaccoValue + regularValue;
+	}
+}
+
+class UKTaxCalculator implements TaxCalculator{
+	public double calculate(double tobaccoValue, double regularValue) {
+		// multa logica grea
+		return tobaccoValue / 2 + regularValue;
+	}
+}
+class EUTaxCalculator implements TaxCalculator{
+	public double calculate(double tobaccoValue, double regularValue_degeaba_NASPA) {
+		// multa logica grea
+		return tobaccoValue / 3;
 	}
 }
