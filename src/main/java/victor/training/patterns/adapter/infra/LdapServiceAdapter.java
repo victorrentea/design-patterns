@@ -1,20 +1,20 @@
 package victor.training.patterns.adapter.infra;
 
 import org.springframework.stereotype.Component;
+import victor.training.patterns.adapter.domain.ILdapServiceAdapter;
 import victor.training.patterns.adapter.domain.User;
-import victor.training.patterns.adapter.infra.LdapUserDto;
-import victor.training.patterns.adapter.infra.LdapUserWebserviceClient;
 
 import java.util.List;
 
 @Component
-public class LdapServiceAdapter {
+public class LdapServiceAdapter implements ILdapServiceAdapter {
     private final LdapUserWebserviceClient wsClient;
 
     LdapServiceAdapter(LdapUserWebserviceClient wsClient) {
         this.wsClient = wsClient;
     }
 
+    @Override
     public User retrieveUserByUsername(String username) {
 
         List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
