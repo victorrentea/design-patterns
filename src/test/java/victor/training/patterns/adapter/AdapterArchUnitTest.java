@@ -16,4 +16,14 @@ public class AdapterArchUnitTest {
           .dependOnClassesThat().resideInAPackage("..infra")
           .check(classes);
    }
+   @Test
+   public void domainIsAgnosticOfMyDtos() {
+      JavaClasses classes = new ClassFileImporter().importPackages("victor.training.patterns.facade");
+
+      ArchRuleDefinition.noClasses()
+          .that().resideInAPackage("..service")
+          .should()
+          .dependOnClassesThat().resideInAPackage("..facade..")
+          .check(classes);
+   }
 }

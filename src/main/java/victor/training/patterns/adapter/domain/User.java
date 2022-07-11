@@ -1,5 +1,7 @@
 package victor.training.patterns.adapter.domain;
 
+import java.util.Objects;
+
 // This would normally be placed in a 'domain model' package
 // i'm sorry
 public class User {
@@ -8,8 +10,8 @@ public class User {
 	private final String workEmail;
 
 	public User(String username, String fullName, String workEmail) {
-		this.username = username;
-		this.fullName = fullName;
+		this.username = Objects.requireNonNull(username);
+		this.fullName = Objects.requireNonNull(fullName);
 		this.workEmail = workEmail;
 	}
 

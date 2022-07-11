@@ -14,6 +14,12 @@ public class ObserverInGUI {
 				JOptionPane.showMessageDialog(null, "Button clicked");
 			}
 		});
+		myFrame.jButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "Button clicked #sieu");
+			}
+		});
 	}
 }
 
