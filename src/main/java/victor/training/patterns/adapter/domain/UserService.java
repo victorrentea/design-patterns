@@ -32,15 +32,5 @@ public class UserService {
 		log.debug("Check user status in permission manager");
 	}
 
-	public List<User> searchUserInLdap(String username) {
-		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
-		List<User> results = new ArrayList<>();
-		for (LdapUserDto ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
-		}
-		return results.subList(0, 5);
-	}
 
 }
