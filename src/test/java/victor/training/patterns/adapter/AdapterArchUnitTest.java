@@ -6,9 +6,11 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import org.junit.Test;
 
 public class AdapterArchUnitTest {
-   @Test
+   @Test // WARNING: daca pica testu, suna-ma: 0720019564 sa-ti explic ce mama masii ise intampla aici.
+   // 8pm burnout
+
    public void dependencyInversionTest() {
-      JavaClasses classes = new ClassFileImporter().importPackages("victor.training.patterns.structural.adapter");
+      JavaClasses classes = new ClassFileImporter().importPackages("victor.training.patterns.adapter");
 
       ArchRuleDefinition.noClasses()
           .that().resideInAPackage("..domain")

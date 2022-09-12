@@ -1,17 +1,18 @@
-package victor.training.patterns.adapter.domain;
+package victor.training.patterns.adapter.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import victor.training.patterns.adapter.infra.LdapUserDto;
-import victor.training.patterns.adapter.infra.LdapUserWebserviceClient;
+import victor.training.patterns.adapter.domain.ILdapClientAdapter;
+import victor.training.patterns.adapter.domain.User;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class LdapClientAdapter {
+public class LdapClientAdapter implements ILdapClientAdapter {
     private final LdapUserWebserviceClient wsClient;
 
+    @Override
     public User findByUsername(String username) {
         List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
         if (list.size() != 1) {
