@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service // pace/ zen armonie biz rules, fara nulluri, fara invalide,
 public class UserService {
 	@Autowired
 	private LdapUserWebserviceClient wsClient;
@@ -24,7 +24,7 @@ public class UserService {
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 
-		if (user.getWorkEmail() != null) {
+		if (user.hasEmail()) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
 		}
 		log.debug("Insert user in my database");
