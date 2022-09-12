@@ -13,16 +13,10 @@ import java.util.List;
 @Service // pace/ zen armonie biz rules, fara nulluri, fara invalide,
 public class UserService {
 	@Autowired
-	private LdapUserWebserviceClient wsClient;
+	private LdapClientAdapter adapter;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
-		if (list.size() != 1) {
-			throw new IllegalArgumentException("There is no single user matching username " + username);
-		}
-		LdapUserDto ldapUser = list.get(0);
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
+		User user = adapter.findByUsername(username);
 
 		if (user.hasEmail()) {
 			log.debug("Send welcome email to " + user.getWorkEmail());
@@ -32,15 +26,7 @@ public class UserService {
 		log.debug("Check user status in permission manager");
 	}
 
-	public List<User> searchUserInLdap(String username) {
-		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
-		List<User> results = new ArrayList<>();
-		for (LdapUserDto ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
-		}
-		return results.subList(0, 5);
-	}
+
+
 
 }
