@@ -16,16 +16,18 @@ public class ExpensiveOps {
 
    private static final BigDecimal TWO = new BigDecimal("2");
 
-   @Cacheable("primes")
+//   @Cacheable("primes")
 //   @Transactional
 //   @PreAuthorized
 //   @Secured
 //   @Timed
 //   @Retryable()
 //   @Async
+//   @Logged
+//   @Transactional
    public Boolean isPrime(int n) {
-      if(true)throw new IllegalArgumentException();
       log.debug("Computing isPrime({}) - EXPENSIVE", n);
+      if(true)throw new IllegalArgumentException("VAI");
       BigDecimal number = new BigDecimal(n);
       if (number.compareTo(TWO) <= 0) {
          return true;

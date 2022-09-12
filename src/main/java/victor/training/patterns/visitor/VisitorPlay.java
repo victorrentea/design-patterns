@@ -15,11 +15,11 @@ public class VisitorPlay {
 			new Circle(5),
 			new Square(5));
 
-		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
+		TextualRepresentationVisitor visitor = new TextualRepresentationVisitor();
 		for (Shape shape : shapes) {
-			shape.accept(perimeterCalculator);
+			shape.accept(visitor);
 		}
-		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
+		System.out.println("Total perimeter: " + visitor.getText());
 
 
 		System.out.println("Total area: " + 0); // TODO

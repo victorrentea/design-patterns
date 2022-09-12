@@ -1,5 +1,6 @@
 package victor.training.patterns.strategy;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -18,6 +19,7 @@ public class ChinaTaxCalculator implements TaxCalculator {
     }
 }
 
+@Component
 class MyFilter implements Filter {
     @Override
     public void doFilter(
@@ -25,6 +27,8 @@ class MyFilter implements Filter {
             ServletResponse servletResponse,
             FilterChain filterChain) throws IOException, ServletException {
 
+        String s = IOUtils.toString(servletRequest.getReader());
+//        log
         // treaba lui
         filterChain.doFilter(servletRequest, servletResponse);
 

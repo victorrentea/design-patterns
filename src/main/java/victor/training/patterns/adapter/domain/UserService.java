@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+// Biz logic `zen armonie ying si yang
 public class UserService {
 	@Autowired
 	private ILdapServiceAdapter adapter;
