@@ -1,6 +1,9 @@
 package victor.training.patterns.facade.facade;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
+import victor.training.patterns.facade.Logged;
 import victor.training.patterns.facade.facade.dto.CustomerDto;
 import victor.training.patterns.facade.Facade;
 import victor.training.patterns.facade.entity.Customer;
@@ -12,6 +15,7 @@ import victor.training.patterns.facade.repo.SiteRepo;
 
 import java.text.SimpleDateFormat;
 
+@Slf4j
 @Facade
 @RequiredArgsConstructor
 public class CustomerFacade {
@@ -20,7 +24,12 @@ public class CustomerFacade {
 	private final EmailRepo emailRepo;
 	private final SiteRepo siteRepo;
 
+	@Logged
+//	@MeasureTime
+
+	@Transactional
 	public CustomerDto findById(long customerId) {
+		log.info("findById("+customerId+")");
 		Customer customer = customerRepo.findById(customerId);
 		CustomerDto dto = new CustomerDto();
 		dto.name = customer.getName();
@@ -31,6 +40,8 @@ public class CustomerFacade {
 	}
 
 	public void register(CustomerDto dto) {
+		log.info("findById("+dto+")");
+
 		Customer customer = new Customer();
 		customer.setEmail(dto.email);
 		customer.setName(dto.name);
