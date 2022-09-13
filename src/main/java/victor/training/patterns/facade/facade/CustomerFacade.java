@@ -9,8 +9,7 @@ import victor.training.patterns.facade.infra.EmailClient;
 import victor.training.patterns.facade.repo.CustomerRepo;
 import victor.training.patterns.facade.repo.EmailRepo;
 import victor.training.patterns.facade.repo.SiteRepo;
-
-import java.text.SimpleDateFormat;
+import victor.training.patterns.facade.service.RegisterCustomerService;
 
 @Facade
 @RequiredArgsConstructor
@@ -21,17 +20,14 @@ public class CustomerFacade {
 	private final SiteRepo siteRepo;
 
 	public CustomerDto findById(long customerId) {
-		Customer customer = customerRepo.findById(customerId);
-		CustomerDto dto = new CustomerDto();
-		dto.name = customer.getName();
-		dto.email = customer.getEmail();
-		dto.creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
-		dto.id = customer.getId();
+		Customer customerEntity = customerRepo.findById(customerId);
+		CustomerDto dto = new CustomerDto(customerEntity);
+//		CustomerDto dto = customerEntity.toDto();
 		return dto;
 	}
 
 	public void register(CustomerDto dto) {
-		Customer customer = new Customer();
+		Customer customer = new Customer(dto.name);
 		customer.setEmail(dto.email);
 		customer.setName(dto.name);
 		customer.setSite(siteRepo.getReference(dto.countryId));
@@ -43,22 +39,11 @@ public class CustomerFacade {
 		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
 			throw new IllegalArgumentException("Email already registered");
 		}
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
-
-		int discountPercentage = 3;
-		if (customer.isGoldMember()) {
-			discountPercentage += 1;
-		}
-		System.out.println("Biz Logic with discount " + discountPercentage);
-		// Heavy business logic
-		// Heavy business logic
-		customerRepo.save(customer);
-		// Heavy business logic
+		registerCustomerService.register(customer);
 
 		sendRegistrationEmail(customer.getEmail());
 	}
+	private final RegisterCustomerService registerCustomerService;
 
 	private void sendRegistrationEmail(String emailAddress) {
 		System.out.println("Sending activation link via email to " + emailAddress);

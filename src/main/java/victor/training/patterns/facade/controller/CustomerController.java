@@ -1,6 +1,7 @@
 package victor.training.patterns.facade.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import victor.training.patterns.facade.facade.CustomerFacade;
 import victor.training.patterns.facade.facade.dto.CustomerDto;
@@ -16,7 +17,7 @@ public class CustomerController {
    }
 
    @PostMapping
-   public void register(@RequestBody CustomerDto customerDto) {
+   public void register(@RequestBody @Validated CustomerDto customerDto) {
       customerFacade.register(customerDto);
    }
 }
