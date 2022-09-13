@@ -9,14 +9,16 @@ import org.springframework.core.annotation.Order;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import victor.training.patterns.facade.Logged;
 import victor.training.patterns.facade.facade.CustomerFacade;
 import victor.training.patterns.facade.facade.dto.CustomerDto;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-
 @RestController //faking it
+
 @RequiredArgsConstructor
 public class CustomerController {
    private final CustomerFacade customerFacade;
@@ -24,19 +26,11 @@ public class CustomerController {
 //   @Retryable(maxAttempts = 3)
    @GetMapping("{customerId}")
    public CustomerDto findById(@PathVariable long customerId) throws Exception {
-      System.out.println("PE cine chem aici? " + customerFacade.getClass());
-
-//      TransactionTemplate txTemplate;
-//      txTemplate.setPropagationBehaviorName("REQUIRES_NEW");
-//      txTemplate.execute(s -> {
-//         logicaInTxNoua();
-//      })
-
-      return Util.measure(()->customerFacade.findById(customerId));
+      return customerFacade.findById(customerId);
    }
 
    @PostMapping
-   public void register(@RequestBody CustomerDto customerDto) {
+   public void register(@RequestBody @Validated CustomerDto customerDto) {
       customerFacade.register(customerDto);
    }
 }

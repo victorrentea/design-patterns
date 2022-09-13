@@ -32,5 +32,4 @@ public class ProxySpringApp implements CommandLineRunner {
 		log.debug("Got: " + ops.isPrime(10000169) + "\n");
 		
 	}
-	
 }
