@@ -1,53 +1,29 @@
 package victor.training.patterns.adapter.infra;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.validation.constraints.NotNull;
 
 public class LdapUserDto {
-	private String uId;
-	private String fName;
-	private String lName;
-	private Date creationDate;
-	private String workEmail;
-	private List<LdapUserPhone> emailAddresses = new ArrayList<>();
+	@JsonProperty("uID")
+	private String username;
+	@JsonProperty("fName")
+	private  String fName;
+	private  String lName;
+	@NotNull
+	private  String workEmail;
 
-	public final String getuId() {
-		return uId;
+//	public LdapUserDto() {}
+
+	public String getFullName() {
+		return fName +" " + lName.toUpperCase();
 	}
-	public final void setuId(String uId) {
-		this.uId = uId;
-	}
-	public final String getfName() {
-		return fName;
-	}
-	public final void setfName(String fName) {
-		this.fName = fName;
-	}
-	public final String getlName() {
-		return lName;
-	}
-	public final void setlName(String lName) {
-		this.lName = lName;
-	}
-	public final Date getCreationDate() {
-		return creationDate;
-	}
-	public final void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	
-	public final String getWorkEmail() {
+
+	public String getWorkEmail() {
 		return workEmail;
 	}
-	public final void setWorkEmail(String workEmail) {
-		this.workEmail = workEmail;
+
+	public boolean hasEmail() {
+		return workEmail != null;
 	}
-	public final List<LdapUserPhone> getEmailAddresses() {
-		return emailAddresses;
-	}
-	public final void setEmailAddresses(List<LdapUserPhone> emailAddresses) {
-		this.emailAddresses = emailAddresses;
-	}
-	
 }
