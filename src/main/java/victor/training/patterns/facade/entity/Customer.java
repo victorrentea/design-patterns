@@ -2,13 +2,8 @@ package victor.training.patterns.facade.entity;
 
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.Setter;
-import victor.training.patterns.facade.facade.dto.CustomerDto;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Objects;
 
