@@ -1,8 +1,17 @@
 package victor.training.patterns.singleton.guice;
 
 import com.google.inject.*;
+import com.google.inject.name.Names;
+import org.mockito.Mockito;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class GuiceShowcase {
    public static void main(String[] args) {
@@ -12,6 +21,25 @@ public class GuiceShowcase {
             // optional customization
 //            bind(SomeInterface.class).to(SomeImpl.class);
             bind(Config.class).toProvider(() -> Config.readFromFile()).in(Scopes.SINGLETON);
+//            bind(ExternalClient.class).toProvider(() -> Mockito.mock(ExternalClient)).in(Scopes.SINGLETON);
+
+            Properties properties = new Properties();
+            try {
+               properties.load(new FileReader("Test.properties"));
+               System.out.println("Props: " + properties);
+
+//               Propertyenum.for    (key, default) -> put in the map
+               HashMap<String, String> p = new HashMap<>(properties
+                       .entrySet()
+                       .stream()
+                       .collect(Collectors.toMap(e -> "prop:" + e.getKey(), e->e.getValue().toString())));
+               Names.bindProperties(binder(), p);
+//               Names.bindProperties(binder(), properties);
+            } catch (FileNotFoundException e) {
+               System.out.println("The configuration file Test.properties can not be found");
+            } catch (IOException e) {
+               System.out.println("I/O Exception during loading configuration");
+            }
          }
       });
       A instance = injector.getInstance(A.class);
@@ -43,18 +71,31 @@ class A {
    }
 }
 
+enum MambuProperties {
+   SOME_PROP("prop");
+
+   public final String key;
+
+   MambuProperties(String key) {
+      this.key = key;
+   }
+}
 class C {
    private B b;
    private Config config;
+   private final String prop;
 
    @Inject
-   public C(B b, Config config) {
+//   public C(B b, Config config, @Named("prop:prop") String prop) {
+   public C(B b, Config config, @Named("prop:key.from.file") String prop) {
       this.b = b;
       this.config = config;
+      this.prop = prop;
    }
 
    public void methodC() {
       b.methodB();
+      System.out.println("Injected property from file: " + prop );
       System.out.println(config.getHost());
    }
 }
