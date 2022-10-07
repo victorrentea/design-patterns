@@ -34,6 +34,7 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+		Country e = Country.valueOf(originCountry);
 		TaxCalculator calculator = selectCalculator(originCountry);
 		return calculator.compute(tobaccoValue, regularValue);
 	}
@@ -48,15 +49,15 @@ class CustomsService {
 //			"ES", new EUTaxCalculator(),
 //			"RO", new EUTaxCalculator()
 //	);
+//		return Optional.ofNullable(strategies.get(originCountry));
 
 	private static TaxCalculator selectCalculator(String originCountry) {
-//		return Optional.ofNullable(strategies.get(originCountry));
-//		return switch (originCountry) {
-//			case "UK" -> new BrexitTaxCalculator();
-//			case "CN" -> new ChinaTaxCalculator();
-//			case "FR", "ES", "RO" -> new EUTaxCalculator();
-//			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-//		};
+		return switch (originCountry) {
+			case "UK" -> new BrexitTaxCalculator();
+			case "CN" -> new ChinaTaxCalculator();
+			case "FR", "ES", "RO" -> new EUTaxCalculator();
+			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		};
 	}
 }
 interface TaxCalculator { // enforce the same contract !!!v provide structure
