@@ -1,15 +1,11 @@
 package victor.training.patterns.template;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import java.util.Random;
-import java.util.function.Consumer;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -24,19 +20,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // logic
-      new EmailSender().sendEmail("a@b.com",Emails::composeOrderPlaced);
+      new OrderPlacedEmailSender().sendOrderPlacedEmail("a@b.com");
    }
 
    private void shipOrder() {
       // logic
-      new EmailSender().sendEmail("a@b.com", e -> Emails.composeOrderShipped(e));
+      new OrderShippedEmailSender().sendOrderPlacedEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
-@Service
-class EmailSender {
 
-    public void sendEmail(String emailAddress, Consumer<Email> emailComposer) {
+abstract class EmailSender {
+
+   public void sendOrderPlacedEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -45,7 +41,7 @@ class EmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            emailComposer.accept(email);
+            fillEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -54,15 +50,23 @@ class EmailSender {
       }
    }
 
+
+   protected abstract void fillEmail(Email email);
+   protected final String encodeSubject(String s) {
+      return s.toUpperCase();
+   }
 }
 // dep on the country, the zip number is different
-class Emails {
-   public static void composeOrderPlaced(Email email) {
-      email.setSubject("Order Placed");
+class OrderPlacedEmailSender extends EmailSender {
+
+   protected void fillEmail(Email email) {
+      email.setSubject(encodeSubject("Order Placed"));
       email.setBody("Thank you for your order");
    }
-   public static void composeOrderShipped(Email email) {
-      email.setSubject("Order Shipped");
+}
+class OrderShippedEmailSender extends EmailSender {
+   protected void fillEmail(Email email) {
+      email.setSubject(encodeSubject("Order Shipped"));
       email.setBody("Thank you for your order");
 //      email.addAttachment(pdf)
    }
