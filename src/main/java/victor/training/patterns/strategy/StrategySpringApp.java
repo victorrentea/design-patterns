@@ -1,5 +1,6 @@
 package victor.training.patterns.strategy;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -33,20 +34,23 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		TaxCalculator calculator = selectCalculator(originCountry).orElseThrow();
+		TaxCalculator calculator = selectCalculator(originCountry);
 		return calculator.compute(tobaccoValue, regularValue);
 	}
 
-	private static final Map<String, TaxCalculator> strategies = Map.of(
-			"UK", new BrexitTaxCalculator(),
-			"CN", new ChinaTaxCalculator(),
-			"FR", new EUTaxCalculator(),
-			"ES", new EUTaxCalculator(),
-			"RO", new EUTaxCalculator()
-	);
+//	@Value("") //  from .properties = good idea = externalizing the mapping if it keeps changing .
+//	private  final Map<String, TaxCalculator> strategies;
 
-	private static Optional<TaxCalculator> selectCalculator(String originCountry) {
-		return Optional.ofNullable(strategies.get(originCountry));
+	//	= Map.of(
+//			"UK", new BrexitTaxCalculator(),
+//			"CN", new ChinaTaxCalculator(),
+//			"FR", new EUTaxCalculator(),
+//			"ES", new EUTaxCalculator(),
+//			"RO", new EUTaxCalculator()
+//	);
+
+	private static TaxCalculator selectCalculator(String originCountry) {
+//		return Optional.ofNullable(strategies.get(originCountry));
 //		return switch (originCountry) {
 //			case "UK" -> new BrexitTaxCalculator();
 //			case "CN" -> new ChinaTaxCalculator();
