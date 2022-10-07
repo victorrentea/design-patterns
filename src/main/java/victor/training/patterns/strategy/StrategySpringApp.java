@@ -1,8 +1,14 @@
 package victor.training.patterns.strategy;
 
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -12,25 +18,29 @@ public class StrategySpringApp implements CommandLineRunner {
 			.run(args);
 	}
 
-	
-	private ConfigProvider configProvider = new ConfigFileProvider(); 
-	
+	private ConfigProvider configProvider = new ConfigFileProvider();
+
+	@Autowired
+	private CustomsService service;
 	// TODO [1] Break CustomsService logic into Strategies
 	// TODO [2] Convert it to Chain Of Responsibility
 	// TODO [3] Wire with Spring
 	public void run(String... args) {
-		CustomsService service = new CustomsService();
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
 		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
-		
+
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
 	}
 }
-
+@Service
+@Data
+@ConfigurationProperties(prefix = "customs")
 class CustomsService {
+//	private Map<String, TaxCalculator> calculators;  // hehe
+
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
+		switch (originCountry) {
 		case "UK": return tobaccoValue/2 + regularValue;
 		case "CN": return tobaccoValue + regularValue;
 		case "FR": 
