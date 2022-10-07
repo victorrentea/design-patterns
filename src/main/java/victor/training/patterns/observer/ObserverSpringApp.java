@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 
@@ -30,40 +32,53 @@ public class ObserverSpringApp {
 	@Autowired
 	private OrderService orderService;
 
-	@EventListener
-	public void atStartup(ContextRefreshedEvent event) {
+	@EventListener(ContextRefreshedEvent.class)
+	public void atStartup() {
 		orderService.placeOrder(new Random().nextLong());
 		// afterTransaction.runInTransaction();
 	}
-
-
 }
 
 @Service
 class OrderService {
 	@Autowired
-	private StockManagementService stockManagementService;
+	private ApplicationEventPublisher eventPublisher;
 
+@Transactional
 	public void placeOrder(Long orderId) {
 		System.out.println("Halo!");
-		stockManagementService.checkStock(orderId);
-		// TODO call invoicing too
+		eventPublisher.publishEvent(new OrderPlacedEvent(orderId)); // in mem blocking call right now
+		System.out.println("END");
 	}
 }
 
-@Service
-class StockManagementService {
-	public void checkStock(long orderId) {
-		System.out.println("Checking stock for products in order " + orderId);
-		System.out.println("If something goes wrong - throw an exception");
-	}
-}
+record OrderPlacedEvent(long orderId) {}
+record InvoiceGeneratedEvent(long orderId) {}
 
 @Service
 class InvoiceService {
-	public void generateInvoice(long orderId) {
-		System.out.println("Generating invoice for order id: " + orderId);
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+
+	@EventListener
+	public void generateInvoice(OrderPlacedEvent event) {
+		callHierarchy(event);
 		// TODO what if...
 		// throw new RuntimeException("thrown from generate invoice");
-	} 
+		eventPublisher.publishEvent(new InvoiceGeneratedEvent(event.orderId()));
+	}
+
+	private static void callHierarchy(OrderPlacedEvent event) {
+		System.out.println("Generating invoice for order id: " + event.orderId());
+	}
+}
+
+@Service
+class AuditService {
+	@EventListener
+	public void audit(InvoiceGeneratedEvent event) {
+		System.out.println("Audit " + event.orderId());
+		// TODO what if...
+		// throw new RuntimeException("thrown from generate invoice");
+	}
 }
