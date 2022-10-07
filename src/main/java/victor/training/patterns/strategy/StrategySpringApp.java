@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.Map;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
 	public static void main(String[] args) {
@@ -34,13 +36,26 @@ class CustomsService {
 		return calculator.compute(tobaccoValue, regularValue);
 	}
 
+	private static final Map<String, TaxCalculator> strategies = Map.of(
+			"UK", new BrexitTaxCalculator(),
+			"CN", new ChinaTaxCalculator(),
+			"FR", new EUTaxCalculator(),
+			"ES", new EUTaxCalculator(),
+			"RO", new EUTaxCalculator()
+	);
+
 	private static TaxCalculator selectCalculator(String originCountry) {
-		return switch (originCountry) {
-			case "UK" -> new BrexitTaxCalculator();
-			case "CN" -> new ChinaTaxCalculator();
-			case "FR", "ES", "RO" -> new EUTaxCalculator();
-			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		};
+		TaxCalculator calculator = strategies.get(originCountry);
+		if (calculator == null) {
+			throw new IllegalArgumentException();
+		}
+		return calculator;
+//		return switch (originCountry) {
+//			case "UK" -> new BrexitTaxCalculator();
+//			case "CN" -> new ChinaTaxCalculator();
+//			case "FR", "ES", "RO" -> new EUTaxCalculator();
+//			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//		};
 	}
 }
 interface TaxCalculator { // enforce the same contract !!!v provide structure

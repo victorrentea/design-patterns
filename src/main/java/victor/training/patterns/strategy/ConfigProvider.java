@@ -1,6 +1,7 @@
 package victor.training.patterns.strategy;
 
 import lombok.SneakyThrows;
+import org.springframework.context.annotation.Profile;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -8,7 +9,7 @@ import java.util.Properties;
 public interface ConfigProvider {
 	Properties getProperties();
 }
-
+@Profile("file.config")
 class ConfigFileProvider implements ConfigProvider {
 	
 	@SneakyThrows
@@ -20,7 +21,7 @@ class ConfigFileProvider implements ConfigProvider {
 		}
 	}
 }
-
+@Profile("db.config")
 class ConfigDatabaseProvider implements ConfigProvider {
 
 	public Properties getProperties() {
