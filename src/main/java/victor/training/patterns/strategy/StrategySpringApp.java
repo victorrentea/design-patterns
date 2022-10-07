@@ -30,34 +30,34 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) { 
-		case "UK":
-			return computeUkTax(tobaccoValue, regularValue);
-		case "CN":
-			return computeChinaTax(tobaccoValue, regularValue);
-		case "FR":
-		case "ES":
-		case "RO": return computeEUTax(tobaccoValue);
-		default: throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		} 
+		TaxCalculator calculator = selectCalculator(originCountry);
+		return calculator.compute(tobaccoValue, regularValue);
 	}
 
-	private static double computeEUTax(double tobaccoValue) {
-		return tobaccoValue / 3;
+	private static TaxCalculator selectCalculator(String originCountry) {
+		return switch (originCountry) {
+			case "UK" -> new BrexitTaxCalculator();
+			case "CN" -> new ChinaTaxCalculator();
+			case "FR", "ES", "RO" -> new EUTaxCalculator();
+			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+		};
 	}
-
-	private static double computeChinaTax(double tobaccoValue, double regularValue) {
+}
+interface TaxCalculator { // enforce the same contract !!!v provide structure
+	double compute(double tobaccoValue, double regularValue);
+}
+class ChinaTaxCalculator implements TaxCalculator {
+	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
-
-	private static double computeUkTax(double tobaccoValue, double regularValue) {
-		// + 50 lines
-		// + 50 lines
-		// + 50 lines
-		// + 50 lines
-		// + 50 lines
-		// + 50 lines
-		// + 50 lines
+}
+class BrexitTaxCalculator implements TaxCalculator{
+	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue / 2 + regularValue;
+	}
+}
+class EUTaxCalculator implements TaxCalculator{
+	public double compute(double tobaccoValue, double unused) {
+		return tobaccoValue / 3;
 	}
 }
