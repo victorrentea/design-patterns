@@ -51,11 +51,15 @@ public class TemplateSpringApp implements CommandLineRunner {
             if (success) break;
          }
       } catch (Exception e) {
+//          onException(e);
          throw new RuntimeException("Can't send email", e);
       }
    }
 
-}
+//     protected void onException(Exception e) {
+//     }
+
+ }
 interface EmailComposer {
    void compose(Email email);
 //   private String encodeSubject(String s) {
