@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import java.util.Map;
+import java.util.Optional;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -32,7 +33,7 @@ public class StrategySpringApp implements CommandLineRunner {
 
 class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		TaxCalculator calculator = selectCalculator(Country.valueOf(originCountry));
+		TaxCalculator calculator = selectCalculator(originCountry).orElseThrow();
 		return calculator.compute(tobaccoValue, regularValue);
 	}
 
@@ -44,17 +45,14 @@ class CustomsService {
 			"RO", new EUTaxCalculator()
 	);
 
-	private static TaxCalculator selectCalculator(Country originCountry) {
-//		TaxCalculator calculator = strategies.get(originCountry);
-//		if (calculator == null) {
-//			throw new IllegalArgumentException();
-//		}
-//		return calculator;
-		return switch (originCountry) {
-			case UK -> new BrexitTaxCalculator();
-			case CN -> new ChinaTaxCalculator();
-			case FR, ES -> new EUTaxCalculator();
-		};
+	private static Optional<TaxCalculator> selectCalculator(String originCountry) {
+		return Optional.ofNullable(strategies.get(originCountry));
+//		return switch (originCountry) {
+//			case "UK" -> new BrexitTaxCalculator();
+//			case "CN" -> new ChinaTaxCalculator();
+//			case "FR", "ES", "RO" -> new EUTaxCalculator();
+//			default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//		};
 	}
 }
 interface TaxCalculator { // enforce the same contract !!!v provide structure
