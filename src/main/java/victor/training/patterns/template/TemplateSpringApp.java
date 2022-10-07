@@ -20,34 +20,51 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // logic
-      new EmailService().sendOrderPlacedEmail("a@b.com");
+      new OrderPlacedEmailSender().sendOrderPlacedEmail("a@b.com");
    }
 
    private void shipOrder() {
       // logic
+      new OrderShippedEmailSender().sendOrderPlacedEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
 
-class EmailService {
+abstract class EmailSender {
 
    public void sendOrderPlacedEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
-         for (int i = 0; i < MAX_RETRIES; i++) {
+         for (int i = 3; i < MAX_RETRIES; i++) {
             Email email = new Email(); // constructor generates new unique ID
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Placed");
-            email.setBody("Thank you for your order");
+            fillEmail(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
+   }
+
+   protected abstract void fillEmail(Email email);
+}
+// dep on the country, the zip number is different
+class OrderPlacedEmailSender extends EmailSender {
+
+   protected void fillEmail(Email email) {
+      email.setSubject("Order Placed");
+      email.setBody("Thank you for your order");
+   }
+}
+class OrderShippedEmailSender extends EmailSender {
+   protected void fillEmail(Email email) {
+      email.setSubject("Order Shipped");
+      email.setBody("Thank you for your order");
+//      email.addAttachment(pdf)
    }
 }
 
