@@ -1,11 +1,15 @@
 package victor.training.patterns.template;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 @SpringBootApplication
 public class TemplateSpringApp implements CommandLineRunner {
@@ -20,24 +24,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // logic
-      new EmailSender(new OrderPlacedEmailComposer()).sendEmail("a@b.com");
+      new EmailSender().sendEmail("a@b.com",Emails::composeOrderPlaced);
    }
 
    private void shipOrder() {
       // logic
-      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
+      new EmailSender().sendEmail("a@b.com", e -> Emails.composeOrderShipped(e));
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
+@Service
+class EmailSender {
 
- class EmailSender {
-   private final EmailComposer emailComposer;
-
-    EmailSender(EmailComposer emailComposer) {
-       this.emailComposer = emailComposer;
-    }
-
-    public void sendEmail(String emailAddress) {
+    public void sendEmail(String emailAddress, Consumer<Email> emailComposer) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -46,7 +45,7 @@ public class TemplateSpringApp implements CommandLineRunner {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            emailComposer.compose(email);
+            emailComposer.accept(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -56,18 +55,13 @@ public class TemplateSpringApp implements CommandLineRunner {
    }
 
 }
-interface EmailComposer {
-   void compose(Email email);
-}
 // dep on the country, the zip number is different
-class OrderPlacedEmailComposer implements EmailComposer {
-   public void compose(Email email) {
+class Emails {
+   public static void composeOrderPlaced(Email email) {
       email.setSubject("Order Placed");
       email.setBody("Thank you for your order");
    }
-}
-class OrderShippedEmailComposer implements EmailComposer {
-   public void compose(Email email) {
+   public static void composeOrderShipped(Email email) {
       email.setSubject("Order Shipped");
       email.setBody("Thank you for your order");
 //      email.addAttachment(pdf)
