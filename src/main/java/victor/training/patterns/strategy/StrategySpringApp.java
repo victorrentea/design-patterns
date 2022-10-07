@@ -45,7 +45,6 @@ class CustomsService {
 //	private Map<String, TaxCalculator> calculators;  // hehe
 
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		RestTemplate r = new RestTemplate();
 		switch (originCountry) {
 			case "UK":
 				return tobaccoValue / 2 + regularValue;
