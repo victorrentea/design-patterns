@@ -4,7 +4,7 @@ package victor.training.patterns.builder.mutable;
 public class AddressBuilder {
 	private final Address address = new Address();
 
-	public AddressBuilder withStreetName(String streetName) {
+	public AddressBuilder withStreetPart(String streetName) {
 		address.setStreetName(streetName);
 		return this;
 	}

@@ -1,27 +1,25 @@
 package victor.training.patterns.builder.immutable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
+
+@Builder
+@Value
+@AllArgsConstructor
 public class Address {
-	private final String streetName;
-	private final String streetNumber;
-	private final String city;
-	private final String aptNumber; // optional field
+	String streetName;
+	String streetNumber;
+	String city;
+	String aptNumber; // optional field
+	@With
+	String floorNumber;
+	String floorNumber1;
+	String floorNumber2;
+	String floorNumber3;
+	String floorNumber4;
 
-	public Address(String streetName, String streetNumber, String city, String aptNumber) {
-		this.streetName = streetName;
-		this.streetNumber = streetNumber;
-		this.city = city;
-		this.aptNumber = aptNumber;
-	}
+//	public Address() {}
 
-	// getters ...
-
-	@Override
-	public String toString() {
-		return "Address{" +
-				 "streetName='" + streetName + '\'' +
-				 ", streetNumber=" + streetNumber +
-				 ", city='" + city + '\'' +
-				 ", aptNumber='" + aptNumber + '\'' +
-				 '}';
-	}
 }

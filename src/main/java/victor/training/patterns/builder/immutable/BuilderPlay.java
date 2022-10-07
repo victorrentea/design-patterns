@@ -10,8 +10,16 @@ public class BuilderPlay {
       uglyConstructor(dto);
    }
    public static void uglyConstructor(SomeDto dto) {
-      Address address = new Address(dto.number, dto.street, dto.city, dto.apt);
-
+      Address address = new Address(dto.number, dto.street, dto.city, dto.apt,
+              "11", "a","b","c","d");
+      Address copy = address.withFloorNumber("different");
+      Address.builder()
+                      .floorNumber("11")
+                      .floorNumber("11")
+                      .floorNumber("11")
+                      .floorNumber("11")
+                      .floorNumber("11")
+                              .build();
       System.out.println("I live at " + address);
 
    }
