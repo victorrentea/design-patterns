@@ -20,19 +20,24 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // logic
-      new OrderPlacedEmailSender().sendOrderPlacedEmail("a@b.com");
+      new EmailSender(new OrderPlacedEmailComposer()).sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // logic
-      new OrderShippedEmailSender().sendOrderPlacedEmail("a@b.com");
+      new EmailSender(new OrderShippedEmailComposer()).sendEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
 
-abstract class EmailSender {
+ class EmailSender {
+   private final EmailComposer emailComposer;
 
-   public void sendOrderPlacedEmail(String emailAddress) {
+    EmailSender(EmailComposer emailComposer) {
+       this.emailComposer = emailComposer;
+    }
+
+    public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -41,7 +46,7 @@ abstract class EmailSender {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            fillEmail(email);
+            emailComposer.compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
@@ -50,23 +55,23 @@ abstract class EmailSender {
       }
    }
 
-
-   protected abstract void fillEmail(Email email);
-   protected final String encodeSubject(String s) {
-      return s.toUpperCase();
-   }
+}
+interface EmailComposer {
+   void compose(Email email);
+//   private String encodeSubject(String s) {
+//      return s.toUpperCase();
+//   }
 }
 // dep on the country, the zip number is different
-class OrderPlacedEmailSender extends EmailSender {
-
-   protected void fillEmail(Email email) {
-      email.setSubject(encodeSubject("Order Placed"));
+class OrderPlacedEmailComposer implements EmailComposer {
+   public void compose(Email email) {
+      email.setSubject("Order Placed");
       email.setBody("Thank you for your order");
    }
 }
-class OrderShippedEmailSender extends EmailSender {
-   protected void fillEmail(Email email) {
-      email.setSubject(encodeSubject("Order Shipped"));
+class OrderShippedEmailComposer implements EmailComposer {
+   public void compose(Email email) {
+      email.setSubject("Order Shipped");
       email.setBody("Thank you for your order");
 //      email.addAttachment(pdf)
    }

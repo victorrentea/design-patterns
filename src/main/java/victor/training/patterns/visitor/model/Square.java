@@ -10,6 +10,7 @@ public class Square implements Shape {
 		this.edge = edge;
 	}
 
+	// THIS SINGLE METHOD. no extra logic inside.
 	@Override
 	public void accept(ShapeVisitor visitor) {
 		visitor.visit(this);

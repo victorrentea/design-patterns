@@ -15,9 +15,31 @@ public class VisitorPlay {
 			new Circle(5),
 			new Square(5));
 
+
+		int sum = 0;
 		PerimeterCalculatorVisitor perimeterCalculator = new PerimeterCalculatorVisitor();
 		for (Shape shape : shapes) {
+//			sum += shape.getPerimeter(); // OOP
+
 			shape.accept(perimeterCalculator);
+//			if (shape instanceof Circle c) {
+//				sum += c.getRadius() * 2 * Math.PI;
+//			} else if (shape instanceof Square s) {
+//				sum += 4 * s.getEdge();
+//			} else {
+//				throw new IllegalArgumentException("JDD should never happen");
+//			}
+			// java 21 sealed classes + destructuring
+//			switch (shape) {
+//				Circle(radius) ->
+//				Rectagle(radius) ->
+//				Square(radius) ->
+//			}
+		}
+//Map<Class, Function>
+
+
+		for (Shape shape : shapes) {
 		}
 		System.out.println("Total perimeter: " + perimeterCalculator.getTotal());
 
@@ -27,3 +49,4 @@ public class VisitorPlay {
 	}
 
 }
+// you implement a single global method on your objects so that you can plug in different method.
