@@ -2,6 +2,7 @@ package victor.training.patterns.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
@@ -49,14 +50,21 @@ class SecondGrade {
 }
 //@Component @Aspect
 //@Service
-class Maths {
+/*final*/ class  Maths { // proxy in spring are generated with subclassing
 //    @Logged @Transactional @Timed //
     public int sum(int a, int b) {
         return a + b;
     }
+//    @Autowired
+//    Maths myselfProxied;
 
     public int product(int a, int b) {
-        return a * b;
+        int acc = 0;
+        for (int i = 0; i < a; i++) {
+            acc = sum(acc, b);
+        }
+
+        return acc;
     }
 }
 
