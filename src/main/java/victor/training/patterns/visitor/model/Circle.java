@@ -14,7 +14,11 @@ public class Circle implements Shape {
 	public void accept(ShapeVisitor visitor) {
 		visitor.visit(this);
 	}
-	
+
+	public double computePerimeter() {
+		return 2 * Math.PI * radius;
+	}
+
 	public int getRadius() {
 		return radius;
 	}

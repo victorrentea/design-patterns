@@ -6,9 +6,9 @@ public class Carrefour {
    public static void main(String[] args) {
       ShoppingCart cart = new ShoppingCart();
 
-      cart.coin();
+      cart.insertCoin();
       System.out.println(cart);
-      cart.coin();
+      cart.insertCoin();
       System.out.println(cart);
       cart.push();
       System.out.println(cart);
@@ -21,7 +21,7 @@ public class Carrefour {
 class ShoppingCart {
    private ShoppingCartState state = new LockedState();
 
-   public void coin() {
+   public void insertCoin() {
       state = state.coin();
    }
 
@@ -33,7 +33,7 @@ class ShoppingCart {
 class LockedState implements ShoppingCartState {
    @Override
    public ShoppingCartState coin() {
-      System.out.println("AUditez ca s-a folosit un carucior");
+      System.out.println("Cart unlocked!");
       return new UnlockedState();
    }
 

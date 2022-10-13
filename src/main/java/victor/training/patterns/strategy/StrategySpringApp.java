@@ -6,14 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -42,20 +35,60 @@ public class StrategySpringApp implements CommandLineRunner {
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
-//	private Map<String, TaxCalculator> calculators;  // hehe
+	@Autowired
+	private ChinaTaxCalculator chinaTaxCalculator;
+	@Autowired
+	private BrexitTaxCalculator brexitTaxCalculator;
+	@Autowired
+	private EUTaxCalculator euTaxCalculator;
 
-	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+	public double calculateCustomsTax(String originCountry,
+									  double tobaccoValue,
+									  double regularValue) { // UGLY API we CANNOT change
+		ITaxCalculator taxCalculator = null;
 		switch (originCountry) {
 			case "UK":
-				return tobaccoValue / 2 + regularValue;
+				taxCalculator =  brexitTaxCalculator;break;
 			case "CN":
-				return tobaccoValue + regularValue;
+				taxCalculator =  chinaTaxCalculator;break;
 			case "FR":
 			case "ES": // other EU country codes...
 			case "RO":
-				return tobaccoValue / 3;
+				taxCalculator =  euTaxCalculator;break;
 			default:
 				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
+		return taxCalculator.compute(tobaccoValue,regularValue);
+	}
+}
+
+interface ITaxCalculator {
+	public double compute(double tobaccoValue, double regularValue);
+}
+@Service
+class ChinaTaxCalculator implements ITaxCalculator{
+	public double compute(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+}
+@Service
+class BrexitTaxCalculator implements ITaxCalculator{
+	public double compute(double tobaccoValue, double regularValue) {
+		// 2002 // 3
+		// 2002 // 3
+		// 2003  // a
+		// 2003  // a
+		// 2003  // a
+		// 2003  // a
+		// 2003  // a
+		return tobaccoValue / 2 + regularValue;
+	}
+
+}
+@Service
+class EUTaxCalculator implements ITaxCalculator{
+
+	public double compute(double tobaccoValue, double degeabaValue) {
+		return tobaccoValue / 3;
 	}
 }
