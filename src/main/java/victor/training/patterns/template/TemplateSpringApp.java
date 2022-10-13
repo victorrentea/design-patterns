@@ -20,18 +20,19 @@ public class TemplateSpringApp implements CommandLineRunner {
 
    private void placeOrder() {
       // logic
-      new EmailService().sendOrderPlacedEmail("a@b.com");
+      new OrderPlacedEmailSender().sendEmail("a@b.com");
    }
 
    private void shipOrder() {
       // logic
+      new OrderShippedEmailSender().sendEmail("a@b.com");
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
 
-class EmailService {
+abstract class AbstractEmailSender {
 
-   public void sendOrderPlacedEmail(String emailAddress) {
+   public void sendEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -40,14 +41,31 @@ class EmailService {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            email.setSubject("Order Placed");
-            email.setBody("Thank you for your order");
+            compose(email);
             boolean success = context.send(email);
             if (success) break;
          }
       } catch (Exception e) {
          throw new RuntimeException("Can't send email", e);
       }
+   }
+
+   public abstract void compose(Email email);
+
+}
+class OrderPlacedEmailSender extends AbstractEmailSender {
+   public void compose(Email email)
+   {
+      email.setSubject("Order Placed");
+      email.setBody("Thank you for your order");
+   }
+}
+class OrderShippedEmailSender extends AbstractEmailSender {
+   @Override
+   public void compose(Email email) {
+      email.setSubject("Order Shipped");
+      email.setBody("Ti-am trimis, speram sa ajunga (de data asta)");
+      email.addAttachment("routing numbrer AWB");
    }
 }
 
@@ -66,4 +84,9 @@ class Email {
    private String sender;
    private String replyTo;
    private String to;
+
+   public void addAttachment(String routing_numbrer_awb) {
+
+
+   }
 }
