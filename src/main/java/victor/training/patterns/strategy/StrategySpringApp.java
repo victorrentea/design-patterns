@@ -6,7 +6,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -35,6 +38,9 @@ public class StrategySpringApp implements CommandLineRunner {
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
+//	private Map<String, Class<? extends ITaxCalculator>> calculators;  // hehe
+
+
 	@Autowired
 	private ChinaTaxCalculator chinaTaxCalculator;
 	@Autowired
@@ -54,12 +60,17 @@ class CustomsService {
 	// 2) are default thnrtow (JDD)
 	// 3) in case 1-2-3 lini -> extract methoda
 	private ITaxCalculator selectCalculator(CountryCode originCountry) {
-		return switch (originCountry) {
-			case UK -> brexitTaxCalculator;
-			case CN -> chinaTaxCalculator; // other EU country codes...
-			case FR, ES, RO -> euTaxCalculator;
-		};
+//		return switch (originCountry) {
+//			case UK -> brexitTaxCalculator;
+//			case CN -> chinaTaxCalculator; // other EU country codes...
+//			case FR, ES, RO -> euTaxCalculator;
+//		};
+
+//		return appContex.getBean(calculators.get(originCountry.name()));
 	}
+
+	@Autowired
+	private ApplicationContext appContex;
 }
 enum CountryCode {
 	RO,
