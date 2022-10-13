@@ -1,6 +1,7 @@
 package victor.training.patterns.strategy;
 
 import lombok.Data;
+import org.mockito.internal.verification.api.InOrderContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -67,6 +68,16 @@ class CustomsService {
 	@Autowired
 	private List<ITaxCalculator> taxCalculators;
 }
+interface DateDeFiltrare {
+
+}
+class DateleToateCaz1 implements DateDeFiltrare {
+
+}
+class DateleToateCaz2 implements DateDeFiltrare {
+
+}
+
 
 interface ITaxCalculator {
 //	int getPriority();
