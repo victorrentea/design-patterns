@@ -57,6 +57,7 @@ class CustomsService {
 	// 2) are default thnrtow (JDD)
 	// 3) in case 1-2-3 lini -> extract methoda
 	private ITaxCalculator selectCalculator(String countryIso) {
+		System.out.println("Calculatiorii toti: " + taxCalculators);
 		return taxCalculators.stream()
 				.filter(tc -> tc.appliesFor(countryIso, LocalDate.now()))
 				.findFirst() // hmmmmmm???
@@ -68,11 +69,17 @@ class CustomsService {
 }
 
 interface ITaxCalculator {
+//	int getPriority();
 	boolean appliesFor(String countryIso, LocalDate entryDate);
 	public double compute(double tobaccoValue, double regularValue);
 }
 @Service
 class ChinaTaxCalculator2023 implements ITaxCalculator{
+//	@Override
+//	public int getPriority() {
+//		return 1;
+//	}
+
 	@Override
 	public boolean appliesFor(String countryIso, LocalDate entryDate) {
 		return entryDate.getYear() == 2023 && countryIso.equals("CN");
@@ -84,6 +91,10 @@ class ChinaTaxCalculator2023 implements ITaxCalculator{
 }
 @Service
 class BrexitTaxCalculator implements ITaxCalculator{
+//	@Override
+//	public int getPriority() { // cuplare cu toti ceilalti. mai bine configurezi din exterior ordinea
+//		return 20;
+//	}
 	@Override
 	public boolean appliesFor(String countryIso, LocalDate entryDate) {
 		return "UK".equals(countryIso);
@@ -103,5 +114,16 @@ class EUTaxCalculator implements ITaxCalculator{
 
 	public double compute(double tobaccoValue, double degeabaValue) {
 		return tobaccoValue / 3;
+	}
+}
+@Service
+class DefaultTaxCalculator implements ITaxCalculator{
+	@Override
+	public boolean appliesFor(String countryIso, LocalDate entryDate) {
+		return true;
+	}
+
+	public double compute(double tobaccoValue, double degeabaValue) {
+		return  0;
 	}
 }
