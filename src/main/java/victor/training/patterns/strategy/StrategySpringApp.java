@@ -9,7 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -28,7 +31,7 @@ public class StrategySpringApp implements CommandLineRunner {
 	// TODO [3] Wire with Spring
 	public void run(String... args) {
 		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
-		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
+//		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
 		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
 
 		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
@@ -41,17 +44,11 @@ class CustomsService {
 //	private Map<String, Class<? extends ITaxCalculator>> calculators;  // hehe
 
 
-	@Autowired
-	private ChinaTaxCalculator chinaTaxCalculator;
-	@Autowired
-	private BrexitTaxCalculator brexitTaxCalculator;
-	@Autowired
-	private EUTaxCalculator euTaxCalculator;
 
 	public double calculateCustomsTax(String originCountry,
 									  double tobaccoValue,
 									  double regularValue) { // UGLY API we CANNOT change
-		ITaxCalculator taxCalculator = selectCalculator(CountryCode.valueOf(originCountry));
+		ITaxCalculator taxCalculator = selectCalculator(originCountry);
 		return taxCalculator.compute(tobaccoValue,regularValue);
 	}
 
@@ -59,53 +56,50 @@ class CustomsService {
 	// 1) sta singur in metoda
 	// 2) are default thnrtow (JDD)
 	// 3) in case 1-2-3 lini -> extract methoda
-	private ITaxCalculator selectCalculator(CountryCode originCountry) {
-//		return switch (originCountry) {
-//			case UK -> brexitTaxCalculator;
-//			case CN -> chinaTaxCalculator; // other EU country codes...
-//			case FR, ES, RO -> euTaxCalculator;
-//		};
-
-//		return appContex.getBean(calculators.get(originCountry.name()));
+	private ITaxCalculator selectCalculator(String countryIso) {
+		return taxCalculators.stream()
+				.filter(tc -> tc.appliesFor(countryIso, LocalDate.now()))
+				.findFirst() // hmmmmmm???
+				.orElseThrow();
 	}
 
 	@Autowired
-	private ApplicationContext appContex;
-}
-enum CountryCode {
-	RO,
-	FR,
-//	DONBAS,
-	ES,
-	CN,
-	UK,
+	private List<ITaxCalculator> taxCalculators;
 }
 
 interface ITaxCalculator {
+	boolean appliesFor(String countryIso, LocalDate entryDate);
 	public double compute(double tobaccoValue, double regularValue);
 }
 @Service
-class ChinaTaxCalculator implements ITaxCalculator{
+class ChinaTaxCalculator2023 implements ITaxCalculator{
+	@Override
+	public boolean appliesFor(String countryIso, LocalDate entryDate) {
+		return entryDate.getYear() == 2023 && countryIso.equals("CN");
+	}
+
 	public double compute(double tobaccoValue, double regularValue) {
 		return tobaccoValue + regularValue;
 	}
 }
 @Service
 class BrexitTaxCalculator implements ITaxCalculator{
+	@Override
+	public boolean appliesFor(String countryIso, LocalDate entryDate) {
+		return "UK".equals(countryIso);
+	}
+
 	public double compute(double tobaccoValue, double regularValue) {
-		// 2002 // 3
-		// 2002 // 3
-		// 2003  // a
-		// 2003  // a
-		// 2003  // a
-		// 2003  // a
-		// 2003  // a
 		return tobaccoValue / 2 + regularValue;
 	}
 
 }
 @Service
 class EUTaxCalculator implements ITaxCalculator{
+	@Override
+	public boolean appliesFor(String countryIso, LocalDate entryDate) {
+		return List.of("RO", "ES", "FR").contains(countryIso);
+	}
 
 	public double compute(double tobaccoValue, double degeabaValue) {
 		return tobaccoValue / 3;
