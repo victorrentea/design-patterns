@@ -45,7 +45,7 @@ class CustomsService {
 	public double calculateCustomsTax(String originCountry,
 									  double tobaccoValue,
 									  double regularValue) { // UGLY API we CANNOT change
-		ITaxCalculator taxCalculator = selectCalculator(originCountry);
+		ITaxCalculator taxCalculator = selectCalculator(CountryCode.valueOf(originCountry));
 		return taxCalculator.compute(tobaccoValue,regularValue);
 	}
 
@@ -53,20 +53,21 @@ class CustomsService {
 	// 1) sta singur in metoda
 	// 2) are default thnrtow (JDD)
 	// 3) in case 1-2-3 lini -> extract methoda
-	private ITaxCalculator selectCalculator(String originCountry) {
-		switch (originCountry) {
-			case "UK":
-				return brexitTaxCalculator;
-			case "CN":
-				return chinaTaxCalculator;
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO":
-				return euTaxCalculator;
-			default:
-				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
+	private ITaxCalculator selectCalculator(CountryCode originCountry) {
+		return switch (originCountry) {
+			case UK -> brexitTaxCalculator;
+			case CN -> chinaTaxCalculator; // other EU country codes...
+			case FR, ES, RO -> euTaxCalculator;
+		};
 	}
+}
+enum CountryCode {
+	RO,
+	FR,
+//	DONBAS,
+	ES,
+	CN,
+	UK,
 }
 
 interface ITaxCalculator {
