@@ -1,36 +1,27 @@
 package victor.training.patterns.template;
 
 import lombok.Data;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Random;
 
-@SpringBootApplication
-public class TemplateSpringApp implements CommandLineRunner {
+public class Template1_Email {
    public static void main(String[] args) {
-      SpringApplication.run(TemplateSpringApp.class, args);
-   }
-
-   public void run(String... args) {
       placeOrder();
       shipOrder();
    }
 
-   private void placeOrder() {
+   private static void placeOrder() {
       // logic
       new EmailService().sendOrderPlacedEmail("a@b.com");
    }
 
-   private void shipOrder() {
+   private static void shipOrder() {
       // logic
       // TODO implement 'similar to how order placed email was implemented'
    }
 }
 
 class EmailService {
-
    public void sendOrderPlacedEmail(String emailAddress) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;

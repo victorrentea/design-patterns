@@ -1,21 +1,27 @@
 package victor.training.patterns.proxy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class ProxyIntro {
     public static void main(String[] args) {
-        // We play the role of Spring here
+        // Play the role of Spring here (there's no framework)
+        // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
+        // TODO 2 : without changing anything below the line (w/o any interface)
+        // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        // TODO: LOG the arguments of any invocation of a method in Maths. without chaging the code below "THE LINE"
         Maths maths = new Maths();
-        SecondGrade secondGrade = new SecondGrade(maths);
-        new ProxyIntro().run(secondGrade);
-    }
 
-    //    public static void main(String[] args) {SpringApplication.run(ProxyIntro.class, args);}
+        SecondGrade secondGrade = new SecondGrade(maths);
+
+        new ProxyIntro().run(secondGrade);
+
+        // TODO 4 : let Spring do its job, and do the same with an Aspect
+        // SpringApplication.run(ProxyIntro.class, args);
+    }
 
     // =============== THE LINE =================
 
@@ -49,7 +55,11 @@ class Maths {
     }
 
     public int product(int a, int b) {
-        return a * b;
+        int total = 0;
+        for (int i = 0; i < a; i++) {
+            total = sum(total, b);
+        }
+        return total;
     }
 }
 
