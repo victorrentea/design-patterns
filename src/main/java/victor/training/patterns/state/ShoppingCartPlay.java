@@ -2,7 +2,7 @@ package victor.training.patterns.state;
 
 import lombok.Data;
 
-public class Carrefour {
+public class ShoppingCartPlay {
    public static void main(String[] args) {
       ShoppingCart cart = new ShoppingCart();
 
