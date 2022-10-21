@@ -2,6 +2,7 @@ package victor.training.patterns.strategy;
 
 import lombok.SneakyThrows;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -11,12 +12,13 @@ public interface ConfigProvider {
 
 class ConfigFileProvider implements ConfigProvider {
 	
-	@SneakyThrows
 	public Properties getProperties() {
 		try (InputStream is = ConfigFileProvider.class.getResourceAsStream("/application.properties")) {
 			Properties properties = new Properties();
 			properties.load(is);
 			return properties; 
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

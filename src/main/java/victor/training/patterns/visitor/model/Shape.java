@@ -2,6 +2,6 @@ package victor.training.patterns.visitor.model;
 
 import victor.training.patterns.visitor.ShapeVisitor;
 
-public interface Shape {
-	void accept(ShapeVisitor visitor);
+sealed public interface Shape permits Circle, Square {
+    void accept(ShapeVisitor visitor);
 }

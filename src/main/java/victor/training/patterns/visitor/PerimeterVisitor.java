@@ -3,22 +3,22 @@ package victor.training.patterns.visitor;
 import victor.training.patterns.visitor.model.Circle;
 import victor.training.patterns.visitor.model.Square;
 
-public class PerimeterCalculatorVisitor implements ShapeVisitor {
+public class PerimeterVisitor implements ShapeVisitor {
 
-	private double total;
+	private double totalPerimeter;
 	
 	@Override
 	public void visit(Square square) {
-		total += 4 * square.getEdge();
+		totalPerimeter += 4 * square.edge();
 	}
 
 	@Override
 	public void visit(Circle circle) {
-		total += circle.getRadius() * 2 * Math.PI;
+		totalPerimeter += 2 * Math.PI * circle.radius();
 	}
 	
-	public double getTotal() {
-		return total;
+	public double getTotalPerimeter() {
+		return totalPerimeter;
 	}
 
 }
