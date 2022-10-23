@@ -36,13 +36,6 @@ public class CustomerFacade {
 		customer.setName(dto.name);
 		customer.setSite(siteRepo.getReference(dto.countryId));
 
-		if (customer.getName().trim().length() <= 5) {
-			throw new IllegalArgumentException("Name too short");
-		}
-
-		if (customerRepo.customerExistsWithEmail(customer.getEmail())) {
-			throw new IllegalArgumentException("Email already registered");
-		}
 		// Heavy business logic
 		// Heavy business logic
 		// Heavy business logic

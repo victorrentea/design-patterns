@@ -17,7 +17,7 @@ public class VisitorPlay {
 
         System.out.println("Total perimeter: " + oop(shapes));
         System.out.println("Total perimeter: " + visitor(shapes));
-        System.out.println("Total perimeter: " + sealed(shapes));
+//        System.out.println("Total perimeter: " + sealed(shapes));
 
         double totalArea = 0;// TODO
         System.out.println("Total area: " + totalArea);
@@ -43,14 +43,14 @@ public class VisitorPlay {
     //</editor-fold>
 
     //<editor-fold desc="java 19 + sealed Shape interface">
-    private static double sealed(List<Shape> shapes) {
-        return shapes.stream()
-                .mapToDouble(shape -> switch (shape) {
-                    case Square s -> s.edge() * 4;
-                    case Circle c -> c.radius() * Math.PI * 2;
-                })
-                .sum();
-    }
+//    private static double sealed(List<Shape> shapes) {
+//        return shapes.stream()
+//                .mapToDouble(shape -> switch (shape) {
+//                    case Square s -> s.edge() * 4;
+//                    case Circle c -> c.radius() * Math.PI * 2;
+//                })
+//                .sum();
+//    }
     //</editor-fold>
 }
 

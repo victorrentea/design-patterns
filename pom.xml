@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit4</artifactId>
-            <version>0.15.0</version>
+            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
