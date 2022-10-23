@@ -1,6 +1,8 @@
 package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 
@@ -31,6 +33,9 @@ class FileExporter {
         this.orderRepo = orderRepo;
         this.exportFolder = exportFolder;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(FileExporter.class);
+
 
     public File exportOrders() {
         File file = new File(exportFolder, "orders.csv");
