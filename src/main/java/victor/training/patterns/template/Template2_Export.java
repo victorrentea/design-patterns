@@ -34,9 +34,6 @@ class FileExporter {
         this.exportFolder = exportFolder;
     }
 
-    private static final Logger log = LoggerFactory.getLogger(FileExporter.class);
-
-
     public File exportOrders() {
         File file = new File(exportFolder, "orders.csv");
         long t0 = System.currentTimeMillis();
