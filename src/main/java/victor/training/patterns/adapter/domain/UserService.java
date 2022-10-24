@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service // holy domain ZEN PEACE HARMONY for my core logic.
 public class UserService {
 	@Autowired
-	private UserApiAdapter userAPiAdapter;
+	private IUserApiAdapter userAPiAdapter;
 
 	public void importUserFromLdap(String username) {
 		User user = userAPiAdapter.fetchUser(username); // scream: NETWORK! don't call me in a loop!!

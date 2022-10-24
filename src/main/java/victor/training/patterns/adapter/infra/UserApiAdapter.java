@@ -1,7 +1,10 @@
-package victor.training.patterns.adapter.domain;
+package victor.training.patterns.adapter.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import victor.training.patterns.adapter.domain.Adapter;
+import victor.training.patterns.adapter.domain.IUserApiAdapter;
+import victor.training.patterns.adapter.domain.User;
 import victor.training.patterns.adapter.infra.LdapUserApiClient;
 import victor.training.patterns.adapter.infra.LdapUserDto;
 
@@ -10,16 +13,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 
-@Component
-@Retention(RetentionPolicy.RUNTIME)
-@interface Adapter {
-}
-
 @RequiredArgsConstructor
 @Adapter
-public class UserApiAdapter {
+public class UserApiAdapter implements IUserApiAdapter {
     private final LdapUserApiClient apiClient;
 
+    @Override
     public User fetchUser(String username) {
         List<LdapUserDto> list = apiClient.search(null, null, username.toUpperCase());
 
