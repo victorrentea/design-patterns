@@ -18,7 +18,7 @@ public class UserService {
 		List<LdapUserDto> list = apiClient.search(null, null, username.toUpperCase());
 
 		if (list.size() != 1) {
-			throw new IllegalArgumentException("There is no single user matching username " + username);
+			throw new IllegalArgumentException("There is  MARIO no single user matching username " + username);
 		}
 
 		LdapUserDto ldapUser = list.get(0);

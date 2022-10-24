@@ -9,49 +9,50 @@ import victor.training.patterns.facade.infra.EmailClient;
 import victor.training.patterns.facade.repo.CustomerRepo;
 import victor.training.patterns.facade.repo.EmailRepo;
 import victor.training.patterns.facade.repo.SiteRepo;
+import victor.training.patterns.facade.service.CustomerService;
 
-import java.text.SimpleDateFormat;
-
-@Facade
+//@RequiredArgsConstructor
+//class CustomerService {
+//	private final CustomerRepo customerRepo;
+//
+//	public Customer findById(long customerId) {
+//		// "indirection without abstraction" = just going through this method without HIDING andything.
+//		return customerRepo.findById(customerId); // "Middle Man" code smell
+//	}
+//}
+//@Facade
 @RequiredArgsConstructor
 public class CustomerFacade {
 	private final CustomerRepo customerRepo;
 	private final EmailClient emailClient;
 	private final EmailRepo emailRepo;
 	private final SiteRepo siteRepo;
+	private final CustomerService customerService;
 
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
-		CustomerDto dto = new CustomerDto();
-		dto.name = customer.getName();
-		dto.email = customer.getEmail();
-		dto.creationDateStr = new SimpleDateFormat("yyyy-MM-dd").format(customer.getCreationDate());
-		dto.id = customer.getId();
-		return dto;
+		// push this to?
+		// - hand-crafted or auto-mapper
+		// - NOT service => propagate the API model inside my core logic.
+		// - dto = new CustomerDto(customer); // if you have CONTROL on your DTO (ie you didnt generated them)
+		// - NOT dto = customer.toDto(); // push the conversion in the @Entity  BAD BAD BAD BAD you pollute the Domain with Presentation/API concerns
+		// - KT: fun Customer.toDto() { } extgension functions ❤️
+		return new CustomerDto(customer);
 	}
 
 	public void register(CustomerDto dto) {
+		// see above solutions
 		Customer customer = new Customer();
 		customer.setEmail(dto.email);
 		customer.setName(dto.name);
 		customer.setSite(siteRepo.getReference(dto.countryId));
 
-		// Heavy business logic
-		// Heavy business logic
-		// Heavy business logic
-
-		int discountPercentage = 3;
-		if (customer.isGoldMember()) {
-			discountPercentage += 1;
-		}
-		System.out.println("Biz Logic with discount " + discountPercentage);
-		// Heavy business logic
-		// Heavy business logic
-		customerRepo.save(customer);
-		// Heavy business logic
+		customerService.registerCustomer(customer);
 
 		sendRegistrationEmail(customer.getEmail());
 	}
+
+
 
 	private void sendRegistrationEmail(String emailAddress) {
 		System.out.println("Sending activation link via email to " + emailAddress);

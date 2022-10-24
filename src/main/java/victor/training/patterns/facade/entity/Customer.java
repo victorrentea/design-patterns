@@ -16,7 +16,16 @@ public class Customer {
 	private LocalDate creationDate;
 	private boolean goldMember;
 
-	public boolean isGoldMember() {
+    public int getDiscountPercentage() {
+		// OOP: keep bits(<7 lines) of REUSABLE DOMAIN behavior next to state. = ❤️ >> DDD
+        int discountPercentage = 3;
+		if (goldMember) {
+            discountPercentage += 1;
+        }
+        return discountPercentage;
+    }
+
+    public boolean isGoldMember() {
 		return goldMember;
 	}
 
