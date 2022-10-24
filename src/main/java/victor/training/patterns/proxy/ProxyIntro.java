@@ -16,7 +16,9 @@ import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 @SpringBootApplication
@@ -72,9 +74,21 @@ public class ProxyIntro {
 //
 //        new ProxyIntro().run(secondGrade);
 
+        I i = (I)Proxy.newProxyInstance(I.class.getClassLoader(), new Class<?>[]{I.class}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                return "Interface Proxies";
+            }
+        });
+        System.out.println(i.hi());
+
         // TODO 4 : let Spring do its job, and do the same with an Aspect
          SpringApplication.run(ProxyIntro.class, args);
     }
+interface I {
+    String hi();
+}
+
 
     // =============== THE LINE =================
 
