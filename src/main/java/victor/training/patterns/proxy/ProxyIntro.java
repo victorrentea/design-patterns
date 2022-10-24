@@ -121,15 +121,17 @@ class SecondGrade { // my daughter
 @Facade
 /*final*/ class Maths { // breaks startup
 //    @Secured("ROLE_ADMIN") // ignored
+// @Transactional(propagation=REQUIRES_NEW)
     /*final*/ public int sum(int a, int b) { // silently ignored at runtime. No error. 🤬 BAD worse than exception.
         return a + b;
     }
 
 //    @Transactional
     public int product(int a, int b) {
+//        return a * b;// not in 2nd grade
         int total = 0;
         for (int i = 0; i < a; i++) {
-            total = sum(total, b);
+            total = sum(total, b); // local method calls are NOT intercepted
         }
         return total;
     }
