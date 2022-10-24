@@ -11,6 +11,7 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import victor.training.patterns.util.ThreadUtils;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -20,6 +21,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.function.Supplier;
+
+import static java.lang.System.currentTimeMillis;
 
 @SpringBootApplication
 public class ProxyIntro {
@@ -66,7 +70,10 @@ public class ProxyIntro {
 ////            @Override
 ////            public int sum(int a, int b) {
 ////                System.out.println("Guess who's back !?");
-////                return super.sum(a, b);
+//        long t0 = currentTimeMillis();
+////                x=  super.sum(a, b);
+//        long t1 = currentTimeMillis();
+//        return x;
 ////            }
 ////        };
 //
@@ -114,8 +121,23 @@ class SecondGrade { // my daughter
         System.out.println("SPring has to trick you in order to intercept methods: in gives you not th real Maths, but a proxy: " + maths.getClass());
         System.out.println("2+4=" + maths.sum(2, 4));
         System.out.println("1+5=" + maths.sum(1, 5));
-        System.out.println("2x3=" + maths.product(2, 3));
+
+        // TODO measure how much time it takes my daughter to compute 2 x 3
+        // 1) OOP => Decorator {product() { t0=... , delegate.product(); t1=... print (t1-t0) }
+        // 2) AOP => Proxy that in its invoke, ...
+        // 3) FP =>  ??? "functions are first-class citizens"
+        int x = measure( () -> maths.product(2, 3)) ;
+
+        System.out.println("2x3=" + x);
         System.out.println("3x3=" + maths.product(3, 3));
+    }
+
+    private int measure(Supplier<Integer> f) { // Util :L)
+        long t0 = currentTimeMillis();
+        Integer result = f.get();
+        long t1 = currentTimeMillis();
+        System.out.println("It took: " + (t1-t0));
+        return result;
     }
 }
 @Facade
@@ -123,14 +145,16 @@ class SecondGrade { // my daughter
 //    @Secured("ROLE_ADMIN") // ignored
 // @Transactional(propagation=REQUIRES_NEW)
     /*final*/ public int sum(int a, int b) { // silently ignored at runtime. No error. 🤬 BAD worse than exception.
+        ThreadUtils.sleepq(100);
         return a + b;
     }
 
 //    @Transactional
+//    @Timed("product") // there is already an aspect from Micrometer / Spring that reports a metric of how much time it took to call this method
     public int product(int a, int b) {
 //        return a * b;// not in 2nd grade
-        int total = 0;
-        for (int i = 0; i < a; i++) {
+        int total = b;
+        for (int i = 1; i < a; i++) {
             total = sum(total, b); // local method calls are NOT intercepted
         }
         return total;
