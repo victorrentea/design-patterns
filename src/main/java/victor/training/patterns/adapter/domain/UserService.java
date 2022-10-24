@@ -4,43 +4,38 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import victor.training.patterns.adapter.infra.LdapUserDto;
-import victor.training.patterns.adapter.infra.LdapUserWebserviceClient;
+import victor.training.patterns.adapter.infra.LdapUserApiClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 public class UserService {
 	@Autowired
-	private LdapUserWebserviceClient wsClient;
+	private LdapUserApiClient apiClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
+		List<LdapUserDto> list = apiClient.search(null, null, username.toUpperCase());
+
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
 		}
-		LdapUserDto ldapUser = list.get(0);
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
 
-		if (user.getWorkEmail() != null) {
-			log.debug("Send welcome email to " + user.getWorkEmail());
-		}
-		log.debug("Insert user in my database");
-		log.debug("Create user profile");
-		log.debug("Check user status in permission manager");
+		LdapUserDto ldapUser = list.get(0);
+
+		deepDomainLogic(ldapUser);
+
 	}
 
-	public List<User> searchUserInLdap(String username) {
-		List<LdapUserDto> list = wsClient.search(username.toUpperCase(), null, null);
-		List<User> results = new ArrayList<>();
-		for (LdapUserDto ldapUser : list) {
-			String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-			User user = new User(ldapUser.getuId(), fullName, ldapUser.getWorkEmail());
-			results.add(user);
+	private void deepDomainLogic(LdapUserDto ldapUser) {
+		if (ldapUser.getWorkEmail()!=null) {
+			log.debug("Send welcome email to  " + ldapUser.getWorkEmail());
 		}
-		return results.subList(0, 5);
+
+		log.debug("Insert user in my database: " + ldapUser.getuId());
+
+		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
+		log.debug("More business logic with " + fullName + " of id " + ldapUser.getuId().toLowerCase());
 	}
 
 }
