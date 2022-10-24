@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,6 +21,7 @@ public class ProxyIntro {
         Maths maths = new Maths();
 
 //        new BufferedReader(new BufferedReader(new BufferedReader(new FileReader("cute.shit"))));
+//        new JScrollPane(new JTable()); UI
 
         SecondGrade secondGrade = new SecondGrade(new MathsWithLog(new MathsWithLog(maths)));
 
