@@ -42,7 +42,7 @@ public class ProxyIntro {
 }
 
 @Slf4j
-class MathsWithLog implements IMaths {
+class MathsWithLog implements IMaths { // decorator
     private final IMaths delegate;
 
     MathsWithLog(IMaths delegate) {
