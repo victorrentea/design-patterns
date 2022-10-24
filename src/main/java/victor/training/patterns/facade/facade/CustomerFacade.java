@@ -9,6 +9,7 @@ import victor.training.patterns.facade.infra.EmailClient;
 import victor.training.patterns.facade.repo.CustomerRepo;
 import victor.training.patterns.facade.repo.EmailRepo;
 import victor.training.patterns.facade.repo.SiteRepo;
+import victor.training.patterns.facade.service.NotificationService;
 
 import java.text.SimpleDateFormat;
 
@@ -16,8 +17,7 @@ import java.text.SimpleDateFormat;
 @RequiredArgsConstructor
 public class CustomerFacade {
 	private final CustomerRepo customerRepo;
-	private final EmailClient emailClient;
-	private final EmailRepo emailRepo;
+	private final NotificationService notificationService;
 	private final SiteRepo siteRepo;
 
 	public CustomerDto findById(long customerId) {
@@ -50,20 +50,8 @@ public class CustomerFacade {
 		customerRepo.save(customer);
 		// Heavy business logic
 
-		sendRegistrationEmail(customer.getEmail());
+		notificationService.sendRegistrationEmail(customer.getEmail());
 	}
 
-	private void sendRegistrationEmail(String emailAddress) {
-		System.out.println("Sending activation link via email to " + emailAddress);
-		Email email = new Email();
-		email.setFrom("noreply");
-		email.setTo(emailAddress);
-		email.setSubject("Welcome!");
-		email.setBody("You'll like it! Sincerely, Team");
 
-		if (!emailRepo.emailWasSentBefore(email.hashCode())) {
-			emailClient.sendEmail(email.getFrom(), email.getTo(), email.getSubject(), email.getBody());
-			emailRepo.saveSentEmail(email);
-		}
-	}
 }

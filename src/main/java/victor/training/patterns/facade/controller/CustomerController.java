@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import victor.training.patterns.facade.facade.CustomerFacade;
 import victor.training.patterns.facade.facade.dto.CustomerDto;
 
-@RestController //faking it
+@RestController
 @RequiredArgsConstructor
 public class CustomerController {
    private final CustomerFacade customerFacade;
