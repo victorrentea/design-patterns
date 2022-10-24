@@ -2,6 +2,7 @@ package victor.training.patterns.proxy;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cglib.proxy.Callback;
@@ -22,64 +23,63 @@ import java.util.Arrays;
 public class ProxyIntro {
     public static void main(String[] args) throws FileNotFoundException {
 
-
 //        new BufferedReader(new BufferedReader(new BufferedReader(new FileReader("cute.shit"))));
 //        new JScrollPane(new JTable()); UI
 
 //        SecondGrade secondGrade = new SecondGrade(new MathsWithLog(new MathsWithLog(maths)));
 
-
-        // Play the role of Spring here (there's no framework)
-        // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
-        // TODO 2 : without changing anything below the line (w/o any interface)
-        // TODO 3 : so that any new methods in Maths are automatically logged [hard]
-
-        Maths realMaths = new Maths(); // your spring bean
-
-        // WARNING: you should not write such code in your production!
-        // it's just to demonstrate the magic behind spring/ejb/guice/hibernate
-
-        Callback h = new MethodInterceptor() {
-            @Override
-            public Object intercept(Object o,
-                                    Method method,
-                                    Object[] arguments, MethodProxy methodProxy) throws Throwable {
-                System.out.println("Calling " + method.getName() + " with " + Arrays.toString(arguments)) ;
-                // call real method:
-//                if (method.isAnnotationPresent(Transactional.class)) {
-//                    // stuff
-//                }
-                return method.invoke(realMaths, arguments);
-            }
-        };
-        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // CGLIB library
-        // generate a dynamic subclass of your class and @Overrides all its public methods
-        // calling "intercept" method above.
-
-
-        // in plain java, what can I pass to a method requiring a Maths instance?
-        // a) new Maths(),
-        // b) new Maths() {   }
-//        Maths mathsProxy = new Maths() { // anonymous subclass
+//
+//        // Play the role of Spring here (there's no framework)
+//        // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
+//        // TODO 2 : without changing anything below the line (w/o any interface)
+//        // TODO 3 : so that any new methods in Maths are automatically logged [hard]
+//
+//        Maths realMaths = new Maths(); // your spring bean
+//
+//        // WARNING: you should not write such code in your production!
+//        // it's just to demonstrate the magic behind spring/ejb/guice/hibernate
+//
+//        Callback h = new MethodInterceptor() {
 //            @Override
-//            public int sum(int a, int b) {
-//                System.out.println("Guess who's back !?");
-//                return super.sum(a, b);
+//            public Object intercept(Object o,
+//                                    Method method,
+//                                    Object[] arguments, MethodProxy methodProxy) throws Throwable {
+//                System.out.println("Calling " + method.getName() + " with " + Arrays.toString(arguments)) ;
+//                // call real method:
+////                if (method.isAnnotationPresent(Transactional.class)) {
+////                    // stuff
+////                }
+//                return method.invoke(realMaths, arguments);
 //            }
 //        };
-
-        SecondGrade secondGrade = new SecondGrade(mathsProxy);
-
-        new ProxyIntro().run(secondGrade);
+//        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // CGLIB library
+//        // generate a dynamic subclass of your class and @Overrides all its public methods
+//        // calling "intercept" method above.
+//
+//
+//        // in plain java, what can I pass to a method requiring a Maths instance?
+//        // a) new Maths(),
+//        // b) new Maths() {   }
+////        Maths mathsProxy = new Maths() { // anonymous subclass
+////            @Override
+////            public int sum(int a, int b) {
+////                System.out.println("Guess who's back !?");
+////                return super.sum(a, b);
+////            }
+////        };
+//
+//        SecondGrade secondGrade = new SecondGrade(mathsProxy);
+//
+//        new ProxyIntro().run(secondGrade);
 
         // TODO 4 : let Spring do its job, and do the same with an Aspect
-        // SpringApplication.run(ProxyIntro.class, args);
+         SpringApplication.run(ProxyIntro.class, args);
     }
 
     // =============== THE LINE =================
 
     @Autowired
-    public void run(SecondGrade secondGrade) {
+    public void run(SecondGrade secondGrade) { // SPring passes the SecondGrade object
         System.out.println("At runtime...");
         secondGrade.mathClass();
     }
@@ -93,9 +93,11 @@ class SecondGrade { // my daughter
 
     SecondGrade(Maths maths) {
         this.maths = maths;
-    }
+    } // injected by Spring. And guess what? the matsh inhjected is not the real object,
+    // but a PROXY
 
     public void mathClass() {
+        System.out.println("SPring has to trick you in order to intercept methods: in gives you not th real Maths, but a proxy: " + maths.getClass());
         System.out.println("2+4=" + maths.sum(2, 4));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
