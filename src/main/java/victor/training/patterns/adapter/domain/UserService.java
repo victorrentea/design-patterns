@@ -9,7 +9,7 @@ import victor.training.patterns.adapter.infra.LdapUserApiClient;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service // holy domain ZEN PEACE HARMONY for my core logic.
 public class UserService {
 	@Autowired
 	private LdapUserApiClient apiClient;
@@ -22,20 +22,29 @@ public class UserService {
 		}
 
 		LdapUserDto ldapUser = list.get(0);
+		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
+		User user = new User(ldapUser.getuId(), ldapUser.getWorkEmail(), fullName);
 
-		deepDomainLogic(ldapUser);
+		deepDomainLogic(user);
 
 	}
 
-	private void deepDomainLogic(LdapUserDto ldapUser) {
-		if (ldapUser.getWorkEmail()!=null) {
-			log.debug("Send welcome email to  " + ldapUser.getWorkEmail());
+	private void deepDomainLogic(User ldapUser) { // to many fields in the dto
+		if (ldapUser.hasWorkEmail()) { // add behavior
+			log.debug("Send welcome email to  " + ldapUser.workEmail());
 		}
 
-		log.debug("Insert user in my database: " + ldapUser.getuId());
+		log.debug("Insert user in my database: " + ldapUser.username()); // MY names
 
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		log.debug("More business logic with " + fullName + " of id " + ldapUser.getuId().toLowerCase());
+		log.debug("More business logic with " + ldapUser.fullName() + " of id " +
+				  ldapUser.username().toLowerCase()); // never null
 	}
+
+//	private static void innocentMethodNeverSuspectedToSideEffect(User ldapUser) {
+//		// dark dark night coding alone: a "quick fix"
+//		if (ldapUser.id() == null) { // no setter
+//			ldapUser.setuId("N/A"); // BAD: altering
+//		}
+//	}
 
 }
