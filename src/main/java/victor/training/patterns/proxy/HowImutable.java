@@ -1,5 +1,7 @@
 package victor.training.patterns.proxy;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +43,9 @@ class Play {
 
         System.out.println(imm.getList());
 
+        // break liskov ? because performacne. and because J uscks.
+        // what in the world told the client that [s]he is not allowed to call add()??
+        // runtime exception !!!
         imm.getList().add("Surprise!!!");
 
 

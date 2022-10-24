@@ -3,27 +3,72 @@ package victor.training.patterns.proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class ProxyIntro {
     public static void main(String[] args) throws FileNotFoundException {
+
+
+//        new BufferedReader(new BufferedReader(new BufferedReader(new FileReader("cute.shit"))));
+//        new JScrollPane(new JTable()); UI
+
+//        SecondGrade secondGrade = new SecondGrade(new MathsWithLog(new MathsWithLog(maths)));
+
+
         // Play the role of Spring here (there's no framework)
         // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        Maths maths = new Maths();
+        Maths realMaths = new Maths(); // your spring bean
 
-//        new BufferedReader(new BufferedReader(new BufferedReader(new FileReader("cute.shit"))));
-//        new JScrollPane(new JTable()); UI
+        // WARNING: you should not write such code in your production!
+        // it's just to demonstrate the magic behind spring/ejb/guice/hibernate
 
-        SecondGrade secondGrade = new SecondGrade(new MathsWithLog(new MathsWithLog(maths)));
+        Callback h = new MethodInterceptor() {
+            @Override
+            public Object intercept(Object o,
+                                    Method method,
+                                    Object[] arguments, MethodProxy methodProxy) throws Throwable {
+                System.out.println("Calling " + method.getName() + " with " + Arrays.toString(arguments)) ;
+                // call real method:
+//                if (method.isAnnotationPresent(Transactional.class)) {
+//                    // stuff
+//                }
+                return method.invoke(realMaths, arguments);
+            }
+        };
+        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // CGLIB library
+        // generate a dynamic subclass of your class and @Overrides all its public methods
+        // calling "intercept" method above.
+
+
+        // in plain java, what can I pass to a method requiring a Maths instance?
+        // a) new Maths(),
+        // b) new Maths() {   }
+//        Maths mathsProxy = new Maths() { // anonymous subclass
+//            @Override
+//            public int sum(int a, int b) {
+//                System.out.println("Guess who's back !?");
+//                return super.sum(a, b);
+//            }
+//        };
+
+        SecondGrade secondGrade = new SecondGrade(mathsProxy);
 
         new ProxyIntro().run(secondGrade);
 
@@ -41,32 +86,12 @@ public class ProxyIntro {
 
 }
 
-@Slf4j
-class MathsWithLog implements IMaths { // decorator
-    private final IMaths delegate;
-
-    MathsWithLog(IMaths delegate) {
-        this.delegate = delegate;
-    }
-
-    @Override
-    public int sum(int a, int b) {
-        log.info("Calling sum " + a + ", " + b);
-        return delegate.sum(a,b);
-    }
-
-    @Override
-    public int product(int a, int b) {
-        log.info("Calling product " + a + ", " + b);
-        return delegate.product(a, b);
-    }
-}
 
 @Service
 class SecondGrade { // my daughter
-    private final IMaths maths;
+    private final Maths maths;
 
-    SecondGrade(IMaths maths) {
+    SecondGrade(Maths maths) {
         this.maths = maths;
     }
 
@@ -74,22 +99,17 @@ class SecondGrade { // my daughter
         System.out.println("2+4=" + maths.sum(2, 4));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
+        System.out.println("3x3=" + maths.product(3, 3));
     }
 }
-//class MathsLogged extends  Maths {}
-interface IMaths{
-    int sum(int a, int b);
-
-    int product(int a, int b);
-}
 @Facade
-class Maths implements IMaths {
-    @Override
-    public int sum(int a, int b) {
+/*final*/ class Maths { // breaks startup
+//    @Secured("ROLE_ADMIN") // ignored
+    /*final*/ public int sum(int a, int b) { // silently ignored at runtime. No error. 🤬 BAD worse than exception.
         return a + b;
     }
 
-    @Override
+//    @Transactional
     public int product(int a, int b) {
         int total = 0;
         for (int i = 0; i < a; i++) {
