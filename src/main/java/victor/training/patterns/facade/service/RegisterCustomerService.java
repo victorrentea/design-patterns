@@ -7,7 +7,8 @@ import victor.training.patterns.facade.repo.CustomerRepo;
 
 @RequiredArgsConstructor
 @Service
-public class CustomerService {
+public class RegisterCustomerService {
+    // cohesive name; people will NOT leave their shit in here by accident
     private final CustomerRepo customerRepo;
     public void registerCustomer(Customer customer) {
         // Heavy business logic using Customer ENTITY!!
@@ -25,4 +26,5 @@ public class CustomerService {
         customerRepo.save(customer);
         // Heavy business logic
     }
+
 }

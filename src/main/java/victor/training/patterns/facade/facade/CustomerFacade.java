@@ -1,15 +1,17 @@
 package victor.training.patterns.facade.facade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import victor.training.patterns.facade.facade.dto.CustomerDto;
-import victor.training.patterns.facade.Facade;
 import victor.training.patterns.facade.entity.Customer;
 import victor.training.patterns.facade.entity.Email;
 import victor.training.patterns.facade.infra.EmailClient;
 import victor.training.patterns.facade.repo.CustomerRepo;
 import victor.training.patterns.facade.repo.EmailRepo;
 import victor.training.patterns.facade.repo.SiteRepo;
-import victor.training.patterns.facade.service.CustomerService;
+import victor.training.patterns.facade.service.RegisterCustomerService;
 
 //@RequiredArgsConstructor
 //class CustomerService {
@@ -21,14 +23,16 @@ import victor.training.patterns.facade.service.CustomerService;
 //	}
 //}
 //@Facade
+@RestController
 @RequiredArgsConstructor
 public class CustomerFacade {
 	private final CustomerRepo customerRepo;
 	private final EmailClient emailClient;
 	private final EmailRepo emailRepo;
 	private final SiteRepo siteRepo;
-	private final CustomerService customerService;
+	private final RegisterCustomerService registerCustomerService;
 
+	@GetMapping("{customerId}")
 	public CustomerDto findById(long customerId) {
 		Customer customer = customerRepo.findById(customerId);
 		// push this to?
@@ -40,6 +44,7 @@ public class CustomerFacade {
 		return new CustomerDto(customer);
 	}
 
+	@PostMapping
 	public void register(CustomerDto dto) {
 		// see above solutions
 		Customer customer = new Customer();
@@ -47,7 +52,7 @@ public class CustomerFacade {
 		customer.setName(dto.name);
 		customer.setSite(siteRepo.getReference(dto.countryId));
 
-		customerService.registerCustomer(customer);
+		registerCustomerService.registerCustomer(customer);
 
 		sendRegistrationEmail(customer.getEmail());
 	}
