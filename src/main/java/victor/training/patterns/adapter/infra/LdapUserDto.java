@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 public class LdapUserDto {
 	private String uId;
 	private String fName;
@@ -12,11 +13,8 @@ public class LdapUserDto {
 	private String workEmail;
 	private List<LdapUserPhone> emailAddresses = new ArrayList<>();
 
-	public final String getuId() {
+	public final String getUsername() {
 		return uId;
-	}
-	public final void setuId(String uId) {
-		this.uId = uId;
 	}
 	public final String getfName() {
 		return fName;

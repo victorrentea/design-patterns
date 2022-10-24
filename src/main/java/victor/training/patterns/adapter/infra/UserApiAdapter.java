@@ -1,15 +1,10 @@
 package victor.training.patterns.adapter.infra;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import victor.training.patterns.adapter.domain.Adapter;
 import victor.training.patterns.adapter.domain.IUserApiAdapter;
 import victor.training.patterns.adapter.domain.User;
-import victor.training.patterns.adapter.infra.LdapUserApiClient;
-import victor.training.patterns.adapter.infra.LdapUserDto;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 
@@ -28,7 +23,7 @@ public class UserApiAdapter implements IUserApiAdapter {
 
         LdapUserDto ldapUser = list.get(0);
         String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-        User user = new User(ldapUser.getuId(), ldapUser.getWorkEmail(), fullName);
+        User user = new User(ldapUser.getUsername(), ldapUser.getWorkEmail(), fullName);
         return user;
     }
 
