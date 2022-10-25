@@ -43,14 +43,24 @@ public class StrategySpringApp implements CommandLineRunner {
 
 
 enum Country {
-    UK, CN,FR,ES,RO
+    UK(UKTaxCalculator.class),
+    CN(ChinaTaxCalculator.class),
+    FR(EUTaxCalculator.class),
+    ES(EUTaxCalculator.class),
+    RO(EUTaxCalculator.class);
+
+    public final Class<? extends TaxCalculator> calculatorClass;
+
+    Country(Class<? extends TaxCalculator> calculatorClass) {
+        this.calculatorClass = calculatorClass;
+    }
 }
 @Service
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
     // externalize the map into a config file
-    private Map<Country, Class<? extends TaxCalculator>> calculators;
+//    private Map<Country, Class<? extends TaxCalculator>> calculators;
 
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
         TaxCalculator taxCalculator = selectCalculatorFor(Country.valueOf(originCountry));
@@ -61,9 +71,10 @@ class CustomsService {
     private ApplicationContext applicationContext;
 
     private TaxCalculator selectCalculatorFor(Country originCountry) {
-        Class<? extends TaxCalculator> calculatorClass = calculators.get(originCountry);
-        return applicationContext.getBean(calculatorClass);
 
+//        Class<? extends TaxCalculator> calculatorClass = calculators.get(originCountry);
+//        return applicationContext.getBean(calculatorClass);
+        return applicationContext.getBean(originCountry.calculatorClass);
         //        return switch (originCountry) { // every clean switch lives alone in its method
 //            case UK -> new UKTaxCalculator();
 //            case CN -> new ChinaTaxCalculator(); // other EU country codes...
