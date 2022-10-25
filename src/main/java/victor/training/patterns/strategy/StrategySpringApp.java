@@ -1,13 +1,20 @@
 package victor.training.patterns.strategy;
 
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Objects;
+
+import static victor.training.patterns.strategy.Country.UK;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -36,25 +43,32 @@ public class StrategySpringApp implements CommandLineRunner {
 
 
 enum Country {
-    UK, CN,FR,ES,RO, MK
+    UK, CN,FR,ES,RO
 }
 @Service
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
-    //	private Map<String, TaxCalculator> calculators;  // hehe
+    // externalize the map into a config file
+    private Map<Country, Class<? extends TaxCalculator>> calculators;
 
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
         TaxCalculator taxCalculator = selectCalculatorFor(Country.valueOf(originCountry));
         return taxCalculator.calculate(tobaccoValue, regularValue);
     }
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     private TaxCalculator selectCalculatorFor(Country originCountry) {
-        return switch (originCountry) { // every clean switch lives alone in its method
-            case UK -> new UKTaxCalculator();
-            case CN -> new ChinaTaxCalculator(); // other EU country codes...
-            case FR, ES, RO -> new EUTaxCalculator();
-        };
+        Class<? extends TaxCalculator> calculatorClass = calculators.get(originCountry);
+        return applicationContext.getBean(calculatorClass);
+
+        //        return switch (originCountry) { // every clean switch lives alone in its method
+//            case UK -> new UKTaxCalculator();
+//            case CN -> new ChinaTaxCalculator(); // other EU country codes...
+//            case FR, ES, RO -> new EUTaxCalculator();
+//        };
     }
 
 }
