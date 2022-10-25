@@ -36,7 +36,7 @@ public class StrategySpringApp implements CommandLineRunner {
 
 
 enum Country {
-    UK, CN,FR,ES,RO
+    UK, CN,FR,ES,RO, MK
 }
 @Service
 @Data
