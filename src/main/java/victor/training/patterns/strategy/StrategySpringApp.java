@@ -55,8 +55,11 @@ class CustomsService {
             case "ES": // other EU country codes...
             case "RO":
                 return new EUTaxCalculator();
-            default:
-                throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+            default: // WHY? is this here?
+                throw new IllegalArgumentException(
+                        "out of HOPE: it will never pop. because I will be carefu" +
+                       "l to add a case in every switch (originCountry) = runtime risk " +
+                       "Not a valid country ISO2 code: " + originCountry);
         }
     }
 
