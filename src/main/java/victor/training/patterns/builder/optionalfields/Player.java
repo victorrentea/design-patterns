@@ -9,6 +9,14 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
+class /*record*/ PersonalInfo {
+//    private final int id; // *required
+//    private final String firstName; // *required
+//    @With
+//    private final String lastName;
+//    private final Integer age;
+}
+
 @Data // + @see lombok.config
 public class Player {
     private final int id; // *required
@@ -16,9 +24,12 @@ public class Player {
     @With
     private final String lastName;
     private final Integer age; // *required
+//    private final PersonalInfo info;
+
     private final String profilePhotoUrl; // *required
     private final String bonusPackage;
     private final long penalty;
+//    private GameProfile gameProfile;
 
     // canonical cto
     public Player(int id, String firstName, String lastName, Integer age, String profilePhotoUrl, String bonusPackage, long penalty) {
