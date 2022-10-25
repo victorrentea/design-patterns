@@ -3,6 +3,8 @@ package victor.training.patterns.observer.subdomains.order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import victor.training.patterns.observer.events.OrderPlacedEvent;
 import victor.training.patterns.observer.subdomains.stock.StockManagementService;
 
@@ -14,6 +16,7 @@ public class OrderService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public void placeOrder(Long orderId) {
         System.out.println("Create the order!");
 //        stockManagementService.checkStock(orderId);

@@ -8,8 +8,8 @@ import victor.training.patterns.observer.events.OrderPlacedEvent;
 
 @Service
 public class InvoiceService {
-//    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // tell srping to register this as a handler for that type in the signature
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // tell srping to register this as a handler for that type in the signature
+//    @EventListener
     public void onOrderPlaced(OrderPlacedEvent event) {
         generateInvoice(event.orderId());
     }
