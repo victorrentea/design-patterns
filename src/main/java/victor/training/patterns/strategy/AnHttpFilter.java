@@ -12,6 +12,8 @@ public class AnHttpFilter implements Filter {
 
         // done you stuff
         try {
+
+
             chain.doFilter(request, response); // allow the call to propagate to the NEXT filter (whatever that is)
         } catch (IOException | ServletException e) {
             throw new RuntimeException(e);
