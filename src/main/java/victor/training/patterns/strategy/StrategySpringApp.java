@@ -2,6 +2,7 @@ package victor.training.patterns.strategy;
 
 import lombok.Data;
 import lombok.SneakyThrows;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
@@ -64,24 +66,45 @@ class CustomsService {
 //    private Map<Country, Class<? extends TaxCalculator>> calculators;
 
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-        TaxCalculator taxCalculator = selectCalculatorFor(Country.valueOf(originCountry));
+        TaxCalculator taxCalculator = selectCalculatorFor(originCountry, LocalDate.now());
         return taxCalculator.calculate(tobaccoValue, regularValue);
     }
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    private TaxCalculator selectCalculatorFor(Country originCountry) {
+    private TaxCalculator selectCalculatorFor(String originCountry, LocalDate parcelDate) {
+
+
+        // TODO CR: the taxes for China have changed starting 1 Nov 2022.
+        //   => the selection criteria of the strategy to use is COMPLEX
+        return switch (originCountry) { // every clean switch lives alone in its method
+            case "UK" -> new UKTaxCalculator();
+            case "CN" -> {
+                // how can I avoid piling up all (growin complex) decisions about WHAT strategy to use for a
+                // given parcel.
+                if (parcelDate.isBefore(LocalDate.parse("2022-11-01")))
+                    yield new ChinaTaxCalculator(); // other EU country codes...
+                else yield new ChinaTaxCalculatorAfterNov2022();
+
+            }
+            case "FR", "ES", "RO" -> new EUTaxCalculator();
+            default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+        };
+    }
+
 
 //        Class<? extends TaxCalculator> calculatorClass = calculators.get(originCountry);
 //        return applicationContext.getBean(calculatorClass);
-        return applicationContext.getBean(originCountry.calculatorClass);
-        //        return switch (originCountry) { // every clean switch lives alone in its method
+
+//        return applicationContext.getBean(originCountry.calculatorClass);
+
+//        return switch (originCountry) { // every clean switch lives alone in its method
 //            case UK -> new UKTaxCalculator();
 //            case CN -> new ChinaTaxCalculator(); // other EU country codes...
 //            case FR, ES, RO -> new EUTaxCalculator();
 //        };
-    }
+
 
 }
 
@@ -90,12 +113,23 @@ interface TaxCalculator {
 }
 @Component
 class UKTaxCalculator implements TaxCalculator {
+
     public double calculate(double tobaccoValue, double regularValue) {
         // imagine dragons...
         return tobaccoValue / 2 + regularValue;
     }
 }
 
+@Component
+class ChinaTaxCalculatorAfterNov2022 implements TaxCalculator {
+    public double calculate(double tobaccoValue, double regularValue/*, LocalDate parcelDate*/) {
+//        if (parcelDate.isAfter(LocalDate.parse("2022-11-01"))) {
+            return tobaccoValue + regularValue + 1;
+//        } else {
+//            return new ChinaTaxCalculator().calculate(tobaccoValue, regularValue);
+//        }
+    }
+}
 @Component
 class ChinaTaxCalculator implements TaxCalculator {
     public double calculate(double tobaccoValue, double regularValue) {
