@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -73,25 +74,33 @@ class CustomsService {
     @Autowired
     private ApplicationContext applicationContext;
 
-    private TaxCalculator selectCalculatorFor(String originCountry, LocalDate parcelDate) {
+    @Autowired
+    private List<TaxCalculator> taxCalculators;
 
+    private TaxCalculator selectCalculatorFor(String originCountry, LocalDate parcelDate) {
+        for (TaxCalculator taxCalculator : taxCalculators) {
+            if (taxCalculator.canHandle(originCountry, parcelDate)) {
+                return taxCalculator;
+            }
+        }
+        throw new IllegalArgumentException("Not supported");
 
         // TODO CR: the taxes for China have changed starting 1 Nov 2022.
         //   => the selection criteria of the strategy to use is COMPLEX
-        return switch (originCountry) { // every clean switch lives alone in its method
-            case "UK" -> new UKTaxCalculator();
-            case "CN" -> {
-                // how can I avoid piling up all (growin complex) decisions about WHAT strategy to use for a
-                // given parcel.
-                if (parcelDate.isBefore(LocalDate.parse("2022-11-01")))
-                    yield new ChinaTaxCalculator(); // other EU country codes...
-                else yield new ChinaTaxCalculatorAfterNov2022();
-
-            }
-            case "FR", "ES", "RO" -> new EUTaxCalculator();
-            default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-        };
-    }
+//        return switch (originCountry) { // every clean switch lives alone in its method
+//            case "UK" -> new UKTaxCalculator();
+//            case "CN" -> {
+//                // how can I avoid piling up all (growin complex) decisions about WHAT strategy to use for a
+//                // given parcel.
+//                if (parcelDate.isBefore(LocalDate.parse("2022-11-01")))
+//                    yield new ChinaTaxCalculator(); // other EU country codes...
+//                else yield new ChinaTaxCalculatorAfterNov2022();
+//
+//            }
+//            case "FR", "ES", "RO" -> new EUTaxCalculator();
+//            default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+//        };
+//    }
 
 
 //        Class<? extends TaxCalculator> calculatorClass = calculators.get(originCountry);
@@ -109,11 +118,17 @@ class CustomsService {
 }
 
 interface TaxCalculator {
+    boolean canHandle(String originCountry, LocalDate parcelDate);
     double calculate(double tobaccoValue, double regularValue);
 }
 
 @Component
 class UKTaxCalculator implements TaxCalculator {
+
+    @Override
+    public boolean canHandle(String originCountry, LocalDate parcelDate) {
+        return "UK".equals(originCountry);
+    }
 
     public double calculate(double tobaccoValue, double regularValue) {
         // imagine dragons...
@@ -123,6 +138,11 @@ class UKTaxCalculator implements TaxCalculator {
 
 @Component
 class ChinaTaxCalculatorAfterNov2022 implements TaxCalculator {
+    @Override
+    public boolean canHandle(String originCountry, LocalDate parcelDate) {
+        return "CN".equals(originCountry) && parcelDate.isAfter(LocalDate.parse("2022-11-01"));
+    }
+
     public double calculate(double tobaccoValue, double regularValue/*, LocalDate parcelDate*/) {
 //        if (parcelDate.isAfter(LocalDate.parse("2022-11-01"))) {
             return tobaccoValue + regularValue + 1;
@@ -131,14 +151,25 @@ class ChinaTaxCalculatorAfterNov2022 implements TaxCalculator {
 //        }
     }
 }
+
 @Component
 class ChinaTaxCalculator implements TaxCalculator {
+    @Override
+    public boolean canHandle(String originCountry, LocalDate parcelDate) {
+        return "CN".equals(originCountry) && !parcelDate.isAfter(LocalDate.parse("2022-11-01"));
+    }
     public double calculate(double tobaccoValue, double regularValue) {
         return tobaccoValue + regularValue;
     }
 }
 @Component
 class EUTaxCalculator implements TaxCalculator {
+
+    @Override
+    public boolean canHandle(String originCountry, LocalDate parcelDate) {
+        return List.of("ES", "FR", "RO").contains(originCountry);
+    }
+
     public double calculate(double tobaccoValue, double regularValueUseless) { // a bit of a loss: democracy = the tyranny of majority
         return tobaccoValue / 3;
     }
