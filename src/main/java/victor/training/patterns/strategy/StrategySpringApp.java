@@ -6,14 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
@@ -47,15 +40,31 @@ class CustomsService {
 	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
 		switch (originCountry) {
 			case "UK":
-				return tobaccoValue / 2 + regularValue;
+				return calculateUKTax(tobaccoValue, regularValue);
 			case "CN":
-				return tobaccoValue + regularValue;
+				return calculateChinaTax(tobaccoValue, regularValue);
 			case "FR":
 			case "ES": // other EU country codes...
 			case "RO":
-				return tobaccoValue / 3;
+				return calculateEUTax(tobaccoValue);
 			default:
 				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
 		}
+	}
+
+	private static double calculateEUTax(double tobaccoValue) {
+		return tobaccoValue / 3;
+	}
+
+	private static double calculateChinaTax(double tobaccoValue, double regularValue) {
+		return tobaccoValue + regularValue;
+	}
+
+	private static double calculateUKTax(double tobaccoValue, double regularValue) {
+		// complex
+		// complex
+		// complex
+		// complex
+		return tobaccoValue / 2 + regularValue;
 	}
 }
