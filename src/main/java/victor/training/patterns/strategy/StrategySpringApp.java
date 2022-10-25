@@ -84,7 +84,7 @@ class CustomsService {
             }
         }
         throw new IllegalArgumentException("Not supported");
-
+    }
         // TODO CR: the taxes for China have changed starting 1 Nov 2022.
         //   => the selection criteria of the strategy to use is COMPLEX
 //        return switch (originCountry) { // every clean switch lives alone in its method
