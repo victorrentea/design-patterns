@@ -2,6 +2,7 @@ package victor.training.patterns.builder.optionalfields;
 
 
 import lombok.Data;
+import lombok.With;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import static java.util.Optional.ofNullable;
 public class Player {
     private final int id; // *required
     private final String firstName; // *required
+    @With
     private final String lastName;
     private final Integer age; // *required
     private final String profilePhotoUrl; // *required
@@ -29,13 +31,13 @@ public class Player {
         this.penalty = penalty;
     }
     public Player(int id, String firstName, Integer age, String profilePhotoUrl) {
-        this(id, firstName, null, age, profilePhotoUrl, null, null);
+        this(id, firstName, null, age, profilePhotoUrl, null, 0);
     }
 
     //± data class copy()
-    public Player withLastName(String lastName) {
-        return new Player(id, firstName, lastName, age, profilePhotoUrl, bonusPackage, penalty);
-    }
+//    public Player withLastName(String lastName) {
+//        return new Player(id, firstName, lastName, age, profilePhotoUrl, bonusPackage, penalty);
+//    }
 
     public Optional<String> getLastName() {
         return ofNullable(lastName);
