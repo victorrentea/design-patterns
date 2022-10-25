@@ -122,6 +122,19 @@ interface TaxCalculator {
     double calculate(double tobaccoValue, double regularValue);
 }
 
+class DefaultCalculator implements TaxCalculator {
+
+    @Override
+    public boolean canHandle(String originCountry, LocalDate parcelDate) {
+        return true; // THIS MUST COME LAST
+    }
+
+    @Override
+    public double calculate(double tobaccoValue, double regularValue) {
+        return 1;
+    }
+}
+
 @Component
 class UKTaxCalculator implements TaxCalculator {
 
