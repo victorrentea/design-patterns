@@ -40,15 +40,20 @@ class CustomsService {
     //	private Map<String, TaxCalculator> calculators;  // hehe
 
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-        switch (originCountry) {
+        TaxCalculator taxCalculator = selectCalculatorFor(originCountry);
+        return taxCalculator.calculate(tobaccoValue, regularValue);
+    }
+
+    private TaxCalculator selectCalculatorFor(String originCountry) {
+        switch (originCountry) { // every clean switch lives alone in its method
             case "UK":
-                return new UKTaxCalculator().calculate(tobaccoValue, regularValue);
+                return new UKTaxCalculator();
             case "CN":
-                return new ChinaTaxCalculator().calculate(tobaccoValue, regularValue);
+                return new ChinaTaxCalculator();
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return new EUTaxCalculator().calculate(tobaccoValue);
+                return new EUTaxCalculator();
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
         }
@@ -56,22 +61,23 @@ class CustomsService {
 
 }
 
-
-class UKTaxCalculator {
+interface TaxCalculator {
+    double calculate(double tobaccoValue, double regularValue);
+}
+class UKTaxCalculator implements TaxCalculator {
     public double calculate(double tobaccoValue, double regularValue) {
         // imagine dragons...
         return tobaccoValue / 2 + regularValue;
     }
 }
 
-class ChinaTaxCalculator {
+class ChinaTaxCalculator implements TaxCalculator {
     public double calculate(double tobaccoValue, double regularValue) {
         return tobaccoValue + regularValue;
     }
 }
-
-class EUTaxCalculator {
-    public double calculate(double tobaccoValue) {
+class EUTaxCalculator implements TaxCalculator {
+    public double calculate(double tobaccoValue, double regularValueUseless) { // a bit of a loss: democracy = the tyranny of majority
         return tobaccoValue / 3;
     }
 
