@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @SpringBootApplication
@@ -64,6 +65,7 @@ class CustomsService {
 interface TaxCalculator {
     double calculate(double tobaccoValue, double regularValue);
 }
+@Component
 class UKTaxCalculator implements TaxCalculator {
     public double calculate(double tobaccoValue, double regularValue) {
         // imagine dragons...
@@ -71,11 +73,13 @@ class UKTaxCalculator implements TaxCalculator {
     }
 }
 
+@Component
 class ChinaTaxCalculator implements TaxCalculator {
     public double calculate(double tobaccoValue, double regularValue) {
         return tobaccoValue + regularValue;
     }
 }
+@Component
 class EUTaxCalculator implements TaxCalculator {
     public double calculate(double tobaccoValue, double regularValueUseless) { // a bit of a loss: democracy = the tyranny of majority
         return tobaccoValue / 3;
