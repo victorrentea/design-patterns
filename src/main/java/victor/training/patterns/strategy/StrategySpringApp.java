@@ -34,6 +34,10 @@ public class StrategySpringApp implements CommandLineRunner {
     }
 }
 
+
+enum Country {
+    UK, CN,FR,ES,RO
+}
 @Service
 @Data
 @ConfigurationProperties(prefix = "customs")
@@ -41,26 +45,16 @@ class CustomsService {
     //	private Map<String, TaxCalculator> calculators;  // hehe
 
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-        TaxCalculator taxCalculator = selectCalculatorFor(originCountry);
+        TaxCalculator taxCalculator = selectCalculatorFor(Country.valueOf(originCountry));
         return taxCalculator.calculate(tobaccoValue, regularValue);
     }
 
-    private TaxCalculator selectCalculatorFor(String originCountry) {
-        switch (originCountry) { // every clean switch lives alone in its method
-            case "UK":
-                return new UKTaxCalculator();
-            case "CN":
-                return new ChinaTaxCalculator();
-            case "FR":
-            case "ES": // other EU country codes...
-            case "RO":
-                return new EUTaxCalculator();
-            default: // WHY? is this here?
-                throw new IllegalArgumentException(
-                        "out of HOPE: it will never pop. because I will be carefu" +
-                       "l to add a case in every switch (originCountry) = runtime risk " +
-                       "Not a valid country ISO2 code: " + originCountry);
-        }
+    private TaxCalculator selectCalculatorFor(Country originCountry) {
+        return switch (originCountry) { // every clean switch lives alone in its method
+            case UK -> new UKTaxCalculator();
+            case CN -> new ChinaTaxCalculator(); // other EU country codes...
+            case FR, ES, RO -> new EUTaxCalculator();
+        };
     }
 
 }
