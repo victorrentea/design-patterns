@@ -10,61 +10,63 @@ import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
-	public static void main(String[] args) {
-		new SpringApplicationBuilder(StrategySpringApp.class)
-			.profiles("localProps")
-			.run(args);
-	}
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(StrategySpringApp.class)
+                .profiles("localProps")
+                .run(args);
+    }
 
-	private ConfigProvider configProvider = new ConfigFileProvider();
+    private ConfigProvider configProvider = new ConfigFileProvider();
 
-	@Autowired
-	private CustomsService service;
-	// TODO [1] Break CustomsService logic into Strategies
-	// TODO [2] Convert it to Chain Of Responsibility
-	// TODO [3] Wire with Spring
-	public void run(String... args) {
-		System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
-		System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
-		System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
+    @Autowired
+    private CustomsService service;
 
-		System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
-	}
+    // TODO [1] Break CustomsService logic into Strategies
+    // TODO [2] Convert it to Chain Of Responsibility
+    // TODO [3] Wire with Spring
+    public void run(String... args) {
+        System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax("RO", 100, 100));
+        System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax("CN", 100, 100));
+        System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax("UK", 100, 100));
+
+        System.out.println("Property: " + configProvider.getProperties().getProperty("someProp"));
+    }
 }
+
 @Service
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
-//	private Map<String, TaxCalculator> calculators;  // hehe
+    //	private Map<String, TaxCalculator> calculators;  // hehe
 
-	public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-		switch (originCountry) {
-			case "UK":
-				return calculateUKTax(tobaccoValue, regularValue);
-			case "CN":
-				return calculateChinaTax(tobaccoValue, regularValue);
-			case "FR":
-			case "ES": // other EU country codes...
-			case "RO":
-				return calculateEUTax(tobaccoValue);
-			default:
-				throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-		}
-	}
+    public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
+        switch (originCountry) {
+            case "UK":
+                return calculateUKTax(tobaccoValue, regularValue);
+            case "CN":
+                return calculateChinaTax(tobaccoValue, regularValue);
+            case "FR":
+            case "ES": // other EU country codes...
+            case "RO":
+                return calculateEUTax(tobaccoValue);
+            default:
+                throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
+        }
+    }
 
-	private static double calculateEUTax(double tobaccoValue) {
-		return tobaccoValue / 3;
-	}
+    private double calculateChinaTax(double tobaccoValue, double regularValue) {
+        return tobaccoValue + regularValue;
+    }
 
-	private static double calculateChinaTax(double tobaccoValue, double regularValue) {
-		return tobaccoValue + regularValue;
-	}
+    private double calculateUKTax(double tobaccoValue, double regularValue) {
+        // complex
+        // complex
+        // complex
+        // complex
+        return tobaccoValue / 2 + regularValue;
+    }
 
-	private static double calculateUKTax(double tobaccoValue, double regularValue) {
-		// complex
-		// complex
-		// complex
-		// complex
-		return tobaccoValue / 2 + regularValue;
-	}
+    private double calculateEUTax(double tobaccoValue) {
+        return tobaccoValue / 3;
+    }
 }
