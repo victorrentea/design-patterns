@@ -1,4 +1,4 @@
-package victor.training.patterns.builder.stepbuilder;
+package victor.training.patterns.builder.step;
 
 public class UserConfiguration {
    private final String name;

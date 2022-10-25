@@ -1,12 +1,12 @@
 package victor.training.patterns.builder.small;
 
-public class BuilderPlay {
+public class Showcase {
    public static void main(String[] args) {
       // ugly canonical constructor
-      Address address = new Address("91", "Dristorului", "Bucharest", "1", "a");
+      Address addressRaw = new Address("91", "Dristorului", "Bucharest", "1", "a");
 
-      // minimal constructor + wither chain
-      address = new Address("91", "Dristorului", "Bucharest")
+      // minimal constructor + chained withers
+      Address address = new Address("91", "Dristorului", "Bucharest")
               .withAptNumber("1")
               .withFloorNumber("a");
 

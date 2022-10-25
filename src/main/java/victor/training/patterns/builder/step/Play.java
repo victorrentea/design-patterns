@@ -1,4 +1,4 @@
-package victor.training.patterns.builder.stepbuilder;
+package victor.training.patterns.builder.step;
 
 public class Play {
    public static void main(String[] args) {

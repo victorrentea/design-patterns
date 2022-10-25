@@ -1,5 +1,6 @@
 package victor.training.patterns.builder.mutable;
 
+// vanilla Java
 class Address {
     private String streetName;
     private String city;
