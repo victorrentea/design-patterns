@@ -3,6 +3,8 @@ package victor.training.patterns.builder.optionalfields;
 
 import lombok.Data;
 import lombok.With;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +21,7 @@ class /*record*/ PersonalInfo {
 
 @Data // + @see lombok.config
 public class Player {
+    private static final Logger log = LoggerFactory.getLogger(Player.class);
     private final int id; // *required
     private final String firstName; // *required
     @With
