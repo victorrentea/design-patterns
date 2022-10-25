@@ -9,6 +9,7 @@ import victor.training.patterns.template.support.OrderRepo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class Template2_Export {
@@ -57,8 +58,12 @@ class FileExporter {
         }
     }
 
-    public String escapeCell(String cellValue) {
-        if (!cellValue.contains("\n")) return cellValue;
-        return "\"" + cellValue.replace("\"", "\"\"") +  "\"";
+    public String escapeCell(Object cellValue) {
+        if (cellValue instanceof String s) {
+            if (!s.contains("\n")) return s;
+            return "\"" + s.replace("\"", "\"\"") + "\"";
+        } else {
+            return Objects.toString(cellValue);
+        }
     }
 }
