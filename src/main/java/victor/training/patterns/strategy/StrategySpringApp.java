@@ -111,6 +111,7 @@ class CustomsService {
 interface TaxCalculator {
     double calculate(double tobaccoValue, double regularValue);
 }
+
 @Component
 class UKTaxCalculator implements TaxCalculator {
 
