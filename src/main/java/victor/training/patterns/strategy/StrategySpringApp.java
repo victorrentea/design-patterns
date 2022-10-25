@@ -50,6 +50,7 @@ enum Country {
     RO(EUTaxCalculator.class);
 
     public final Class<? extends TaxCalculator> calculatorClass;
+//    public final BiFunction<....> calculatorFunction;
 
     Country(Class<? extends TaxCalculator> calculatorClass) {
         this.calculatorClass = calculatorClass;
