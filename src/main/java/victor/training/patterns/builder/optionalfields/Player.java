@@ -4,6 +4,9 @@ package victor.training.patterns.builder.optionalfields;
 import lombok.Data;
 
 import java.util.Objects;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 @Data // + @see lombok.config
 public class Player {
@@ -23,6 +26,14 @@ public class Player {
         this.profilePhotoUrl = Objects.requireNonNull(profilePhotoUrl);
         this.bonusPackage = bonusPackage;
         this.penalty = penalty;
+    }
+
+    public Optional<String> getLastName() {
+        return ofNullable(lastName);
+    }
+
+    public Optional<String> getBonusPackage() {
+        return ofNullable(bonusPackage);
     }
 }
 
