@@ -27,8 +27,8 @@ public class VerticalSlicingAnApp {
 	@Autowired
 	private OrderService orderService;
 
-	@EventListener
-	public void atStartup(ContextRefreshedEvent event) {
+	@EventListener(ContextRefreshedEvent.class) // thrown by the framework
+	public void atStartup() { // Hey spring, please call this method in THIS EXACT STARTUP PHASE of yours
 		orderService.placeOrder(new Random().nextLong());
 		// afterTransaction.runInTransaction();
 	}
