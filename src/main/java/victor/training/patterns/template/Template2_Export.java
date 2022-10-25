@@ -44,6 +44,7 @@ abstract class FileExporter {
             return file;
         } catch (Exception e) {
             System.out.println("Pretend: Send Error Notification Email"); // TODO CR: only for export orders, not for products
+            handleError(e);
             throw new RuntimeException("Error exporting data", e);
         } finally {
             System.out.println("Pretend: Metrics: Export finished in: " + (System.currentTimeMillis() - t0));
@@ -51,6 +52,13 @@ abstract class FileExporter {
     }
 
     protected abstract void writeContent(Writer writer) throws IOException;
+
+    // #1 2+ abstract steps
+
+    // what if this is almost never implem by subclasses?
+    protected  void handleError(Exception e) {} // #2 hook method; empty method there just for
+    // someone to be able to override it. (optional step)
+
 
     public String escapeCell(String cellValue) {
         if (!cellValue.contains("\n")) return cellValue;
@@ -67,11 +75,17 @@ class OrderFileExporter extends FileExporter{
     }
 
     @Override
+    protected void handleError(Exception e) {
+        System.out.println("Something extra");
+    }
+
+    @Override
     public void writeContent(Writer writer) throws IOException {
         writer.write("OrderID;Date\n");
 
         for (Order order : orderRepo.findByActiveTrue()) {
-            String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+            String csv = escapeCell(order.getId() +"")
+                         + ";" + escapeCell(order.getCustomerId()+"") + ";" + order.getAmount() + "\n";
             writer.write(csv);
         }
     }
