@@ -9,6 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.function.BiFunction;
+
 @SpringBootApplication
 public class StrategySpringApp implements CommandLineRunner {
     public static void main(String[] args) {
@@ -41,48 +43,23 @@ class CustomsService {
     //	private Map<String, TaxCalculator> calculators;  // hehe
 
     public double calculateCustomsTax(String originCountry, double tobaccoValue, double regularValue) { // UGLY API we CANNOT change
-        TaxCalculator taxCalculator = selectCalculatorFor(originCountry);
-        return taxCalculator.calculate(tobaccoValue, regularValue);
+        var taxCalculator = selectCalculatorFor(originCountry);
+        return taxCalculator.apply(tobaccoValue, regularValue);
     }
 
-    private TaxCalculator selectCalculatorFor(String originCountry) {
+    private BiFunction<Double,Double, Double> selectCalculatorFor(String originCountry) {
         switch (originCountry) { // every clean switch lives alone in its method
             case "UK":
-                return new UKTaxCalculator();
+                return (t,r) -> t / 2 + r;
             case "CN":
-                return new ChinaTaxCalculator();
+                return (t,r) -> t + r;
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return new EUTaxCalculator();
+                return (t,r) -> t/3;
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
         }
-    }
-
-}
-
-interface TaxCalculator {
-    double calculate(double tobaccoValue, double regularValue);
-}
-@Component
-class UKTaxCalculator implements TaxCalculator {
-    public double calculate(double tobaccoValue, double regularValue) {
-        // imagine dragons...
-        return tobaccoValue / 2 + regularValue;
-    }
-}
-
-@Component
-class ChinaTaxCalculator implements TaxCalculator {
-    public double calculate(double tobaccoValue, double regularValue) {
-        return tobaccoValue + regularValue;
-    }
-}
-@Component
-class EUTaxCalculator implements TaxCalculator {
-    public double calculate(double tobaccoValue, double regularValueUseless) { // a bit of a loss: democracy = the tyranny of majority
-        return tobaccoValue / 3;
     }
 
 }
