@@ -1,4 +1,4 @@
-package victor.training.patterns.observer.subdomains;
+package victor.training.patterns.observer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +8,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import victor.training.patterns.observer.subdomains.order.OrderService;
 
-import java.util.Random;
-
 @Slf4j
 @SpringBootApplication
 public class VerticalSlicingAnApp {
@@ -17,6 +15,7 @@ public class VerticalSlicingAnApp {
 		SpringApplication.run(VerticalSlicingAnApp.class, args);
 	}
 
+	// Unleash hell: multi-threaded event listener
 //	@Bean
 //    public ApplicationEventMulticaster applicationEventMulticaster() {
 //        SimpleApplicationEventMulticaster eventMulticaster = new SimpleApplicationEventMulticaster();
@@ -29,8 +28,7 @@ public class VerticalSlicingAnApp {
 
 	@EventListener
 	public void atStartup(ContextRefreshedEvent event) {
-		orderService.placeOrder(new Random().nextLong());
-		// afterTransaction.runInTransaction();
+		orderService.placeOrder();
 	}
 
 

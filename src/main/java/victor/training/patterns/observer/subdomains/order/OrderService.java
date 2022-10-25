@@ -9,8 +9,10 @@ public class OrderService {
     @Autowired
     private StockManagementService stockManagementService;
 
-    public void placeOrder(Long orderId) {
-        System.out.println("Halo!");
+    public void placeOrder() {
+        System.out.println("Saving the order in the DB!");
+        Long orderId = 13L; // = pretend the inserted PK
+
         stockManagementService.checkStock(orderId);
         // TODO call invoicing too
     }

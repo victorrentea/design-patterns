@@ -20,7 +20,7 @@ public class ObserverArchUnitTest {
    @Test
    public void independentSubdomains() {
       JavaClasses classes = new ClassFileImporter()
-          .importPackages("victor.training.patterns.behavioral.observer");
+          .importPackages("victor.training.patterns.observer.subdomains");
 
       String names = classes.stream().map(JavaClass::getSimpleName).collect(joining());
       System.out.println("Studying classes: " + names);
