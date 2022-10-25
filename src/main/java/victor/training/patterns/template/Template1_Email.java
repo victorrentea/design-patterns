@@ -3,7 +3,6 @@ package victor.training.patterns.template;
 import lombok.Data;
 
 import java.util.Random;
-import java.util.function.Consumer;
 
 public class Template1_Email {
    public static void main(String[] args) {
@@ -13,22 +12,16 @@ public class Template1_Email {
 
    private static void placeOrder() {
       // logic
-      new EmailService().sendEmail("a@b.com", e -> {
-         e.setSubject("Order Placed");
-         e.setBody("Thank you for your order");
-      });
+      new EmailService().sendEmail("a@b.com", "Order Placed", "Thank you for your order");
    }
    private static void shipOrder() {
       // logic
-      new EmailService().sendEmail("a@b.com", e -> {
-         e.setSubject("Order Shipped");
-         e.setBody("We shipped your order");
-      });
+      new EmailService().sendEmail("a@b.com", "Order Shipped", "Shipped");
    }
 }
 
 class EmailService {
-   public void sendEmail(String emailAddress, Consumer<Email> damn) {
+   public void sendEmail(String emailAddress, String subject, String body) {
       EmailContext context = new EmailContext(/*smtpConfig,etc*/);
       int MAX_RETRIES = 3;
       try {
@@ -37,7 +30,8 @@ class EmailService {
             email.setSender("noreply@corp.com");
             email.setReplyTo("/dev/null");
             email.setTo(emailAddress);
-            damn.accept(email);
+            email.setSubject(subject);
+            email.setBody(body);
             boolean success = context.send(email);
             if (success) break;
          }
