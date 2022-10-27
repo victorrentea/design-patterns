@@ -28,6 +28,8 @@ public class Immutable {
     public List<String> getList() {
 //        return new ArrayList<>(list); // - malloc / gc
         return Collections.unmodifiableList(list); // decorator in disguise. + no malloc of the entire array
+        // returned by a static facytory method that hides from me
+        // the actual type that I am returned
     }
 }
 
@@ -40,6 +42,7 @@ class Play {
 
         // --- can I change obj' state here?
         obj.getList().add("dirty hack"); // BETTER: RUNTIME ERROR, not a silent ignore of the add
+
 
         System.out.println("After: " + obj);
     }
