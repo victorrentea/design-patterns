@@ -1,4 +1,4 @@
-# In the beginning was the Word [10-12 min]
+# In the beginning was the Word [10 min]
   
  You have a data structure with 8 fields, out of which 4* should always be not null.
 
