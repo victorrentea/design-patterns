@@ -9,13 +9,13 @@ import victor.training.patterns.adapter.infra.LdapUserApiClient;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service // ZEN GARDEN
 public class UserService {
 	@Autowired
 	private LdapUserApiClient apiClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUserDto> list = apiClient.search(null, null, username.toUpperCase());
+		List<LdapUserDto> list = apiClient.search(username.toUpperCase(), null, null);
 
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
@@ -28,14 +28,24 @@ public class UserService {
 	}
 
 	private void deepDomainLogic(LdapUserDto ldapUser) {
-		if (ldapUser.getWorkEmail()!=null) {
+		if (ldapUser.getWorkEmail()!=null) { // can't put logic in the domain
 			log.debug("Send welcome email to  " + ldapUser.getWorkEmail());
 		}
 
-		log.debug("Insert user in my database: " + ldapUser.getuId());
 
-		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
-		log.debug("More business logic with " + fullName + " of id " + ldapUser.getuId().toLowerCase());
+		log.debug("Insert user in my database: " + ldapUser.getuId()); // bad names
+
+		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase(); // mapping spread in my domain
+		innocent(ldapUser);// temporal coupling with the next line: they have to happen in this order,
+		// although nothign tells me that. why ? setters (mutable data)
+		log.debug("More business logic with " + fullName + " of id " + ldapUser.getuId().toLowerCase()); // NPE rislk/ invalid data
+	}
+
+	private void innocent(LdapUserDto ldapUser) { // Side effects on params.
+
+		if (ldapUser.getuId() == null) {
+			ldapUser.setuId("N/A");
+		}
 	}
 
 }

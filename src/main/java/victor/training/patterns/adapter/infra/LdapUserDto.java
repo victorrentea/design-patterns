@@ -3,7 +3,7 @@ package victor.training.patterns.adapter.infra;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+// generate
 public class LdapUserDto {
 	private String uId;
 	private String fName;
