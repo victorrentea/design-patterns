@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+// often generated, or from client-lib.jar
 public class LdapUserDto {
 	private String uId;
 	private String fName;
