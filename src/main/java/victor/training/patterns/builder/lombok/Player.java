@@ -1,7 +1,7 @@
 package victor.training.patterns.builder.lombok;
 
-public class PlayerRaw {
-    String id; // *required
+public class Player {
+    Long id; // *required
     String firstName; // *required
     String lastName;
     Integer age; // *required
@@ -11,3 +11,4 @@ public class PlayerRaw {
     String country;
 }
 
+// imagine no Hibernate.....
