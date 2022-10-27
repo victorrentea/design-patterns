@@ -8,6 +8,8 @@ import victor.training.patterns.adapter.infra.LdapUserApiClient;
 
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
+
 @Slf4j
 @Service // ZEN GARDEN
 public class UserService {
@@ -22,30 +24,31 @@ public class UserService {
 		}
 
 		LdapUserDto ldapUser = list.get(0);
-
-		deepDomainLogic(ldapUser);
-
-	}
-
-	private void deepDomainLogic(LdapUserDto ldapUser) {
-		if (ldapUser.getWorkEmail()!=null) { // can't put logic in the domain
-			log.debug("Send welcome email to  " + ldapUser.getWorkEmail());
-		}
-
-
-		log.debug("Insert user in my database: " + ldapUser.getuId()); // bad names
-
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase(); // mapping spread in my domain
-		innocent(ldapUser);// temporal coupling with the next line: they have to happen in this order,
-		// although nothign tells me that. why ? setters (mutable data)
-		log.debug("More business logic with " + fullName + " of id " + ldapUser.getuId().toLowerCase()); // NPE rislk/ invalid data
+
+		User user = new User(ldapUser.getuId(), fullName, ofNullable(ldapUser.getWorkEmail()));
+
+		deepDomainLogic(user);
+
 	}
 
-	private void innocent(LdapUserDto ldapUser) { // Side effects on params.
-
-		if (ldapUser.getuId() == null) {
-			ldapUser.setuId("N/A");
+	private void deepDomainLogic(User user) {
+		if (user.workEmail().isPresent()) { // can't put logic in the domain
+			log.debug("Send welcome email to  " + user.workEmail().get());
 		}
+
+
+		log.debug("Insert user in my database: " + user.username()); // bad names
+
+		innocent(user);// temporal coupling with the next line: they have to happen in this order,
+		// although nothign tells me that. why ? setters (mutable data)
+		log.debug("More business logic with " + user.fullName() + " of id " + user.username().toLowerCase()); // NPE rislk/ invalid data
+	}
+
+	private void innocent(User ldapUser) { // Side effects on params.
+//		if (ldapUser.getuId() == null) { // ha ha ha you can't immutable
+//			ldapUser.setuId("N/A");
+//		}
 	}
 
 }
