@@ -1,6 +1,7 @@
 package victor.training.patterns.singleton;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -12,6 +13,7 @@ import victor.training.patterns.singleton.ConfigManager;
 @ExtendWith(MockitoExtension.class)
 public class BizService5Test {
    @Test
+   @Disabled
    public void test() {
       try (MockedStatic<ConfigManager> mock = Mockito.mockStatic(ConfigManager.class)) {
          ConfigManager mockManager = Mockito.mock(ConfigManager.class);
