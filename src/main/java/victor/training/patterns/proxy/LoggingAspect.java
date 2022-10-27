@@ -8,6 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
@@ -29,13 +30,18 @@ public class LoggingAspect {
             jackson.enable(SerializationFeature.INDENT_OUTPUT);
         }
     }
+    // all methods inside any class annotated with @Service
+    @Around("@within(org.springframework.stereotype.Service))")
 
-    @Around("@within(victor.training.spring.aspects.Facade))") // all methods inside classes annotated with @Facade
-//    @Around("@annotation(victor.training.spring.aspects.LoggedMethod))") // all methods annotated with @LoggedMethod
-//    @Around("execution(* org.springframework.data.jpa.repository.JpaRepository+.*(..))") // all subtypes of JpaRepository
-//    @Around("execution(* ..*.get*(..))") // all methods starting with "get" everywhere!! = naming convention = dangerous
+    // all methods annotated with @LoggedMethod
+//    @Around("@annotation(victor.training.spring.aspects.LoggedMethod))")
+
+    // all methods in any subtype of JpaRepository (eg OrderRepo extends JpaRepository)
+//    @Around("execution(* org.springframework.data.jpa.repository.JpaRepository+.*(..))")
+
+    // THE WORST: all methods starting with "get" everywhere!! = naming convention = dangerous
+//    @Around("execution(* ..*.get*(..))")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-
         if (log.isDebugEnabled()) {
             String methodName = joinPoint.getTarget().getClass().getSimpleName() + "." + joinPoint.getSignature().getName();
             String currentUsername = "SecurityContextHolder.getContext().getName()"; // TODO

@@ -7,7 +7,6 @@ import victor.training.patterns.util.ThreadUtils;
 
 import static java.lang.System.currentTimeMillis;
 
-@SpringBootApplication
 public class Decorator {
     public static void main(String[] args) {
         // TODO 1 : Log the arguments of the Math.sum() method.
@@ -79,7 +78,6 @@ class LoggingMathDecorator implements IMaths {
 
 
 
-@Service
 class SecondGrade {
     private final IMaths maths;
 

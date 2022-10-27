@@ -1,6 +1,7 @@
 package victor.training.patterns.proxy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
@@ -21,25 +22,25 @@ public class ProxyIntro {
         // TODO 1bis: Then sometimes also measure it's run time (Decorator)
         // TODO 2 : Log without changing anything below the line w/o any interface (Proxy)
         // TODO 3 : so that any new methods in Maths are automatically logged
-
-        Maths maths = new Maths();
-
-        Callback h = new MethodInterceptor() {
-            @Override
-            public Object intercept(Object o, Method method, Object[] arguments, MethodProxy methodProxy) throws Throwable {
-                System.out.println("Calling " + method.getName() + " with args " + Arrays.toString(arguments));
-                return method.invoke(maths, arguments);
-            }
-        };
-        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // this is EXACTLY what spring/hibrernate/ejb/guice does under the hood.
-
-        SecondGrade secondGrade = new SecondGrade(mathsProxy);
-
-        new ProxyIntro().run(secondGrade);
+//
+//        Maths maths = new Maths();
+//
+//        Callback h = new MethodInterceptor() {
+//            @Override
+//            public Object intercept(Object o, Method method, Object[] arguments, MethodProxy methodProxy) throws Throwable {
+//                System.out.println("Calling " + method.getName() + " with args " + Arrays.toString(arguments));
+//                return method.invoke(maths, arguments);
+//            }
+//        };
+//        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // this is EXACTLY what spring/hibrernate/ejb/guice does under the hood.
+//
+//        SecondGrade secondGrade = new SecondGrade(mathsProxy);
+//
+//        new ProxyIntro().run(secondGrade);
 
         // Play the role of Spring here (there's no framework)
         // TODO 4 : let Spring do its job, and do the same with an Aspect
-        // SpringApplication.run(ProxyIntro.class, args);
+         SpringApplication.run(ProxyIntro.class, args);
     }
 
     // =============== THE LINE =================
@@ -68,7 +69,7 @@ class SecondGrade {
     }
 }
 
-@Facade
+@Service
 class Maths { // T
     public int sum(int a, int b) {
         ThreadUtils.sleepq(10); // Thinking...
