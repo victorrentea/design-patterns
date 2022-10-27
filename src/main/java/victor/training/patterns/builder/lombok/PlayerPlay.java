@@ -29,7 +29,7 @@ public class PlayerPlay {
 //                .id(1L)
                 // weakness of a builder:
                     // it throws an error at runtime for a REQUIRED field
-                .lastName("DOE")
+                .lastName("DOE");
 //                .profilePhotoId("photoId");
     }
 }
