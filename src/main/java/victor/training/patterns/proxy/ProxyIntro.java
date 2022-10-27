@@ -14,7 +14,14 @@ public class ProxyIntro {
         // TODO 2 : Log without changing anything below the line w/o any interface (Proxy)
         // TODO 3 : so that any new methods in Maths are automatically logged
 
-        Maths maths = new Maths();
+        Maths maths = new Maths() { // anonymous subclass
+
+            @Override
+            public int sum(int a, int b) {
+                System.out.println("Calling sum " + a + "," + b);
+                return super.sum(a, b);
+            }
+        };
 
         SecondGrade secondGrade = new SecondGrade(maths);
 
@@ -34,7 +41,7 @@ public class ProxyIntro {
     }
 
 }
-
+// ------don't change anything bellow this line--------------------------------------
 @Service
 class SecondGrade {
     private final Maths maths;
@@ -51,7 +58,7 @@ class SecondGrade {
 }
 
 @Facade
-class Maths {
+class Maths { // T
     public int sum(int a, int b) {
         ThreadUtils.sleepq(10); // Thinking...
         return a + b;
