@@ -12,6 +12,8 @@ import victor.training.patterns.util.ThreadUtils;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -22,31 +24,31 @@ public class ProxyIntro {
         // TODO 1bis: Then sometimes also measure it's run time (Decorator)
         // TODO 2 : Log without changing anything below the line w/o any interface (Proxy)
         // TODO 3 : so that any new methods in Maths are automatically logged
-//
-//        Maths maths = new Maths();
-//
-//        Callback h = new MethodInterceptor() {
-//            @Override
-//            public Object intercept(Object o, Method method, Object[] arguments, MethodProxy methodProxy) throws Throwable {
-//                System.out.println("Calling " + method.getName() + " with args " + Arrays.toString(arguments));
-//                return method.invoke(maths, arguments);
-//            }
-//        };
-//        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // this is EXACTLY what spring/hibrernate/ejb/guice does under the hood.
-//
-//        SecondGrade secondGrade = new SecondGrade(mathsProxy);
-//
-//        new ProxyIntro().run(secondGrade);
+        //
+        //        Maths maths = new Maths();
+        //
+        //        Callback h = new MethodInterceptor() {
+        //            @Override
+        //            public Object intercept(Object o, Method method, Object[] arguments, MethodProxy methodProxy) throws Throwable {
+        //                System.out.println("Calling " + method.getName() + " with args " + Arrays.toString(arguments));
+        //                return method.invoke(maths, arguments);
+        //            }
+        //        };
+        //        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // this is EXACTLY what spring/hibrernate/ejb/guice does under the hood.
+        //
+        //        SecondGrade secondGrade = new SecondGrade(mathsProxy);
+        //
+        //        new ProxyIntro().run(secondGrade);
 
         // Play the role of Spring here (there's no framework)
         // TODO 4 : let Spring do its job, and do the same with an Aspect
-         SpringApplication.run(ProxyIntro.class, args);
+        SpringApplication.run(ProxyIntro.class, args);
     }
 
     // =============== THE LINE =================
 
     @Autowired
-    public void run(SecondGrade secondGrade) {
+    public void run(SecondGrade secondGrade) throws Exception {
         System.out.println("At runtime...");
         secondGrade.mathClass();
     }
@@ -61,11 +63,41 @@ class SecondGrade {
         this.maths = maths;
     }
 
-    public void mathClass() {
-        System.out.println("2+4=" + maths.sum(2, 4));
+    //@Timed (micrometer)
+    public void mathClass() throws Exception {
+        System.out.println("Who am I talking with? " + maths.getClass());
+        System.out.println("2+4=" + measure(()-> measure(() -> maths.sum(2, 4))));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
         System.out.println("3x3=" + maths.product(3, 3));
+    }
+
+    private <T> T measureWithEx(Callable<T> run) throws Exception {
+        long t0 = currentTimeMillis();
+        try {
+            return run.call();
+        } finally {
+            long t1 = currentTimeMillis();
+            System.out.println("TookFP " + (t1 - t0));
+        }
+    }
+    private <T> T measure(Supplier<T> run) { // classic Java8
+        long t0 = currentTimeMillis();
+        try {
+            return run.get();
+        } finally {
+            long t1 = currentTimeMillis();
+            System.out.println("TookFP " + (t1 - t0));
+        }
+    }
+    private void measure(Runnable run) throws Exception {
+        long t0 = currentTimeMillis();
+        try {
+             run.run();
+        } finally {
+            long t1 = currentTimeMillis();
+            System.out.println("TookFP " + (t1 - t0));
+        }
     }
 }
 
