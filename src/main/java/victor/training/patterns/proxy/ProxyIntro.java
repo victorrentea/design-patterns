@@ -2,8 +2,15 @@ package victor.training.patterns.proxy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.stereotype.Service;
 import victor.training.patterns.util.ThreadUtils;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -15,10 +22,18 @@ public class ProxyIntro {
         // TODO 2 : Log without changing anything below the line w/o any interface (Proxy)
         // TODO 3 : so that any new methods in Maths are automatically logged
 
-        IMaths maths = new Maths();
+        Maths maths = new Maths();
 
+        Callback h = new MethodInterceptor() {
+            @Override
+            public Object intercept(Object o, Method method, Object[] arguments, MethodProxy methodProxy) throws Throwable {
+                System.out.println("Calling " + method.getName() + " with args " + Arrays.toString(arguments));
+                return method.invoke(maths, arguments);
+            }
+        };
+        Maths mathsProxy = (Maths) Enhancer.create(Maths.class, h); // this is EXACTLY what spring/hibrernate/ejb/guice does under the hood.
 
-        SecondGrade secondGrade = new SecondGrade(new LoggingMathDecorator(new MonitoringMathDecorator(maths)));
+        SecondGrade secondGrade = new SecondGrade(mathsProxy);
 
         new ProxyIntro().run(secondGrade);
 
@@ -35,55 +50,13 @@ public class ProxyIntro {
         secondGrade.mathClass();
     }
 }
-class MonitoringMathDecorator implements IMaths {
-    private final IMaths delegate;
-
-    MonitoringMathDecorator(IMaths math) {
-        this.delegate = math;
-    }
-
-    @Override
-    public int sum(int a, int b) {
-        long t0 = currentTimeMillis();
-        int sum = delegate.sum(a, b);
-        long t1 = currentTimeMillis();
-        System.out.println("Took " + (t1-t0));
-        return sum;
-    }
-
-    @Override
-    public int product(int a, int b) {
-        return delegate.product(a, b);
-    }
-}
-class LoggingMathDecorator implements IMaths {
-    private final IMaths delegate;
-
-    LoggingMathDecorator(IMaths math) {
-        this.delegate = math;
-    }
-
-    @Override
-
-    public int sum(int a, int b) {
-        System.out.println("Calling sum with " + a+","+b);
-        return delegate.sum(a,b);
-    }
-
-    @Override
-    public int product(int a, int b) {
-        return delegate.product(a, b);
-    }
-}
-// ------don't change anything bellow this line--------------------------------------
-
 
 
 @Service
 class SecondGrade {
-    private final IMaths maths;
+    private final Maths maths;
 
-    SecondGrade(IMaths maths) {
+    SecondGrade(Maths maths) {
         this.maths = maths;
     }
 
@@ -91,23 +64,17 @@ class SecondGrade {
         System.out.println("2+4=" + maths.sum(2, 4));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
+        System.out.println("3x3=" + maths.product(3, 3));
     }
 }
 
-interface IMaths {
-    int sum(int a, int b);
-    int product(int a, int b);
-}
-
 @Facade
-class Maths implements IMaths { // T
-    @Override
+class Maths { // T
     public int sum(int a, int b) {
         ThreadUtils.sleepq(10); // Thinking...
         return a + b;
     }
 
-    @Override
     public int product(int a, int b) {
         int total = 0;
         for (int i = 0; i < a; i++) {
