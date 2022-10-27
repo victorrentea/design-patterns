@@ -9,9 +9,9 @@ import java.util.List;
 
 public class Immutable {
     private final String s;
-    private final List<String> list;
+    private final ImmutableList<String> list;
 
-    public Immutable(String s, List<String> list) {
+    public Immutable(String s, ImmutableList<String> list) {
         this.s = s;
         this.list = list;
     }
@@ -25,18 +25,19 @@ public class Immutable {
         return s;
     }
 
-    public List<String> getList() {
+    public ImmutableList<String> getList() {
 //        return new ArrayList<>(list); // - malloc / gc
-        return Collections.unmodifiableList(list); // decorator in disguise. + no malloc of the entire array
+//        return Collections.unmodifiableList(list); // decorator in disguise. + no malloc of the entire array
         // returned by a static facytory method that hides from me
         // the actual type that I am returned
+        return list;
     }
 }
 
 
 class Play {
     public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
+        ImmutableList<String> list = ImmutableList.of("1");
         Immutable obj = new Immutable("a", list);
         System.out.println("Before: " + obj);
 
