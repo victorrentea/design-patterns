@@ -1,10 +1,9 @@
-package victor.training.patterns.adapter.domain;
+package victor.training.patterns.adapter.infra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import victor.training.patterns.adapter.infra.LdapUserApiClient;
-import victor.training.patterns.adapter.infra.LdapUserDto;
+import victor.training.patterns.adapter.domain.ExternalUserProvider;
+import victor.training.patterns.adapter.domain.User;
 
 import java.util.List;
 
@@ -13,9 +12,10 @@ import static java.util.Optional.ofNullable;
 @interface Adapter {}
 
 @Adapter
-public class LdapUserClientAdapter {
+public class LdapUserClientAdapter implements ExternalUserProvider {
     @Autowired
     private LdapUserApiClient apiClient;
+    @Override
     public User fetchUser(String username) {
         List<LdapUserDto> list = apiClient.search(username.toUpperCase(), null, null);
 

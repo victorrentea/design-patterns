@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 @Service // ZEN GARDEN
 public class UserService {
 	@Autowired
-	private LdapUserClientAdapter adapter;
+	private ExternalUserProvider userProvider;
 
 	public void importUserFromLdap(String username) {
-		User user = adapter.fetchUser(username);
+		User user = userProvider.fetchUser(username);
 		if (user.workEmail().isPresent()) { // can't put logic in the domain
 			log.debug("Send welcome email to  " + user.workEmail().get());
 		}
