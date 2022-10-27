@@ -1,7 +1,10 @@
 package victor.training.patterns.proxy;
 
+import com.google.common.collect.ImmutableList;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Immutable {
@@ -23,7 +26,8 @@ public class Immutable {
     }
 
     public List<String> getList() {
-        return new ArrayList<>(list); // - malloc / gc
+//        return new ArrayList<>(list); // - malloc / gc
+        return Collections.unmodifiableList(list); // decorator in disguise. + no malloc of the entire array
     }
 }
 
@@ -35,7 +39,7 @@ class Play {
         System.out.println("Before: " + obj);
 
         // --- can I change obj' state here?
-        obj.getList().add("dirty hack"); // 😨 surprise!!! your add is NOT saved. hehehehe sucker!
+        obj.getList().add("dirty hack"); // BETTER: RUNTIME ERROR, not a silent ignore of the add
 
         System.out.println("After: " + obj);
     }
