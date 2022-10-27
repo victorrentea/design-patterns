@@ -4,14 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
+import victor.training.patterns.util.ThreadUtils;
 
 @SpringBootApplication
 public class ProxyIntro {
     public static void main(String[] args) {
-        // Play the role of Spring here (there's no framework)
-        // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
-        // TODO 2 : without changing anything below the line (w/o any interface)
-        // TODO 3 : so that any new methods in Maths are automatically logged [hard]
+        // TODO 1 : Log the arguments of the Math.sum() method.
+        // TODO 1bis: Then sometimes also measure it's run time (Decorator)
+        // TODO 2 : Log without changing anything below the line w/o any interface (Proxy)
+        // TODO 3 : so that any new methods in Maths are automatically logged
 
         Maths maths = new Maths();
 
@@ -19,6 +20,7 @@ public class ProxyIntro {
 
         new ProxyIntro().run(secondGrade);
 
+        // Play the role of Spring here (there's no framework)
         // TODO 4 : let Spring do its job, and do the same with an Aspect
         // SpringApplication.run(ProxyIntro.class, args);
     }
@@ -51,6 +53,7 @@ class SecondGrade {
 @Facade
 class Maths {
     public int sum(int a, int b) {
+        ThreadUtils.sleepq(10); // Thinking...
         return a + b;
     }
 
@@ -65,6 +68,7 @@ class Maths {
 
 
 // Key Points
+// [1] Decorator = another implementation of the interface of the real class.
 // [2] Class Proxy using CGLIB (Enhancer) extending the proxied class
 // [3] Spring Cache support [opt: redis]
 // [4] Custom @Aspect, applied to methods in @Facade
