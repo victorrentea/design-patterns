@@ -23,7 +23,7 @@ public class Immutable {
     }
 
     public List<String> getList() {
-        return list;
+        return new ArrayList<>(list); // - malloc / gc
     }
 }
 
@@ -35,6 +35,7 @@ class Play {
         System.out.println("Before: " + obj);
 
         // --- can I change obj' state here?
+        obj.getList().add("dirty hack"); // 😨 surprise!!! your add is NOT saved. hehehehe sucker!
 
         System.out.println("After: " + obj);
     }
