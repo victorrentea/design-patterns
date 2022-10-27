@@ -22,6 +22,11 @@ public class Customer {
 		// Codesmell = Feature Evny
 		// just a bit(3-7 lines) of domain logic working with the state
 		// of a single Domain object, and potentially reusable
+
+
+		// if the logic grows, move it into a Domain Service
+		// logic in a data object should be that simple THAT
+		// YOU SHOULD NEVER NEED TO MOCK IT AWAY.
         int discountPercentage = 3;
 		if (goldMember) {
             discountPercentage += 1;

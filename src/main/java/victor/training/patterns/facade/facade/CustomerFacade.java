@@ -1,19 +1,13 @@
 package victor.training.patterns.facade.facade;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import victor.training.patterns.facade.facade.dto.CustomerDto;
 import victor.training.patterns.facade.Facade;
 import victor.training.patterns.facade.entity.Customer;
-import victor.training.patterns.facade.entity.Email;
-import victor.training.patterns.facade.infra.EmailClient;
 import victor.training.patterns.facade.repo.CustomerRepo;
-import victor.training.patterns.facade.repo.EmailRepo;
 import victor.training.patterns.facade.repo.SiteRepo;
-import victor.training.patterns.facade.service.CustomerService;
+import victor.training.patterns.facade.service.RegisterCustomerService;
 import victor.training.patterns.facade.service.NotificationService;
-
-import java.text.SimpleDateFormat;
 
 @Facade
 @RequiredArgsConstructor
@@ -39,11 +33,11 @@ public class CustomerFacade {
 		customer.setName(dto.name);
 		customer.setSite(siteRepo.getReference(dto.countryId));
 
-		customerService.registerCustomer(customer);
+		registerCustomerService.registerCustomer(customer);
 
 		notificationService.sendRegistrationEmail(customer.getEmail());
 	}
 
 
-	private final CustomerService customerService;
+	private final RegisterCustomerService registerCustomerService;
 }
