@@ -9,7 +9,7 @@ import victor.training.patterns.adapter.infra.LdapUserApiClient;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service // ZEN garden, my core domain logic
 public class UserService {
 	@Autowired
 	private LdapUserApiClient apiClient;
@@ -24,18 +24,18 @@ public class UserService {
 		LdapUserDto ldapUser = list.get(0);
 
 		deepDomainLogic(ldapUser);
-
 	}
 
 	private void deepDomainLogic(LdapUserDto ldapUser) {
-		if (ldapUser.getWorkEmail()!=null) {
-			log.debug("Send welcome email to  " + ldapUser.getWorkEmail());
-		}
-
 		log.debug("Insert user in my database: " + ldapUser.getuId());
 
 		String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase();
 		log.debug("More business logic with " + fullName + " of id " + ldapUser.getuId().toLowerCase());
+
+		if (ldapUser.getWorkEmail()!=null) {
+			String toRecipient = fullName + "<" + ldapUser.getWorkEmail() + ">"; // repeats in the code
+			log.debug("Send welcome email to  " + toRecipient);
+		}
 	}
 
 }
