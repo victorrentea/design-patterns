@@ -15,7 +15,7 @@ public class UserService {
 	private LdapUserApiClient apiClient;
 
 	public void importUserFromLdap(String username) {
-		List<LdapUserDto> list = apiClient.search(null, null, username.toUpperCase());
+		List<LdapUserDto> list = apiClient.search(username.toUpperCase(), null, null);
 
 		if (list.size() != 1) {
 			throw new IllegalArgumentException("There is no single user matching username " + username);
