@@ -3,7 +3,10 @@ package victor.training.patterns.template;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.function.IOConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import victor.training.patterns.facade.entity.Customer;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 import victor.training.patterns.template.support.ProductRepo;
@@ -12,6 +15,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -55,10 +60,25 @@ class ProductContentWriter {
 
     public void writeExport(Writer writer) throws IOException {
         writer.write("Prodycts....\n");
+
+        //loan pattern:
+        // some infrastructure code (Spring's JDBC template)
+        // take a function from you that will work with a ResultSet that is managed from the infra
+        // ie. JdbcTemplate will rs.close() and open the rs on the prepared statement.
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        jdbcTemplate.queryForObject("SQL", (rowInTheResultSet, rowNum) -> {
+            String name = rowInTheResultSet.getString(1);
+            Customer customer = new Customer().setName(name);
+            return customer;
+        });
         //TODO
     }
 }
 
+
+// what matters /changes/ where most bugs will be
+// =arch = the art of drawing lines =========================
+// infra
 
 class FileExporter {
     private final OrderRepo orderRepo;
@@ -75,6 +95,7 @@ class FileExporter {
         try (Writer writer = new FileWriter(file)) {
             System.out.println("Starting export to: " + file.getAbsolutePath());
 
+            // LOAN: the function that I receive as an arg will loan from me a Writer that I created/closed/managed for it
             ioConsumer.accept(writer);
 
             System.out.println("File export completed: " + file.getAbsolutePath());
