@@ -53,6 +53,17 @@ class BrexitTaxCalculator implements TaxCalculator{
     }
 }
 @Service
+class DefaultTaxCalculator implements TaxCalculator{
+    @Override
+    public boolean appliesFor(Parcel parcel) {
+        return true;
+    }
+
+    public double calculate(Parcel parcel) {
+        return -1;
+    }
+}
+@Service
 class EUTaxCalculator implements TaxCalculator{
     @Override
     public boolean appliesFor(Parcel parcel) {
