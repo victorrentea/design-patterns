@@ -1,5 +1,7 @@
 package victor.training.patterns.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -107,6 +109,8 @@ class Maths { // T
         ThreadUtils.sleepq(10); // Thinking...
         return a + b;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(Maths.class);
 
     public int product(int a, int b) {
         int total = 0;

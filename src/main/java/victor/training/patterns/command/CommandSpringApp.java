@@ -15,7 +15,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
+
 import static java.util.Arrays.asList;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static victor.training.patterns.util.ThreadUtils.sleepq;
 
 @EnableAsync
@@ -51,12 +56,25 @@ class Drinker implements CommandLineRunner {
    // TODO [1] inject and use a ThreadPoolTaskExecutor.submit
    // TODO [2] make them return a CompletableFuture + @Async + asyncExecutor bean
    // TODO [3] wanna try it out over JMS? try out ServiceActivatorPattern
-   public void run(String... args) {
+   public void run(String... args) throws ExecutionException, InterruptedException {
       log.debug("Submitting my order");
       long t0 = System.currentTimeMillis();
       log.debug("Waiting for my drinks...");
-      Beer beer = barman.pourBeer();
-      Vodka vodka = barman.pourVodka();
+
+      // how should I run the two in parallel:
+      // a) new Thread(),
+      // b) Executors (JavaS),
+      // c) ThreadPoolTaskExecutor(Spring),
+      // d) CompletableFuture(java)
+
+      CompletableFuture<Beer> futureBeer = supplyAsync(() -> barman.pourBeer());
+      CompletableFuture<Vodka> futureVodka = supplyAsync(() -> barman.pourVodka());
+
+      Beer beer = futureBeer.get();
+      Vodka vodka = futureVodka.get();
+      // Do not BLOCK with .get() if using COmpletableFuture. instead chain more stuff to do with
+      // methods starting with then....
+      // ⚠️careful with exceptions.
       long t1 = System.currentTimeMillis();
       log.debug("Got my order in {} ms ! Enjoying {}", t1 - t0, asList(beer, vodka));
    }
@@ -67,13 +85,13 @@ class Drinker implements CommandLineRunner {
 class Barman {
    public Beer pourBeer() {
       log.debug("Pouring Beer (1 second)...");
-      sleepq(1000);
+      sleepq(1000); // Other REST API that under stress takes 1 sec to return
       return new Beer();
    }
 
    public Vodka pourVodka() {
       log.debug("Pouring Vodka (1 second)...");
-      sleepq(1000);
+      sleepq(1000); // Long WSDL call to some legacy cobol system pl/sql mainframe corba
       return new Vodka();
    }
 }
