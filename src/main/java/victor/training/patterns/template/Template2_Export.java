@@ -1,8 +1,6 @@
 package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 
@@ -16,11 +14,13 @@ public class Template2_Export {
     private final FileExporter exporter;
 
     public void exportOrders() throws Exception {
-        exporter.exportOrders();
+        exporter.exportOrders(true);
     }
 
     public void exportProducts() throws Exception {
-        // TODO 'the same way you did the export of orders'
+        exporter.exportOrders(false);
+
+        // TODO '... the same way you did the export of orders'
         // RUN UNIT TESTS!
     }
 }
@@ -35,17 +35,22 @@ class FileExporter {
         this.exportFolder = exportFolder;
     }
 
-    public File exportOrders() {
+    public File exportOrders(boolean exportingOrders) {
         File file = new File(exportFolder, "orders.csv");
         long t0 = System.currentTimeMillis();
         try (Writer writer = new FileWriter(file)) {
             System.out.println("Starting export to: " + file.getAbsolutePath());
 
-            writer.write("OrderID;Date\n");
+            if (exportingOrders) {
+                writer.write("OrderID;CustomerId;Price\n");
 
-            for (Order order : orderRepo.findByActiveTrue()) {
-                String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
-                writer.write(csv);
+                for (Order order : orderRepo.findByActiveTrue()) {
+                    String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+                    writer.write(csv);
+                }
+            } else {
+                writer.write("Export products...\n");
+                // TODO
             }
 
             System.out.println("File export completed: " + file.getAbsolutePath());
