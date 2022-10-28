@@ -20,12 +20,33 @@ public class VisitorPlay {
 //        System.out.println("Total perimeter: " + sealed(shapes));
 
         double totalArea = 0;// TODO
+
         System.out.println("Total area: " + totalArea);
     }
+
+
+
+
+
+
+
+
 
     private static double oop(List<Shape> shapes) {
         double total = 0;
         for (Shape shape : shapes) {
+//            if (shape instanceof Square s) {
+//                total += s.edge() * 4;
+//            } else if (shape instanceof Circle circle) {
+//                total += 2 * Math.PI * circle.radius();
+//            } else {
+//                // weak2 (of instanceof) piling up logic in a single place, instead pushing it in the obhjects holidng the data
+//
+//                // weak1 (of instanceof)
+//                throw new IllegalArgumentException("God, please make this exception NEVER occur.  Let met remember this place to go when I add a new Shape type.");
+//            }
+
+            total += shape.getPerimeter();
             // TODO compute perimeter depending on the type of the shape (Circle, Square,...)
         }
         return total;

@@ -9,4 +9,9 @@ public record Circle(int radius) implements Shape {
 		visitor.visit(this);
 	}
 
+	@Override
+	public double getPerimeter() {
+		return radius * 2 * Math.PI;
+	}
+
 }
