@@ -26,7 +26,7 @@ class FileExporterTest {
 
     @BeforeEach
     final void before() {
-        exporter = new FileExporter(orderRepo, exportFolder);
+        exporter = new FileExporter(orderRepo, exportFolder, contentWriter);
     }
     @AfterEach
     void after() {
