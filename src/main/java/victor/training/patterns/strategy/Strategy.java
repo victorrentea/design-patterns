@@ -2,9 +2,12 @@ package victor.training.patterns.strategy;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.function.Function;
 
 record Parcel(String originCountry, double tobaccoValue, double regularValue, LocalDate date) {
 }
@@ -16,44 +19,44 @@ class CustomsService {
     //	private Map<String, Class<? extends TaxCalculator>> calculators; // configured in application.properties 😮
 
     public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
-        TaxCalculator taxCalculator = selectCalculator(parcel);
-        return taxCalculator.calculate(parcel);
+        Function<Parcel,Double> taxCalculator = selectCalculator(CountryEnum.valueOf(parcel.originCountry()));
+        return taxCalculator.apply(parcel);
     }
 
     // switch rules: 1) the only thing in its method. 2) each case: = 1 line 3) always default throw (unless java 17)
-    private static TaxCalculator selectCalculator(Parcel parcel) {
+    private static Function<Parcel, Double> selectCalculator(CountryEnum originCountry) {
         // DON't EVER DO THIS!!!!!
-        switch (parcel.originCountry()) {
-            case "UK":
-                return new BrexitTaxCalculator();
-            case "CN":
-                return new ChinaTaxCalculator();
-            case "FR":
-            case "ES": // other EU country codes...
-            case "RO":
-                return new EUTaxCalculator();
-            default:
-                throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
-        }
+        return switch (originCountry) {
+            case UK -> Calculators::calculateUK;
+            case CN -> Calculators::calculateChina;
+            case FR, ES, RO -> Calculators::calculateEU;
+
+            // we cover with an exception for a bad input
+            // can we use the compiler to tell us that we missed a supported country ?
+        };
     }
-}
-interface TaxCalculator {
-    double calculate(Parcel parcel);
+
+//    public Void stupidHabbit(CountryEnum originCountry) {
+//        return switch (originCountry) {
+//            case UK -> {System.out.println("stuff to do "); yield null;}
+//            case CN -> new ChinaTaxCalculator(); // other EU country codes...
+//            case FR, ES, RO -> new EUTaxCalculator();
+//
+//            // we cover with an exception for a bad input
+//            // can we use the compiler to tell us that we missed a supported country ?
+//        };
+//    }
 }
 
-class BrexitTaxCalculator implements TaxCalculator{
-    public double calculate(Parcel parcel) {
-        // in fact ... 40 lines , 12 if statements
+class Calculators {
+    public static double calculateUK(Parcel parcel) {
+        // in fact ... 10 lines , 3 if statements
         return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
-}
-class EUTaxCalculator implements TaxCalculator{
-    public double calculate(Parcel parcel) {
+    public static double calculateEU(Parcel parcel) {
         return parcel.tobaccoValue() / 3;
     }
-}
-class ChinaTaxCalculator implements TaxCalculator{
-    public double calculate(Parcel parcel) {
+    public static double calculateChina(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
     }
 }
