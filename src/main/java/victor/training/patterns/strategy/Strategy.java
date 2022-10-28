@@ -1,13 +1,12 @@
 package victor.training.patterns.strategy;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.function.Function;
+import java.util.List;
 
 record Parcel(String originCountry, double tobaccoValue, double regularValue, LocalDate date) {
 }
@@ -19,45 +18,69 @@ class CustomsService {
     //	private Map<String, Class<? extends TaxCalculator>> calculators; // configured in application.properties 😮
 
     public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
-        Function<Parcel,Double> taxCalculator = selectCalculator(CountryEnum.valueOf(parcel.originCountry()));
-        return taxCalculator.apply(parcel);
+        TaxCalculator taxCalculator = selectCalculator(parcel);
+        return taxCalculator.calculate(parcel);
     }
 
-    // switch rules: 1) the only thing in its method. 2) each case: = 1 line 3) always default throw (unless java 17)
-    private static Function<Parcel, Double> selectCalculator(CountryEnum originCountry) {
-        // DON't EVER DO THIS!!!!!
-        return originCountry.function;
-//        return switch (originCountry) {
-//            case UK -> Calculators::calculateUK;
-//            case CN -> Calculators::calculateChina;
-//            case FR, ES, RO -> Calculators::calculateEU;
-//
-//            // we cover with an exception for a bad input
-//            // can we use the compiler to tell us that we missed a supported country ?
-//        };
+    // The taxes to apply to China will change starting Nov 1, 2022
+    private  TaxCalculator selectCalculator(Parcel parcel) {
+        for (TaxCalculator taxCalculator : taxCalculators) {
+            if (taxCalculator.appliesFor(parcel)) {
+                return taxCalculator;
+            }
+        }
+        throw new IllegalArgumentException("Not supported parcel");
     }
 
-//    public Void stupidHabbit(CountryEnum originCountry) {
-//        return switch (originCountry) {
-//            case UK -> {System.out.println("stuff to do "); yield null;}
-//            case CN -> new ChinaTaxCalculator(); // other EU country codes...
-//            case FR, ES, RO -> new EUTaxCalculator();
-//
-//            // we cover with an exception for a bad input
-//            // can we use the compiler to tell us that we missed a supported country ?
-//        };
-//    }
+    @Autowired
+    private List<TaxCalculator> taxCalculators;
+}
+interface TaxCalculator {
+    boolean appliesFor(Parcel parcel);
+    double calculate(Parcel parcel);
 }
 
-class Calculators {
-    public static double calculateUK(Parcel parcel) {
-        // in fact ... 10 lines , 3 if statements
+@Service
+class BrexitTaxCalculator implements TaxCalculator{
+    @Override
+    public boolean appliesFor(Parcel parcel) {
+        return "UK".equals(parcel.originCountry());
+    }
+
+    public double calculate(Parcel parcel) {
+        // in fact ... 40 lines , 12 if statements
         return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
-    public static double calculateEU(Parcel parcel) {
+}
+@Service
+class EUTaxCalculator implements TaxCalculator{
+    @Override
+    public boolean appliesFor(Parcel parcel) {
+        return List.of("FR", "ES", "RO").contains(parcel.originCountry());
+    }
+
+    public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() / 3;
     }
-    public static double calculateChina(Parcel parcel) {
+}
+@Service
+class ChinaTaxCalculator implements TaxCalculator{
+    @Override
+    public boolean appliesFor(Parcel parcel) {
+        return "CN".equals(parcel.originCountry()) && parcel.date().isBefore(LocalDate.parse("2022-11-01"));
+    }
+
+    public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
+    }
+}
+class ChinaTaxCalculatorSince2022Nov implements TaxCalculator{
+    @Override
+    public boolean appliesFor(Parcel parcel) {
+        return "CN".equals(parcel.originCountry()) && !parcel.date().isBefore(LocalDate.parse("2022-11-01"));
+    }
+
+    public double calculate(Parcel parcel) {
+        return parcel.tobaccoValue() + parcel.regularValue()  + 1; // different !
     }
 }
