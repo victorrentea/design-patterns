@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+enum CountryEnum {
+    RO, ES, FR, UK,CN
+}
+
+
 record Parcel(String originCountry, double tobaccoValue, double regularValue, LocalDate date) {
 }
 
@@ -34,3 +39,4 @@ class CustomsService {
         }
     }
 }
+
