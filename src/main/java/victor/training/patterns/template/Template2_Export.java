@@ -1,8 +1,6 @@
 package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
@@ -43,6 +41,7 @@ abstract class FileExporter {
             System.out.println("File export completed: " + file.getAbsolutePath());
             return file;
         } catch (Exception e) {
+            handleException(e);
             System.out.println("Pretend: Send Error Notification Email"); // TODO CR: only for export orders, not for products
             throw new RuntimeException("Error exporting data", e);
         } finally {
@@ -60,6 +59,7 @@ abstract class FileExporter {
 
     // we defer the implem of this missing step to subclasses
     protected abstract void writeContent(Writer writer) throws IOException;
+    protected void handleException(Exception writer) { } // default methods in interfaces in java8
 
 }
 
@@ -67,11 +67,16 @@ class OrderExporter extends FileExporter{
     @Autowired
     private  OrderRepo orderRepo;
 
+    @Override
+    protected void handleException(Exception writer) {
+        // I implement this optional hook
+    }
+
     protected void writeContent(Writer writer) throws IOException {
         writer.write("OrderID;Date\n");
 
         for (Order order : orderRepo.findByActiveTrue()) {
-            String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+            String csv = order.getId() + ";" + escapeCell(order.getCustomerId()) + ";" + order.getAmount() + "\n";
             writer.write(csv);
         }
     }
