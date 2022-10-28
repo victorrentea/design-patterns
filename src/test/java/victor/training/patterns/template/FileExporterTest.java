@@ -38,7 +38,14 @@ class FileExporterTest {
         Order order = new Order().setId(1L).setCustomerId(13L).setAmount(10D);
         when(orderRepo.findByActiveTrue()).thenReturn(List.of(order));
 
-        File exportedFile = exporter.exportOrders();
+        File exportedFile = exporter.exportOrders(writer1 -> {
+            writer1.write("OrderID;Date\n");
+
+            for (Order order : orderRepo.findByActiveTrue()) {
+                String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+                writer1.write(csv);
+            }
+        });
 
         String contents = Files.readString(exportedFile.toPath());
         assertThat(contents).isEqualTo("""
