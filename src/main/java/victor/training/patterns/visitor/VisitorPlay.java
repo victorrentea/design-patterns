@@ -1,6 +1,7 @@
 package victor.training.patterns.visitor;
 
 import victor.training.patterns.visitor.model.Circle;
+import victor.training.patterns.visitor.model.Rectangle;
 import victor.training.patterns.visitor.model.Shape;
 import victor.training.patterns.visitor.model.Square;
 
@@ -12,6 +13,7 @@ public class VisitorPlay {
     public static void main(String[] args) {
         List<Shape> shapes = List.of(
                 new Square(10),
+                new Rectangle(5,3),
                 new Circle(5),
                 new Square(5));
 
@@ -64,14 +66,15 @@ public class VisitorPlay {
     //</editor-fold>
 
     //<editor-fold desc="java 19 + sealed Shape interface">
-//    private static double sealed(List<Shape> shapes) {
-//        return shapes.stream()
-//                .mapToDouble(shape -> switch (shape) {
-//                    case Square s -> s.edge() * 4;
-//                    case Circle c -> c.radius() * Math.PI * 2;
-//                })
-//                .sum();
-//    }
+    private static double sealed(List<Shape> shapes) {
+        return shapes.stream()
+                .mapToDouble(shape -> switch (shape) {
+                    case Square s -> s.edge() * 4;
+                    case Circle c -> c.radius() * Math.PI * 2;
+                    case Rectangle r -> 2 * (r.w() + r.h());
+                })
+                .sum();
+    }
     //</editor-fold>
 }
 
