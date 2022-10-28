@@ -1,12 +1,13 @@
 package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Objects;
 
@@ -28,12 +29,10 @@ public class Template2_Export {
 class FileExporter {
     private final OrderRepo orderRepo;
     private final File exportFolder;
-    private final ContentWriter contentWriter;
 
-    public FileExporter(OrderRepo orderRepo, File exportFolder, ContentWriter contentWriter) {
+    public FileExporter(OrderRepo orderRepo, File exportFolder) {
         this.orderRepo = orderRepo;
         this.exportFolder = exportFolder;
-        this.contentWriter = contentWriter;
     }
 
     public File exportOrders() {
@@ -42,7 +41,12 @@ class FileExporter {
         try (Writer writer = new FileWriter(file)) {
             System.out.println("Starting export to: " + file.getAbsolutePath());
 
-            contentWriter.writeContent(writer);
+            writer.write("OrderID;Date\n");
+
+            for (Order order : orderRepo.findByActiveTrue()) {
+                String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+                writer.write(csv);
+            }
 
             System.out.println("File export completed: " + file.getAbsolutePath());
             return file;
@@ -54,8 +58,6 @@ class FileExporter {
         }
     }
 
-
-
     public String escapeCell(Object cellValue) {
         if (cellValue instanceof String s) {
             if (!s.contains("\n")) return s;
@@ -63,28 +65,5 @@ class FileExporter {
         } else {
             return Objects.toString(cellValue);
         }
-    }
-}
-
-
-interface ContentWriter {
-    void writeContent(Writer writer) throws IOException;
-}
-class Impl1 implements ContentWriter {
-    // orders
-    public void writeContent(Writer writer) throws IOException {
-        writer.write("OrderID;Date\n");
-        for (Order order : orderRepo.findByActiveTrue()) {
-            String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
-            writer.write(csv);
-        }
-    }
-
-}class Impl2 implements ContentWriter {
-    // products
-
-    @Override
-    public void writeContent(Writer writer) throws IOException {
-
     }
 }

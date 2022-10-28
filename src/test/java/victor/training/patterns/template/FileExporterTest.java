@@ -26,7 +26,7 @@ class FileExporterTest {
 
     @BeforeEach
     final void before() {
-        exporter = new FileExporter(orderRepo, exportFolder, contentWriter);
+        exporter = new FileExporter(orderRepo, exportFolder);
     }
     @AfterEach
     void after() {
@@ -38,7 +38,7 @@ class FileExporterTest {
         Order order = new Order().setId(1L).setCustomerId(13L).setAmount(10D);
         when(orderRepo.findByActiveTrue()).thenReturn(List.of(order));
 
-        File exportedFile = exporter.exportOrders(true);
+        File exportedFile = exporter.exportOrders();
 
         String contents = Files.readString(exportedFile.toPath());
         assertThat(contents).isEqualTo("""
