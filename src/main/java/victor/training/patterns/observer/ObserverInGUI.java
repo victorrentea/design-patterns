@@ -8,13 +8,16 @@ import java.awt.event.ActionListener;
 public class ObserverInGUI {
 	public static void main(String[] args) {
 		MyFrame myFrame = new MyFrame();
-		
+
+		// smelling as OOP
 		myFrame.jButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "Button clicked");
 			}
 		});
+		//smell of FP
+		myFrame.jButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "Button clicked"));
 	}
 }
 

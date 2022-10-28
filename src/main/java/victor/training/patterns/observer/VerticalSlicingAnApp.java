@@ -26,8 +26,8 @@ public class VerticalSlicingAnApp {
 	@Autowired
 	private OrderService orderService;
 
-	@EventListener
-	public void atStartup(ContextRefreshedEvent event) {
+	@EventListener(ContextRefreshedEvent.class)
+	public void atStartup() {
 		orderService.placeOrder();
 	}
 

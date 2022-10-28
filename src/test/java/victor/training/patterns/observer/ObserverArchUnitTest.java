@@ -26,7 +26,7 @@ public class ObserverArchUnitTest {
       System.out.println("Studying classes: " + names);
 
       SliceRule sliceRule = SlicesRuleDefinition.slices()
-          .matching("..observer.(**)")
+          .matching("..observer.subdomains.(**)")
           .should().notDependOnEachOther()
           .ignoreDependency(alwaysTrue(), resideInAPackage("..events")); // allow dependencies to .events
 
