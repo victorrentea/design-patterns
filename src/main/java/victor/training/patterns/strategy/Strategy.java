@@ -22,15 +22,41 @@ class CustomsService {
     public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
         switch (parcel.originCountry()) {
             case "UK":
-                return parcel.tobaccoValue() / 2 + parcel.regularValue();
+                return calculateBrexitTax(parcel);
             case "CN":
-                return parcel.tobaccoValue() + parcel.regularValue();
+                return calculateChinaTax(parcel);
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return parcel.tobaccoValue() / 3;
+                return calculateEUTax(parcel);
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
         }
+    }
+
+    private static double calculateEUTax(Parcel parcel) {
+        return parcel.tobaccoValue() / 3;
+    }
+
+    private static double calculateChinaTax(Parcel parcel) {
+        return parcel.tobaccoValue() + parcel.regularValue();
+    }
+
+    private static double calculateBrexitTax(Parcel parcel) {
+        // in fact ... 40 lines , 12 if statements
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        // in fact ... 40 lines
+        return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
 }
