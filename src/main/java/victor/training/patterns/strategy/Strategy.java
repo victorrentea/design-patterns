@@ -26,14 +26,15 @@ class CustomsService {
     // switch rules: 1) the only thing in its method. 2) each case: = 1 line 3) always default throw (unless java 17)
     private static Function<Parcel, Double> selectCalculator(CountryEnum originCountry) {
         // DON't EVER DO THIS!!!!!
-        return switch (originCountry) {
-            case UK -> Calculators::calculateUK;
-            case CN -> Calculators::calculateChina;
-            case FR, ES, RO -> Calculators::calculateEU;
-
-            // we cover with an exception for a bad input
-            // can we use the compiler to tell us that we missed a supported country ?
-        };
+        return originCountry.function;
+//        return switch (originCountry) {
+//            case UK -> Calculators::calculateUK;
+//            case CN -> Calculators::calculateChina;
+//            case FR, ES, RO -> Calculators::calculateEU;
+//
+//            // we cover with an exception for a bad input
+//            // can we use the compiler to tell us that we missed a supported country ?
+//        };
     }
 
 //    public Void stupidHabbit(CountryEnum originCountry) {
