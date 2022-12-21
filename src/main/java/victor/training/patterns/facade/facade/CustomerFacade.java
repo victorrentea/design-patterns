@@ -27,7 +27,7 @@ public class CustomerFacade {
 		return new CustomerDto(customer);
 	}
 
-	public void register(CustomerDto dto) {
+	public void register2(CustomerDto dto) {
 		Customer customer = new Customer();
 		customer.setEmail(dto.email);
 		customer.setName(dto.name);

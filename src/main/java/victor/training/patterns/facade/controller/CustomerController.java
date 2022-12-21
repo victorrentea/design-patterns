@@ -17,6 +17,6 @@ public class CustomerController {
 
    @PostMapping
    public void register(@RequestBody CustomerDto customerDto) {
-      customerFacade.register(customerDto);
+      customerFacade.register2(customerDto);
    }
 }

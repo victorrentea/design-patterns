@@ -1,23 +1,14 @@
 package victor.training.patterns.proxy.decorator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 import victor.training.patterns.util.ThreadUtils;
-
-import static java.lang.System.currentTimeMillis;
 
 public class Decorator {
     public static void main(String[] args) {
-        // TODO 1 : Log the arguments of the Math.sum() method.
-        // TODO 1bis: Then sometimes also measure it's run time (Decorator)
-        // TODO 2 : Log without changing anything below the line w/o any interface (Proxy)
-        // TODO 3 : so that any new methods in Maths are automatically logged
+        // TODO 1 : Log the argx
+        Maths maths = new Maths();
 
-        IMaths maths = new Maths();
-
-
-        SecondGrade secondGrade = new SecondGrade(new LoggingMathDecorator(new MonitoringMathDecorator(maths)));
+        SecondGrade secondGrade = new SecondGrade(new MathsCuLogging(maths));
 
         new Decorator().run(secondGrade);
 
@@ -34,50 +25,33 @@ public class Decorator {
         secondGrade.mathClass();
     }
 }
-class MonitoringMathDecorator implements IMaths {
-    private final IMaths delegate;
+class MathsCuLogging implements IMaths{
+    private final Maths maths;
 
-    MonitoringMathDecorator(IMaths math) {
-        this.delegate = math;
+    MathsCuLogging(Maths maths) {
+        this.maths = maths;
     }
 
     @Override
     public int sum(int a, int b) {
-        long t0 = currentTimeMillis();
-        int sum = delegate.sum(a, b);
-        long t1 = currentTimeMillis();
-        System.out.println("Took " + (t1-t0));
-        return sum;
+        int rezultat = maths.sum(a, b);
+        System.out.println("Tatal maniac verifica suma: " +a + " si " + b + " i-a dat " + rezultat);
+        return rezultat;
     }
 
     @Override
     public int product(int a, int b) {
-        return delegate.product(a, b);
-    }
-}
-class LoggingMathDecorator implements IMaths {
-    private final IMaths delegate;
+        int rezultat = maths.product(a, b);
+        System.out.println("Tatal maniac verifica produs: " +a + " si " + b + " i-a dat " + rezultat);
 
-    LoggingMathDecorator(IMaths math) {
-        this.delegate = math;
-    }
-
-    @Override
-
-    public int sum(int a, int b) {
-        System.out.println("Calling sum with " + a+","+b);
-        return delegate.sum(a,b);
-    }
-
-    @Override
-    public int product(int a, int b) {
-        return delegate.product(a, b);
+        return rezultat;
     }
 }
 // ------don't change anything bellow this line--------------------------------------
-
-
-
+interface IMaths {
+    int sum(int a, int b);
+    int product(int a, int b);
+}
 class SecondGrade {
     private final IMaths maths;
 
@@ -92,11 +66,6 @@ class SecondGrade {
     }
 }
 
-interface IMaths {
-    int sum(int a, int b);
-    int product(int a, int b);
-}
-
 class Maths implements IMaths { // T
     @Override
     public int sum(int a, int b) {
@@ -106,6 +75,7 @@ class Maths implements IMaths { // T
 
     @Override
     public int product(int a, int b) {
+        ThreadUtils.sleepq(30);
         int total = 0;
         for (int i = 0; i < a; i++) {
             total = sum(total, b);
@@ -114,11 +84,3 @@ class Maths implements IMaths { // T
     }
 }
 
-
-// Key Points
-// [1] Decorator = another implementation of the interface of the real class.
-// [2] Class Proxy using CGLIB (Enhancer) extending the proxied class
-// [3] Spring Cache support [opt: redis]
-// [4] Custom @Aspect, applied to methods in @Facade
-// [6] Tips: self proxy, debugging, final
-// [7] OPT: Manual proxying using BeanPostProcessor

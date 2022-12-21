@@ -20,13 +20,11 @@ public class SingletonBasics {
 
 class BizService {
    public int bizMethod() {
-      // Think about testing
       // TODO keep loaded config in ConfigManager field
       // TODO reuse ConfigManager instance in field (performance)
       // TODO push life mgmt to ConfigManager (getInstance)
-      // TODO Test it
-      // TODO Introduce ServiceLocator
-      ConfigManager configManager = new ConfigManager();
+      ConfigManager configManager = ConfigManager.getInstance();
+
       String config = configManager.getConfig();
       if (config.equals("NOOP")) {
          return -1;
@@ -36,17 +34,31 @@ class BizService {
 }
 
 
+// scop: sa opresc instantierea acestei clase de mai mult decat o singura data
+// inauntru
 class ConfigManager {
 
-   private final String config;
+   private static ConfigManager instance;
+   private ConfigManager() {
+      config = init();
+   }
+   public static ConfigManager getInstance() {
+      if (instance == null) {
+         instance = new ConfigManager();
+      }
+      return instance;
+   }
 
-   public ConfigManager() {
+   private final String config;
+   private String init() {
+      final String config;
       try (Reader reader = new FileReader("f.txt")) {
          config = IOUtils.toString(reader); // takes time
-         sleepq(1000);
+         sleepq(1000); // ma prefac
       } catch (IOException e) {
          throw new RuntimeException(e);
       }
+      return config;
    }
 
    public String getConfig() {
