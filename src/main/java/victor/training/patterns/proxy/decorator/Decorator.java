@@ -25,7 +25,7 @@ public class Decorator {
         secondGrade.mathClass();
     }
 }
-class MathsCuLogging implements IMaths{
+class MathsCuLogging extends Maths{
     private final Maths maths;
 
     MathsCuLogging(Maths maths) {
@@ -48,14 +48,10 @@ class MathsCuLogging implements IMaths{
     }
 }
 // ------don't change anything bellow this line--------------------------------------
-interface IMaths {
-    int sum(int a, int b);
-    int product(int a, int b);
-}
 class SecondGrade {
-    private final IMaths maths;
+    private final Maths maths;
 
-    SecondGrade(IMaths maths) {
+    SecondGrade(Maths maths) {
         this.maths = maths;
     }
 
@@ -66,14 +62,12 @@ class SecondGrade {
     }
 }
 
-class Maths implements IMaths { // T
-    @Override
+class Maths { // T
     public int sum(int a, int b) {
         ThreadUtils.sleepq(10); // Thinking...
         return a + b;
     }
 
-    @Override
     public int product(int a, int b) {
         ThreadUtils.sleepq(30);
         int total = 0;
