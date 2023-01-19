@@ -30,6 +30,7 @@ private final LdapUserApiClient apiClient;
             ldapUser.getWorkEmail(),
             fullName
     );
+
     return user;
   }
 }

@@ -12,8 +12,8 @@ public class UserService {
 
 	public void importUserFromLdap(String username) {
 		User user = userProvider.fetchUser(username);
-		if (user.workEmail().isPresent()) { // can't put logic in the domain
-			log.debug("Send welcome email to  " + user.workEmail().get());
+		if (user.workEmail()!=null) { // can't put logic in the domain
+			log.debug("Send welcome email to  " + user.workEmail());
 		}
 
 

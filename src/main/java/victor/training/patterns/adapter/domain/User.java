@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 public record User(
     String username,
     String fullName,
-    Optional<String> workEmail // FAIL: Opt is dubious on fields!
+    String workEmail // FAIL: Opt is dubious on fields!
 ) {
     public User {
         requireNonNull(username); // fail fast

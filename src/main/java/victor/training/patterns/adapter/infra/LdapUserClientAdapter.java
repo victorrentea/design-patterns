@@ -27,7 +27,7 @@ public class LdapUserClientAdapter implements ExternalUserProvider {
         String fullName = ldapUser.getfName() + " " + ldapUser.getlName().toUpperCase(); // mapping spread in my domain
 
         User user = new User(ldapUser.getuId(),
-                fullName, ofNullable(ldapUser.getWorkEmail()));
+                fullName, ldapUser.getWorkEmail());
         return user;
     }
 }
