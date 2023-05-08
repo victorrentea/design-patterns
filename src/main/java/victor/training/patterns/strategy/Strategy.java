@@ -1,10 +1,10 @@
 package victor.training.patterns.strategy;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import victor.training.patterns.strategy.UKTaxCalculator.ChinaTaxCalculator;
-import victor.training.patterns.strategy.UKTaxCalculator.EUTaxCalculator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,10 +27,12 @@ class CustomsService {
         TaxCalculator calculator = selectCalculator(parcel.originCountry());
         return calculator.calculate(parcel); // polymorphic call
     }
-//Map<List<String>, Class<? extends TaxCalculator>> map;
-    public static TaxCalculator selectCalculator(String originCountry) {
-        List<TaxCalculator> toate = List.of(new ChinaTaxCalculator(), new UKTaxCalculator(), new EUTaxCalculator());
-        return toate.stream()
+
+    @Autowired
+    private List<TaxCalculator> taxCalculators; // iti aduna toate implementarile de care stie ale interfetei aleia
+
+    public TaxCalculator selectCalculator(String originCountry) {
+        return taxCalculators.stream()
                 .filter(c -> c.supports(originCountry))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry));
@@ -40,6 +42,7 @@ interface TaxCalculator {
     boolean supports(String originCountry); // mai bine incapsulata. zice doar da/nu OCP
     double calculate(Parcel parcel);
 }
+@Component
 class UKTaxCalculator implements TaxCalculator {
     @Override
     public boolean supports(String originCountry) {
@@ -51,6 +54,7 @@ class UKTaxCalculator implements TaxCalculator {
         return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
 }
+@Component
 class ChinaTaxCalculator implements TaxCalculator {
     @Override
     public boolean supports(String originCountry) {
@@ -61,6 +65,7 @@ class ChinaTaxCalculator implements TaxCalculator {
         return parcel.tobaccoValue() + parcel.regularValue();
     }
 }
+@Component
 class EUTaxCalculator implements TaxCalculator {
     @Override
     public boolean supports(String originCountry) {
