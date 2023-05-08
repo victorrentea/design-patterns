@@ -23,6 +23,8 @@ record Parcel(String originCountry, double tobaccoValue, double regularValue, Lo
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
+//    private Map<String, Class<? extends TaxCalculator>> calculators; // configured in application.properties 😮
+
 
     public double calculateCustomsTax(Parcel parcel) {
         TaxCalculator calculator = selectCalculator(parcel.originCountry());
@@ -79,7 +81,7 @@ class EUTaxCalculator implements TaxCalculator {
 }
 
 @Component
-//@Order(-10000)
+@Order(153)
 class DefaultTaxCalculator implements TaxCalculator {
     @Override
     public boolean supports(String originCountry) {
