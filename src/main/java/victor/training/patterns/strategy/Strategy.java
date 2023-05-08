@@ -27,44 +27,46 @@ class CustomsService {
         TaxCalculator calculator = selectCalculator(parcel.originCountry());
         return calculator.calculate(parcel); // polymorphic call
     }
-Map<List<String>, Class<? extends TaxCalculator>> map;
+//Map<List<String>, Class<? extends TaxCalculator>> map;
     public static TaxCalculator selectCalculator(String originCountry) {
-//        List<TaxCalculator> toate = List.of(new ChinaTaxCalculator(), new UKTaxCalculator(), new EUTaxCalculator());
-        switch (originCountry) {
-            case "UK":
-                return new UKTaxCalculator();
-            case "CN":
-                return new ChinaTaxCalculator();
-            case "FR":
-            case "ES": // other EU country codes...
-            case "RO":
-                return new EUTaxCalculator();
-            default:
-                throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry);
-        }
-        
+        List<TaxCalculator> toate = List.of(new ChinaTaxCalculator(), new UKTaxCalculator(), new EUTaxCalculator());
+        return toate.stream()
+                .filter(c -> c.supports(originCountry))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Not a valid country ISO2 code: " + originCountry));
     }
 }
 interface TaxCalculator {
+    boolean supports(String originCountry); // mai bine incapsulata. zice doar da/nu OCP
     double calculate(Parcel parcel);
 }
 class UKTaxCalculator implements TaxCalculator {
+    @Override
+    public boolean supports(String originCountry) {
+        return "UK".equals(originCountry);
+    }
+
     public double calculate(Parcel parcel) {
         // logica x 20+ linii de cod
         return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
 }
-
-
-
-
-
 class ChinaTaxCalculator implements TaxCalculator {
+    @Override
+    public boolean supports(String originCountry) {
+        return "CN".equals(originCountry);
+    }
+
     public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
     }
 }
 class EUTaxCalculator implements TaxCalculator {
+    @Override
+    public boolean supports(String originCountry) {
+        return List.of("RO", "ES", "FR").contains(originCountry);
+    }
+
     public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() / 3;
     }
