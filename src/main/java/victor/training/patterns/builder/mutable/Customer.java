@@ -11,5 +11,6 @@ class Customer {
     private List<String> labels = new ArrayList<>();
     private Address address;
 
+
     // generated setters still return "this": see lombok.config
 }
