@@ -1,5 +1,7 @@
 package victor.training.patterns.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,6 +34,7 @@ public class ProxyIntro {
     }
 
 }
+// TASK: log the arguments and return value of every method in 'Maths' class
 
 //@Service
 class SecondGrade {
@@ -50,15 +53,22 @@ class SecondGrade {
 
 //@Facade
 class Maths {
+    private static final Logger log = LoggerFactory.getLogger(Maths.class);
     public int sum(int a, int b) {
-        return a + b;
+        log.info("sum({},{})", a, b);
+        int r = a + b;
+        log.info("= {}", r);
+        return r;
     }
 
     public int product(int a, int b) {
+        log.info("product({},{})", a, b);
         int total = 0;
         for (int i = 0; i < a; i++) {
             total = sum(total, b);
         }
+        log.info("= {}", total);
+
         return total;
     }
 }
