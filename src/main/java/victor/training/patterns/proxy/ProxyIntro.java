@@ -15,7 +15,7 @@ public class ProxyIntro {
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        Maths maths = new Maths();
+        Maths maths = new MathsWithLogger();
 
         SecondGrade secondGrade = new SecondGrade(maths);
 
@@ -32,7 +32,23 @@ public class ProxyIntro {
         System.out.println("At runtime...");
         secondGrade.mathClass();
     }
+}
 
+class MathsWithLogger extends Maths {
+    private static final Logger log = LoggerFactory.getLogger(MathsWithLogger.class);
+    @Override
+    public int sum(int a, int b) {
+        int r = super.sum(a, b);
+        log.info("sum({},{})={}", a, b, r);
+        return r;
+    }
+
+    @Override
+    public int product(int a, int b) {
+        int r = super.product(a, b);
+        log.info("product({},{})={}", a, b, r);
+        return r;
+    }
 }
 // TASK: log the arguments and return value of every method in 'Maths' class
 
@@ -53,22 +69,15 @@ class SecondGrade {
 
 //@Facade
 class Maths {
-    private static final Logger log = LoggerFactory.getLogger(Maths.class);
     public int sum(int a, int b) {
-        log.info("sum({},{})", a, b);
-        int r = a + b;
-        log.info("= {}", r);
-        return r;
+        return a + b;
     }
 
     public int product(int a, int b) {
-        log.info("product({},{})", a, b);
         int total = 0;
         for (int i = 0; i < a; i++) {
             total = sum(total, b);
         }
-        log.info("= {}", total);
-
         return total;
     }
 }
