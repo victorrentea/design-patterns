@@ -3,17 +3,36 @@ package victor.training.patterns.proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 //@SpringBootApplication
+
 public class ProxyIntro {
+    private static final Logger log = LoggerFactory.getLogger(ProxyIntro.class);
     public static void main(String[] args) {
         // Play the role of Spring here (there's no framework)
         // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        IMaths maths = new MathsWithLogger(new Maths());
+        IMaths real = new Maths();
 
-        SecondGrade secondGrade = new SecondGrade(maths);
+
+        InvocationHandler handler  = new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                Object r = method.invoke(real, args); // invok metoda reala
+                log.info("{}({})={}", method.getName(), args, r);
+                return r;
+            }
+        };
+        IMaths proxy = (IMaths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
+                new Class<?>[]{IMaths.class}, handler);
+
+
+        SecondGrade secondGrade = new SecondGrade(proxy);
 
         new ProxyIntro().run(secondGrade);
 
@@ -40,28 +59,28 @@ interface IMaths {
 //favor composition (field)
 // over inheritance (extends)
 // > Decorator (aka delegate)
-class MathsWithLogger implements IMaths { // sa extinzi clase concrete e de evitat
-    private final IMaths delegate;
-    private static final Logger log = LoggerFactory.getLogger(MathsWithLogger.class);
-
-    MathsWithLogger(IMaths delegate) {
-        this.delegate = delegate;
-    }
-
-    @Override
-    public int sum(int a, int b) {
-        int r = delegate.sum(a, b);
-        log.info("sum({},{})={}", a, b, r);
-        return r;
-    }
-
-    @Override
-    public int product(int a, int b) {
-        int r = delegate.product(a, b);
-        log.info("product({},{})={}", a, b, r);
-        return r;
-    }
-}
+//class MathsWithLogger implements IMaths { // sa extinzi clase concrete e de evitat
+//    private final IMaths delegate;
+//    private static final Logger log = LoggerFactory.getLogger(MathsWithLogger.class);
+//
+//    MathsWithLogger(IMaths delegate) {
+//        this.delegate = delegate;
+//    }
+//
+//    @Override
+//    public int sum(int a, int b) {
+//        int r = delegate.sum(a, b);
+//        log.info("sum({},{})={}", a, b, r);
+//        return r;
+//    }
+//
+//    @Override
+//    public int product(int a, int b) {
+//        int r = delegate.product(a, b);
+//        log.info("product({},{})={}", a, b, r);
+//        return r;
+//    }
+//}
 // TASK: log the arguments and return value of every method in 'Maths' class
 
 //@Service
