@@ -2,10 +2,16 @@ package victor.training.patterns.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 //@SpringBootApplication
 
@@ -17,19 +23,34 @@ public class ProxyIntro {
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        IMaths real = new Maths();
+        Maths real = new Maths();
 
 
-        InvocationHandler handler  = new InvocationHandler() {
+//        InvocationHandler handler  = new InvocationHandler() {
+//            @Override
+//            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//                Object r = method.invoke(real, args); // invok metoda reala
+//                log.info("{}({})={}", method.getName(), args, r);
+//                return r;
+//            }
+//        };
+//        Maths proxy = (Maths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
+//                new Class<?>[]{Maths.class}, handler);
+//        IMaths proxy = (IMaths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
+//                new Class<?>[]{IMaths.class}, handler);
+
+        // In java, ca o metoda sa fie interceptata NU e nevoie sa impementezi vreo interfata.
+
+        // Asta springu face:
+        Callback callback  =new MethodInterceptor() {
             @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                Object r = method.invoke(real, args); // invok metoda reala
-                log.info("{}({})={}", method.getName(), args, r);
+            public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+                Object r = method.invoke(real, objects); // invok metoda reala
+                log.info("{}({})={}", method.getName(), Arrays.toString(objects), r);
                 return r;
             }
         };
-        IMaths proxy = (IMaths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
-                new Class<?>[]{IMaths.class}, handler);
+        Maths proxy = (Maths) Enhancer.create(Maths.class, callback);
 
 
         SecondGrade secondGrade = new SecondGrade(proxy);
@@ -47,10 +68,6 @@ public class ProxyIntro {
         System.out.println("At runtime...");
         secondGrade.mathClass();
     }
-}
-interface IMaths {
-    int sum(int a, int b);
-    int product(int a, int b);
 }
 
 //contine, nu e
@@ -85,13 +102,15 @@ interface IMaths {
 
 //@Service
 class SecondGrade {
-    private final IMaths maths; // dependinta injectata aici de mana
+    private final Maths maths; // dependinta injectata aici de mana
 
-    SecondGrade(IMaths maths) {
+    SecondGrade(Maths maths) {
         this.maths = maths;
     }
 
     public void mathClass() {
+        System.out.println("Clasa pe care Spring ti-a injectat-o NU e MEREU clasa concreta pe care tu ai scris-o si o vezi in cod: "
+            + maths.getClass().getName());
         System.out.println("2+4=" + maths.sum(2, 4));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
@@ -99,7 +118,7 @@ class SecondGrade {
 }
 
 //@Facade
-class Maths implements IMaths {
+class Maths {
     public int sum(int a, int b) {
         return a + b;
     }
