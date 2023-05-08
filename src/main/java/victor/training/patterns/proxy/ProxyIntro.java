@@ -2,10 +2,14 @@ package victor.training.patterns.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationHandler;
@@ -13,8 +17,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-//@SpringBootApplication
-
+@SpringBootApplication
 public class ProxyIntro {
     private static final Logger log = LoggerFactory.getLogger(ProxyIntro.class);
     public static void main(String[] args) {
@@ -23,47 +26,47 @@ public class ProxyIntro {
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        Maths real = new Maths();
-
-
-//        InvocationHandler handler  = new InvocationHandler() {
+//        Maths real = new Maths();
+//
+//
+////        InvocationHandler handler  = new InvocationHandler() {
+////            @Override
+////            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+////                Object r = method.invoke(real, args); // invok metoda reala
+////                log.info("{}({})={}", method.getName(), args, r);
+////                return r;
+////            }
+////        };
+////        Maths proxy = (Maths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
+////                new Class<?>[]{Maths.class}, handler);
+////        IMaths proxy = (IMaths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
+////                new Class<?>[]{IMaths.class}, handler);
+//
+//        // In java, ca o metoda sa fie interceptata NU e nevoie sa impementezi vreo interfata.
+//
+//        // Asta springu face:
+//        Callback callback  =new MethodInterceptor() {
 //            @Override
-//            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//                Object r = method.invoke(real, args); // invok metoda reala
-//                log.info("{}({})={}", method.getName(), args, r);
+//            public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+//                Object r = method.invoke(real, objects); // invok metoda reala
+//                log.info("{}({})={}", method.getName(), Arrays.toString(objects), r);
 //                return r;
 //            }
 //        };
-//        Maths proxy = (Maths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
-//                new Class<?>[]{Maths.class}, handler);
-//        IMaths proxy = (IMaths) Proxy.newProxyInstance(ProxyIntro.class.getClassLoader(),
-//                new Class<?>[]{IMaths.class}, handler);
-
-        // In java, ca o metoda sa fie interceptata NU e nevoie sa impementezi vreo interfata.
-
-        // Asta springu face:
-        Callback callback  =new MethodInterceptor() {
-            @Override
-            public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-                Object r = method.invoke(real, objects); // invok metoda reala
-                log.info("{}({})={}", method.getName(), Arrays.toString(objects), r);
-                return r;
-            }
-        };
-        Maths proxy = (Maths) Enhancer.create(Maths.class, callback);
-
-
-        SecondGrade secondGrade = new SecondGrade(proxy);
-
-        new ProxyIntro().run(secondGrade);
+//        Maths proxy = (Maths) Enhancer.create(Maths.class, callback);
+//
+//
+//        SecondGrade secondGrade = new SecondGrade(proxy);
+//
+//        new ProxyIntro().run(secondGrade);
 
         // TODO 4 : let Spring do its job, and do the same with an Aspect
-        // SpringApplication.run(ProxyIntro.class, args);
+         SpringApplication.run(ProxyIntro.class, args);
     }
 
     // =============== THE LINE =================
 
-//    @Autowired
+    @Autowired
     public void run(SecondGrade secondGrade) {
         System.out.println("At runtime...");
         secondGrade.mathClass();
@@ -100,7 +103,7 @@ public class ProxyIntro {
 //}
 // TASK: log the arguments and return value of every method in 'Maths' class
 
-//@Service
+@Service
 class SecondGrade {
     private final Maths maths; // dependinta injectata aici de mana
 
@@ -117,8 +120,9 @@ class SecondGrade {
     }
 }
 
-//@Facade
+@Facade
 class Maths {
+//    @LoggedMethod
     public int sum(int a, int b) {
         return a + b;
     }
