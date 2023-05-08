@@ -3,8 +3,12 @@ package victor.training.patterns.strategy;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
+import victor.training.patterns.strategy.UKTaxCalculator.ChinaTaxCalculator;
+import victor.training.patterns.strategy.UKTaxCalculator.EUTaxCalculator;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 enum CountryEnum {
     RO, ES, FR, UK,CN
@@ -23,8 +27,9 @@ class CustomsService {
         TaxCalculator calculator = selectCalculator(parcel.originCountry());
         return calculator.calculate(parcel); // polymorphic call
     }
-
+Map<List<String>, Class<? extends TaxCalculator>> map;
     public static TaxCalculator selectCalculator(String originCountry) {
+//        List<TaxCalculator> toate = List.of(new ChinaTaxCalculator(), new UKTaxCalculator(), new EUTaxCalculator());
         switch (originCountry) {
             case "UK":
                 return new UKTaxCalculator();
@@ -49,6 +54,11 @@ class UKTaxCalculator implements TaxCalculator {
         return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
 }
+
+
+
+
+
 class ChinaTaxCalculator implements TaxCalculator {
     public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
