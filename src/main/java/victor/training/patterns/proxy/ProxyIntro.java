@@ -121,19 +121,23 @@ class SecondGrade {
 }
 
 @Facade
-class Maths {
+/*final*/ class Maths { // crapa #1
 //    @LoggedMethod
-    public int sum(int a, int b) {
+//    @Secured("ADMIN")
+    //@Timed
+//    @Transactional
+    /*final*/ public int sum(int a, int b) { // #2 final methods are ignored, pe tacute
         return a + b;
     }
 
     public int product(int a, int b) {
         int total = 0;
         for (int i = 0; i < a; i++) {
-            total = sum(total, b);
+            total = sum(total, b);// #3 APELURILE locale in cadrul aceleiasi clase NU sunt interceptate
         }
         return total;
     }
+    // 6 x 7  = 6 + 6 + 6 + 6 + 6 + 6 + 6
 }
 
 
