@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
-@SpringBootApplication
+//@SpringBootApplication
 public class ProxyIntro {
     public static void main(String[] args) {
         // Play the role of Spring here (there's no framework)
@@ -25,7 +25,7 @@ public class ProxyIntro {
 
     // =============== THE LINE =================
 
-    @Autowired
+//    @Autowired
     public void run(SecondGrade secondGrade) {
         System.out.println("At runtime...");
         secondGrade.mathClass();
@@ -33,9 +33,9 @@ public class ProxyIntro {
 
 }
 
-@Service
+//@Service
 class SecondGrade {
-    private final Maths maths;
+    private final Maths maths; // dependinta injectata aici de mana
 
     SecondGrade(Maths maths) {
         this.maths = maths;
@@ -48,7 +48,7 @@ class SecondGrade {
     }
 }
 
-@Facade
+//@Facade
 class Maths {
     public int sum(int a, int b) {
         return a + b;
