@@ -3,6 +3,7 @@ package victor.training.patterns.strategy;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +75,19 @@ class EUTaxCalculator implements TaxCalculator {
 
     public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() / 3;
+    }
+}
+
+@Component
+//@Order(-10000)
+class DefaultTaxCalculator implements TaxCalculator {
+    @Override
+    public boolean supports(String originCountry) {
+        return true;
+    }
+
+    public double calculate(Parcel parcel) {
+        return parcel.tobaccoValue() / 5;
     }
 }
 
