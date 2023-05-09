@@ -2,6 +2,7 @@ package victor.training.patterns.proxy;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Immutable {
@@ -23,7 +24,7 @@ public class Immutable {
     }
 
     public List<String> getList() {
-        return list;
+        return Collections.unmodifiableList(list);
     }
 }
 
@@ -34,7 +35,7 @@ class Play {
         Immutable obj = new Immutable("a", list);
         System.out.println("Before: " + obj);
 
-        // --- can I change obj' state here?
+        // --- can I change object's state here?
 
         System.out.println("After: " + obj);
     }
