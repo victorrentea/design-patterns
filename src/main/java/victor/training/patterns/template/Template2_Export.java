@@ -41,6 +41,7 @@ abstract class FileExporter {
             writeContent(writer);
 
             System.out.println("File export completed: " + file.getAbsolutePath());
+            audit(file);
             return file;
         } catch (Exception e) {
             System.out.println("Pretend: Send Error Notification Email"); // TODO CR: only for export orders, not for products
@@ -61,6 +62,7 @@ abstract class FileExporter {
         }
     }
 
+  protected void audit(File file) {}
     abstract protected  void writeContent(Writer writer) throws IOException;
 }
 // folosim template method cand clasa de baza (cu metoda abstracta template)
@@ -80,6 +82,11 @@ class ProductFileExporter extends FileExporter {
             writer.write(csv);
         }
     }
+
+  @Override
+  protected void audit(File file) {
+    System.out.printf("Doar subclasa asta imple metoda hook, ca sa faca audit "+ file );
+  }
 }
 
 class OrderFileExporter extends FileExporter {
