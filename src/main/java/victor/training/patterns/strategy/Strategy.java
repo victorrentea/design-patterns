@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,19 @@ import java.util.Map;
 import static victor.training.patterns.strategy.Country.*;
 
 enum CountryEnum {
-  RO, ES, FR, UK, CN
+  RO/*{
+    @Override
+    double computeTax(Parcel parcel) {
+      return 0; // SOC: primul bug in enum n-o sa-l uiti
+    }
+  }*/, ES /*{
+    @Override
+    double computeTax(Parcel parcel) {
+      return 0;
+    }
+  }*/, FR, UK, CN;
+
+//  abstract double computeTax(Parcel parcel); // DUBIOS cuplez ceva usor "enum" la ceva heavy(domain object)
 }
 
 
@@ -34,7 +47,7 @@ class CustomsService {
 //    private final ChinaTaxCalculator chinaTaxCalculator;
 //    private final EUTaxCalculator euTaxCalculator;
   private Map<Country, Class<? extends TaxCalculator>> calculators;
-
+  private final ApplicationContext spring;
   public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
     TaxCalculator taxCalculator = selectTaxCalculator(Country.valueOf(parcel.originCountry()));
     return taxCalculator.calculate(parcel);
@@ -45,7 +58,7 @@ class CustomsService {
 //    public void init() {
 //    }
   private final List<TaxCalculator> toate;
-  private final ApplicationContext spring;
+
   private TaxCalculator selectTaxCalculator(Country originCountry) {
 //    TaxCalculator calculator = spring.getBean(calculators.get(originCountry));
 //    return calculator;
@@ -79,6 +92,12 @@ class CustomsService {
 //        }
 }
 
+
+//interface SpecialOffer {
+//  appliesFor(Cart cart);
+//  computeDiscount(Cart);
+//}
+
 interface TaxCalculator {
   boolean supports(Country country);
   double calculate(Parcel parcel);
@@ -86,6 +105,8 @@ interface TaxCalculator {
 
 @Service
 //@Order(1000000)
+@Order(5)
+//@Order(Ordered.LOWEST_PRECEDENCE)
 class DefaultTaxCalculator implements TaxCalculator {
   @Override
   public boolean supports(Country country) {
@@ -97,7 +118,7 @@ class DefaultTaxCalculator implements TaxCalculator {
     return 1;
   }
 }
-
+@Order(3)
 @Service
 class EUTaxCalculator implements TaxCalculator {
   private static double f(Parcel parcel) {
@@ -115,7 +136,7 @@ class EUTaxCalculator implements TaxCalculator {
     return parcel.tobaccoValue() / 3 + f(parcel);
   }
 }
-
+@Order(4)
 @Service
 class ChinaTaxCalculator implements TaxCalculator {
   @Override
@@ -128,7 +149,7 @@ class ChinaTaxCalculator implements TaxCalculator {
   }
 
 }
-
+@Order(2)
 @Service
 class UKTaxCalculator implements TaxCalculator {
   @Override
