@@ -2,6 +2,7 @@ package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 import victor.training.patterns.template.support.Product;
@@ -43,6 +44,7 @@ class FileExporter {
     return export(writer -> contentWriters.writeProducts(writer));
   }
   private File export(ContentWriter contentWriter) {
+    // INFRA CODE
     File file = new File(exportFolder, "orders.csv");
     long t0 = System.currentTimeMillis();
     try (Writer writer = new FileWriter(file)) {
@@ -80,7 +82,10 @@ class ContentWriters {
   private final ProductRepo productRepo;
   private final OrderRepo orderRepo;
 
+  // presupun ca cele 2 fct sunt mici.
+  // daca cresc mari -> spart clasa (SRP)
   public void writeProducts(Writer writer) throws IOException {
+    // FILE FORMAT CODE
     writer.write("ProductID;Name\n");
     for (Product product : productRepo.findAll()) {
       String csv = product.getId() + ";" + product.getName() + "\n";
