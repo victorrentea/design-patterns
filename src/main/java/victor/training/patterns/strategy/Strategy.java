@@ -46,15 +46,15 @@ class CustomsService {
 //    }
 private final ApplicationContext spring;
   private TaxCalculator selectTaxCalculator(Country originCountry) {
-    TaxCalculator calculator = spring.getBean(calculators.get(originCountry));
-    return calculator;
+//    TaxCalculator calculator = spring.getBean(calculators.get(originCountry));
+//    return calculator;
 //
-//    for (TaxCalculator taxCalculator : toate) {
-//      if (taxCalculator.supports(originCountry)) {
-//        return taxCalculator;
-//      }
-//    }
-//    throw new IllegalArgumentException();
+    for (TaxCalculator taxCalculator : toate) {
+      if (taxCalculator.supports(originCountry)) {
+        return taxCalculator;
+      }
+    }
+    throw new IllegalArgumentException();
   }
 //        return switch (originCountry) { // a la java 17
 //            case UK -> ukTaxCalculator;
