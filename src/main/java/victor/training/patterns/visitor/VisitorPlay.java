@@ -26,7 +26,7 @@ public class VisitorPlay {
     private static double oop(List<Shape> shapes) {
         double total = 0;
         for (Shape shape : shapes) {
-            // TODO compute perimeter depending on the type of the shape (Circle, Square,...)
+            // TODO calculate perimeter depending on the type of the shape (Circle, Square,...)
         }
         return total;
     }
