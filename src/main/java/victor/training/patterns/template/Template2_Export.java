@@ -1,6 +1,7 @@
 package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 import victor.training.patterns.template.support.Product;
@@ -27,6 +28,9 @@ public class Template2_Export {
   }
 }
 
+@Service // NU POATE FI SINGLETON. ca nu stiu care din cele 2 implementari sa le pun
+// CE INSEAMAN ASTA?
+// ca clasa mea e STATEFUL
 @RequiredArgsConstructor
 class FileExporter {
   private final File exportFolder;
@@ -64,7 +68,7 @@ class FileExporter {
 interface ContentWriter {
     void writeContent(Writer writer) throws IOException;
 }
-
+@Service
 @RequiredArgsConstructor
 class ProductContentWriter implements ContentWriter {
   private final ProductRepo productRepo;
@@ -79,6 +83,7 @@ class ProductContentWriter implements ContentWriter {
   }
 }
 
+@Service
 @RequiredArgsConstructor
 class OrderContentWriter implements ContentWriter {
   private final OrderRepo orderRepo;
