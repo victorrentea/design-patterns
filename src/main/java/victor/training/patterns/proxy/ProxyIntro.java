@@ -1,6 +1,13 @@
 package victor.training.patterns.proxy;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.MethodProxy;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class ProxyIntro {
@@ -11,7 +18,17 @@ public class ProxyIntro {
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
         Maths maths = new Maths();
 
-        SecondGrade secondGrade = new SecondGrade(new MathsPrim(maths));
+        Callback h = new MethodInterceptor() {
+            @Override
+            public Object intercept(Object o, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
+//                Maths.class.getDeclaredMethod("", int) // << ITI BATI JOC DE JAVA si de design / encapsulare
+                System.out.println("Chem methoda " + method.getName() + " cu param " + Arrays.toString(params));
+                return method.invoke(maths, params);
+            }
+        };
+        Maths proxy = (Maths) Enhancer.create(Maths.class, h);
+
+        SecondGrade secondGrade = new SecondGrade(proxy);
 
         secondGrade.mathClass();
     }
@@ -26,25 +43,25 @@ public class ProxyIntro {
 // injecteaza apoi aceasta instanta peste tot.
 
 // spring va genera asta: asta e un proxy. Miroase ca originalul, dar face chestii in plus
-class MathsPrim extends Maths {
-    private final Maths maths; // compozitie
-    MathsPrim(Maths maths) {
-        this.maths = maths;
-    }
-
-    @Override
-    public int sum(int a, int b) {
-        System.out.println("sum ("+a+","+b+")");
-//        return super.sum(a, b); // mostenire
-        return maths.sum(a, b); // compozitie❤️
-    }
-    @Override
-    public int product(int a, int b) {
-        System.out.println("product ("+a+","+b+")");
-        return maths.product(a, b);
-    }
-    // am intercept apelul si am facut chestii inainte sa deleg in superclasa.
-}
+//class MathsPrim extends Maths {
+//    private final Maths maths; // compozitie
+//    MathsPrim(Maths maths) {
+//        this.maths = maths;
+//    }
+//
+//    @Override
+//    public int sum(int a, int b) {
+//        System.out.println("sum ("+a+","+b+")");
+////        return super.sum(a, b); // mostenire
+//        return maths.sum(a, b); // compozitie❤️
+//    }
+//    @Override
+//    public int product(int a, int b) {
+//        System.out.println("product ("+a+","+b+")");
+//        return maths.product(a, b);
+//    }
+//    // am intercept apelul si am facut chestii inainte sa deleg in superclasa.
+//}
 
 // TODO intercepteaza si logeaza orice apel pe care SecondGrade il face catre Maths
 //   ca sa logezi parametrii✅
@@ -58,9 +75,12 @@ class SecondGrade {
     SecondGrade(Maths maths) {
         this.maths = maths;
     }
+
     public void mathClass() {
         System.out.println("Chem metode pe " + maths.getClass());
         System.out.println("2+4=" + maths.sum(2, 4));
+        System.out.println("2+8=" + maths.sum(2, 8));
+        System.out.println("2+123=" + maths.sum(2, 123));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
     }
