@@ -1,11 +1,14 @@
 package victor.training.patterns.strategy;
 
 import lombok.Data;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static victor.training.patterns.strategy.Country.*;
 
@@ -30,6 +33,7 @@ class CustomsService {
 //    private final ChinaTaxCalculator chinaTaxCalculator;
 //    private final EUTaxCalculator euTaxCalculator;
   private final List<TaxCalculator> toate;
+  private Map<Country, Class<? extends TaxCalculator>> calculators;
 
   public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
     TaxCalculator taxCalculator = selectTaxCalculator(Country.valueOf(parcel.originCountry()));
@@ -40,14 +44,17 @@ class CustomsService {
 //    @PostConstruct
 //    public void init() {
 //    }
-
+private final ApplicationContext spring;
   private TaxCalculator selectTaxCalculator(Country originCountry) {
-    for (TaxCalculator taxCalculator : toate) {
-      if (taxCalculator.supports(originCountry)) {
-        return taxCalculator;
-      }
-    }
-    throw new IllegalArgumentException();
+    TaxCalculator calculator = spring.getBean(calculators.get(originCountry));
+    return calculator;
+//
+//    for (TaxCalculator taxCalculator : toate) {
+//      if (taxCalculator.supports(originCountry)) {
+//        return taxCalculator;
+//      }
+//    }
+//    throw new IllegalArgumentException();
   }
 //        return switch (originCountry) { // a la java 17
 //            case UK -> ukTaxCalculator;
