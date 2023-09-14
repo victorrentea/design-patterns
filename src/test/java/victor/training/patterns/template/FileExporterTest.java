@@ -20,15 +20,13 @@ class FileExporterTest {
     FileExporter exporter;
 
     File exportFolder = Files.createTempDirectory("test").toFile();
-    private ContentWriters contentWriters;
 
     FileExporterTest() throws IOException {
     }
 
     @BeforeEach
     final void before() {
-        contentWriters = new ContentWriters(null, orderRepo);
-        exporter = new FileExporter(exportFolder, contentWriters);
+        exporter = new OrderFileExporter( exportFolder, orderRepo);
     }
     @AfterEach
     void after() {
