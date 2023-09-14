@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.function.Function;
 
 enum CountryEnum {
@@ -59,7 +60,7 @@ class CustomsService {
 }
 @FunctionalInterface // adica vreao sa o iau ƛ
 interface TaxCalculator {
-    double calculate(Parcel parcel);
+    double calculate(Parcel parcel/*, de evitat: Map<ParamEnum, Object> ceVreaMuschiu*/);
 }
 @Service
 class EUTaxCalculator {
