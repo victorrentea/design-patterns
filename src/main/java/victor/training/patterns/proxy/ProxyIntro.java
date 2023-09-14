@@ -1,10 +1,12 @@
 package victor.training.patterns.proxy;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -21,14 +23,13 @@ public class ProxyIntro {
         Callback h = new MethodInterceptor() {
             @Override
             public Object intercept(Object o, Method method, Object[] params, MethodProxy methodProxy) throws Throwable {
-//                Maths.class.getDeclaredMethod("", int) // << ITI BATI JOC DE JAVA si de design / encapsulare
                 System.out.println("Chem methoda " + method.getName() + " cu param " + Arrays.toString(params));
                 return method.invoke(maths, params);
             }
         };
         Maths proxy = (Maths) Enhancer.create(Maths.class, h);
 
-        SecondGrade secondGrade = new SecondGrade(proxy);
+        SecondGrade secondGrade = new SecondGrade();
 
         secondGrade.mathClass();
     }
@@ -71,26 +72,33 @@ public class ProxyIntro {
 // (ca si cum nu ai cum sa alterezi codul scris de developer
 
 class SecondGrade {
-    private final Maths maths;
+    private final Maths maths  /*= new Maths()*/; // 5: "new", eg din teste
     SecondGrade(Maths maths) {
         this.maths = maths;
     }
-
     public void mathClass() {
         System.out.println("Chem metode pe " + maths.getClass());
         System.out.println("2+4=" + maths.sum(2, 4));
-        System.out.println("2+8=" + maths.sum(2, 8));
-        System.out.println("2+123=" + maths.sum(2, 123));
         System.out.println("1+5=" + maths.sum(1, 5));
         System.out.println("2x3=" + maths.product(2, 3));
     }
 }
+// stiind ca proxy=subclasa care face @override la met publice
+// ce pot face mai jos sa STRIC PROXY-URILE: "Tzepe cu proxy-uri"
+
+/*1:final->Crash la start*/
 class Maths {
-    public int sum(int a, int b) {
+//    @Secured("ROLE_ADMIN")
+    @Transactional // chemata din alta clasa deschide Tx, chemata local NU.
+    public /*2:final->IGNORED*/ int sum(int a, int b) {
         return a + b;
     }
-    public int product(int a, int b) {
-        return a*b;
+    public /*3:static->IGNORED*/ int product(int a, int b) {
+        int result = 0;
+        for (int i = 0; i < a; i++) {
+            result = sum(result, b); // 4⭐️⭐️⭐️⭐️⭐️:apel local NU e interceptat
+        }
+        return result;
     }
 }
 
