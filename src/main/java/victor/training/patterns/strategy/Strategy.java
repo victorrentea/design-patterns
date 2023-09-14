@@ -1,10 +1,6 @@
 package victor.training.patterns.strategy;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
@@ -24,30 +20,52 @@ record Parcel(String originCountry, double tobaccoValue, double regularValue, Lo
 class CustomsService {
     //	private Map<String, Class<? extends TaxCalculator>> calculators; // configured in application.properties 😮
 
+    private final UKTaxCalculator ukTaxCalculator;
+    private final ChinaTaxCalculator chinaTaxCalculator;
+    private final EUTaxCalculator euTaxCalculator;
+
     public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
         switch (parcel.originCountry()) {
             case "UK":
-                return computeUKTax(parcel);
+                return ukTaxCalculator.computeUKTax(parcel);
             case "CN":
-                return computeChinaTax(parcel);
+                return chinaTaxCalculator.computeChinaTax(parcel);
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return computeEUTax(parcel);
+                return euTaxCalculator.computeEUTax(parcel);
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
         }
     }
-
-    private static double computeEUTax(Parcel parcel) {
-        return parcel.tobaccoValue() / 3;
+}
+@Service
+class EUTaxCalculator {
+    public double computeEUTax(Parcel parcel) {
+        // logica groasa
+        return parcel.tobaccoValue() / 3 +f(parcel);
     }
-
-    private static double computeChinaTax(Parcel parcel) {
+    private static double f(Parcel parcel) {
+        // more logic
+        return 0;
+    }
+}
+@Service
+class ChinaTaxCalculator {
+    public double computeChinaTax(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
     }
 
-    private static double computeUKTax(Parcel parcel) {
+}
+@Service
+class UKTaxCalculator {
+   public double computeUKTax(Parcel parcel) {
+        // if
+        // if
+        // if
+        // if
+        // if
+        // if
         // if
         // if
         // if
@@ -56,4 +74,3 @@ class CustomsService {
         return parcel.tobaccoValue() / 2 + parcel.regularValue();
     }
 }
-
