@@ -40,13 +40,18 @@ class CustomsService {
 //        };
         switch (parcel.originCountry()) {
             case "UK":
-                return parcel1 -> ukTaxCalculator.calculate(parcel1);
+                return new TaxCalculator() { // puteam din java2, dar era scarbos
+                  @Override
+                  public double calculate(Parcel parcel1) {
+                    return ukTaxCalculator.calculate(parcel1);
+                  }
+                };
             case "CN":
-                return chinaTaxCalculator::calculate;
+                return chinaTaxCalculator::calculate; // syntactic sugar, miere si lapte
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return euTaxCalculator::calculate;
+                return p -> euTaxCalculator.calculate(p);
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
         }
