@@ -20,15 +20,15 @@ class FileExporterTest {
     FileExporter exporter;
 
     File exportFolder = Files.createTempDirectory("test").toFile();
-    private OrderContentWriter contentWriter;
+    private ContentWriters contentWriters;
 
     FileExporterTest() throws IOException {
     }
 
     @BeforeEach
     final void before() {
-        contentWriter = new OrderContentWriter(orderRepo);
-        exporter = new FileExporter(exportFolder);
+        contentWriters = new ContentWriters(null, orderRepo);
+        exporter = new FileExporter(exportFolder, contentWriters);
     }
     @AfterEach
     void after() {
@@ -40,7 +40,7 @@ class FileExporterTest {
         Order order = new Order().setId(1L).setCustomerId(13L).setAmount(10D);
         when(orderRepo.findByActiveTrue()).thenReturn(List.of(order));
 
-        File exportedFile = exporter.exportOrders(contentWriter);
+        File exportedFile = exporter.exportOrders();
 
         String contents = Files.readString(exportedFile.toPath());
         assertThat(contents).isEqualTo("""

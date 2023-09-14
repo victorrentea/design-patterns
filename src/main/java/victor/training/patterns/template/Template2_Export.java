@@ -34,9 +34,15 @@ public class Template2_Export {
 @RequiredArgsConstructor
 class FileExporter {
   private final File exportFolder;
-//  private final ContentWriter contentWriter; // compositie cu strategy pattern
+  private final ContentWriters contentWriters;
 
-  public File exportOrders(ContentWriter contentWriter) {
+  public File exportOrders() {
+    return export(writer -> contentWriters.writeOrders(writer));
+  }
+  public File exportProducts() {
+    return export(writer -> contentWriters.writeProducts(writer));
+  }
+  private File export(ContentWriter contentWriter) {
     File file = new File(exportFolder, "orders.csv");
     long t0 = System.currentTimeMillis();
     try (Writer writer = new FileWriter(file)) {
@@ -70,26 +76,18 @@ interface ContentWriter {
 }
 @Service
 @RequiredArgsConstructor
-class ProductContentWriter implements ContentWriter {
+class ContentWriters {
   private final ProductRepo productRepo;
+  private final OrderRepo orderRepo;
 
-  @Override
-  public void writeContent(Writer writer) throws IOException {
+  public void writeProducts(Writer writer) throws IOException {
     writer.write("ProductID;Name\n");
     for (Product product : productRepo.findAll()) {
       String csv = product.getId() + ";" + product.getName() + "\n";
       writer.write(csv);
     }
   }
-}
-
-@Service
-@RequiredArgsConstructor
-class OrderContentWriter implements ContentWriter {
-  private final OrderRepo orderRepo;
-
-  @Override
-  public void writeContent(Writer writer) throws IOException {
+  public void writeOrders(Writer writer) throws IOException {
     writer.write("OrderID;Date\n");
     for (Order order : orderRepo.findByActiveTrue()) {
       String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
