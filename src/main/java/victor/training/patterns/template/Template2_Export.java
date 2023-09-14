@@ -19,7 +19,7 @@ public class Template2_Export {
   private final FileExporter exporter;
 
   public void exportOrders() throws Exception {
-    exporter.exportOrders();
+//    exporter.exportOrders();
   }
 
   public void exportProducts() throws Exception {
@@ -28,15 +28,15 @@ public class Template2_Export {
   }
 }
 
-@Service // NU POATE FI SINGLETON. ca nu stiu care din cele 2 implementari sa le pun
-// CE INSEAMAN ASTA?
-// ca clasa mea e STATEFUL
+
+// imi ranesc clientii. le bag pe gat [Product]ContentWriter
+@Service
 @RequiredArgsConstructor
 class FileExporter {
   private final File exportFolder;
-  private final ContentWriter contentWriter; // compositie cu strategy pattern
+//  private final ContentWriter contentWriter; // compositie cu strategy pattern
 
-  public File exportOrders() {
+  public File exportOrders(ContentWriter contentWriter) {
     File file = new File(exportFolder, "orders.csv");
     long t0 = System.currentTimeMillis();
     try (Writer writer = new FileWriter(file)) {
