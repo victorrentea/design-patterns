@@ -30,8 +30,7 @@ public class Template2_Export {
 
 
 @RequiredArgsConstructor
-abstract// lombok
-class FileExporter {
+abstract class FileExporter {
     private final File exportFolder;
     public File exportOrders() {
         File file = new File(exportFolder, "orders.csv");
@@ -51,6 +50,8 @@ class FileExporter {
             System.out.println("Pretend: Metrics: Export finished in: " + (t1 - t0));
         }
     }
+
+    // tools offered to subtypes
     public String escapeCell(Object cellValue) {
         if (cellValue instanceof String s) {
             if (!s.contains("\n")) return s;
@@ -59,8 +60,12 @@ class FileExporter {
             return Objects.toString(cellValue);
         }
     }
+
     abstract protected  void writeContent(Writer writer) throws IOException;
 }
+// folosim template method cand clasa de baza (cu metoda abstracta template)
+// ofera subclaselor metode helper
+// uses tools from superclass
 class ProductFileExporter extends FileExporter {
     private final ProductRepo productRepo;
     public ProductFileExporter(File exportFolder, ProductRepo productRepo) {
@@ -71,11 +76,12 @@ class ProductFileExporter extends FileExporter {
     protected void writeContent(Writer writer) throws IOException {
         writer.write("ProductID;Name\n");
         for (Product product : productRepo.findAll()) {
-            String csv = product.getId() + ";" + product.getName() + "\n";
+            String csv = product.getId() + ";" + escapeCell(product.getName()) + "\n";
             writer.write(csv);
         }
     }
 }
+
 class OrderFileExporter extends FileExporter {
      private final OrderRepo orderRepo;
     public OrderFileExporter(File exportFolder, OrderRepo orderRepo) {
@@ -86,8 +92,9 @@ class OrderFileExporter extends FileExporter {
     protected void writeContent(Writer writer) throws IOException {
         writer.write("OrderID;Date\n");
         for (Order order : orderRepo.findByActiveTrue()) {
-            String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+            String csv = order.getId() + ";" + order.getCustomerId() + ";" + escapeCell(order.getAmount()) + "\n";
             writer.write(csv);
         }
     }
 }
+
