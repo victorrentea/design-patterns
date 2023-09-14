@@ -14,12 +14,6 @@ enum CountryEnum {
 }
 
 
-interface TaxCalculator {
-  List<Country> getCountry();
-
-  double calculate(Parcel parcel);
-}
-
 record Parcel(String originCountry, double tobaccoValue, double regularValue, LocalDate date) {
 }
 
@@ -49,7 +43,7 @@ class CustomsService {
 
   private TaxCalculator selectTaxCalculator(Country originCountry) {
     for (TaxCalculator taxCalculator : toate) {
-      if (taxCalculator.getCountry().contains(originCountry)) {
+      if (taxCalculator.supports(originCountry)) {
         return taxCalculator;
       }
     }
@@ -77,6 +71,13 @@ class CustomsService {
 //        }
 }
 
+interface TaxCalculator {
+  //  List<Country> getCountry();
+  boolean supports(Country country);
+
+  double calculate(Parcel parcel);
+}
+
 @Service
 class EUTaxCalculator implements TaxCalculator {
   private static double f(Parcel parcel) {
@@ -85,8 +86,8 @@ class EUTaxCalculator implements TaxCalculator {
   }
 
   @Override
-  public List<Country> getCountry() {
-    return List.of(FR, ES, RO);
+  public boolean supports(Country country) {
+    return List.of(FR, ES, RO).contains(country);
   }
 
   public double calculate(Parcel parcel) {
@@ -98,8 +99,8 @@ class EUTaxCalculator implements TaxCalculator {
 @Service
 class ChinaTaxCalculator implements TaxCalculator {
   @Override
-  public List<Country> getCountry() {
-    return List.of(CN);
+  public boolean supports(Country country) {
+    return country == CN;
   }
 
   public double calculate(Parcel parcel) {
@@ -111,8 +112,8 @@ class ChinaTaxCalculator implements TaxCalculator {
 @Service
 class UKTaxCalculator implements TaxCalculator {
   @Override
-  public List<Country> getCountry() {
-    return List.of(UK);
+  public boolean supports(Country country) {
+    return country == UK;
   }
 
   public double calculate(Parcel parcel) {
