@@ -25,6 +25,7 @@ class CustomsService {
     private final EUTaxCalculator euTaxCalculator;
 
     public double calculateCustomsTax(Parcel parcel, LocalDate receptionDate) { // UGLY API we CANNOT change
+
         switch (parcel.originCountry()) {
             case "UK":
                 return ukTaxCalculator.calculate(parcel);
@@ -33,17 +34,17 @@ class CustomsService {
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return euTaxCalculator.calculate(parcel, receptionDate);
+                return euTaxCalculator.calculate(parcel);
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
         }
     }
 }
 interface TaxCalculator {
-    double calculate(Parcel parcel, LocalDate localDate);
+    double calculate(Parcel parcel);
 }
 @Service
-class EUTaxCalculator {
+class EUTaxCalculator implements TaxCalculator{
     public double calculate(Parcel parcel) {
         // logica groasa
         return parcel.tobaccoValue() / 3 +f(parcel);
@@ -54,14 +55,14 @@ class EUTaxCalculator {
     }
 }
 @Service
-class ChinaTaxCalculator {
+class ChinaTaxCalculator implements TaxCalculator{
     public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
     }
 
 }
 @Service
-class UKTaxCalculator {
+class UKTaxCalculator implements TaxCalculator{
    public double calculate(Parcel parcel) {
         // if
         // if
