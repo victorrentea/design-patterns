@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,7 +33,6 @@ class CustomsService {
   //    private final UKTaxCalculator ukTaxCalculator;
 //    private final ChinaTaxCalculator chinaTaxCalculator;
 //    private final EUTaxCalculator euTaxCalculator;
-  private final List<TaxCalculator> toate;
   private Map<Country, Class<? extends TaxCalculator>> calculators;
 
   public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
@@ -44,7 +44,8 @@ class CustomsService {
 //    @PostConstruct
 //    public void init() {
 //    }
-private final ApplicationContext spring;
+  private final List<TaxCalculator> toate;
+  private final ApplicationContext spring;
   private TaxCalculator selectTaxCalculator(Country originCountry) {
 //    TaxCalculator calculator = spring.getBean(calculators.get(originCountry));
 //    return calculator;
@@ -79,10 +80,22 @@ private final ApplicationContext spring;
 }
 
 interface TaxCalculator {
-  //  List<Country> getCountry();
   boolean supports(Country country);
-
   double calculate(Parcel parcel);
+}
+
+@Service
+//@Order(1000000)
+class DefaultTaxCalculator implements TaxCalculator {
+  @Override
+  public boolean supports(Country country) {
+    return true;
+  }
+
+  @Override
+  public double calculate(Parcel parcel) {
+    return 1;
+  }
 }
 
 @Service
