@@ -1,8 +1,6 @@
 package victor.training.patterns.template;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import victor.training.patterns.template.support.Order;
 import victor.training.patterns.template.support.OrderRepo;
 import victor.training.patterns.template.support.Product;
@@ -14,80 +12,83 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Objects;
 
+
 @RequiredArgsConstructor
 public class Template2_Export {
-    private final FileExporter exporter;
+  private final FileExporter exporter;
 
-    public void exportOrders() throws Exception {
-        exporter.exportOrders();
-    }
+  public void exportOrders() throws Exception {
+    exporter.exportOrders();
+  }
 
-    public void exportProducts() throws Exception {
-        // TODO 'the same way you did the export of orders'
-        // RUN UNIT TESTS!
-    }
+  public void exportProducts() throws Exception {
+    // TODO 'the same way you did the export of orders'
+    // RUN UNIT TESTS!
+  }
 }
-
 
 @RequiredArgsConstructor
-abstract// lombok
 class FileExporter {
-    private final File exportFolder;
-    public File exportOrders() {
-        File file = new File(exportFolder, "orders.csv");
-        long t0 = System.currentTimeMillis();
-        try (Writer writer = new FileWriter(file)) {
-            System.out.println("Starting export to: " + file.getAbsolutePath());
+  private final File exportFolder;
+  private final ContentWriter contentWriter; // compositie cu strategy pattern
 
-            writeContent(writer);
+  public File exportOrders() {
+    File file = new File(exportFolder, "orders.csv");
+    long t0 = System.currentTimeMillis();
+    try (Writer writer = new FileWriter(file)) {
+      System.out.println("Starting export to: " + file.getAbsolutePath());
 
-            System.out.println("File export completed: " + file.getAbsolutePath());
-            return file;
-        } catch (Exception e) {
-            System.out.println("Pretend: Send Error Notification Email"); // TODO CR: only for export orders, not for products
-            throw new RuntimeException("Error exporting data", e);
-        } finally {
-            long t1 = System.currentTimeMillis();
-            System.out.println("Pretend: Metrics: Export finished in: " + (t1 - t0));
-        }
+      contentWriter.writeContent(writer);
+
+      System.out.println("File export completed: " + file.getAbsolutePath());
+      return file;
+    } catch (Exception e) {
+      System.out.println("Pretend: Send Error Notification Email"); // TODO CR: only for export orders, not for products
+      throw new RuntimeException("Error exporting data", e);
+    } finally {
+      long t1 = System.currentTimeMillis();
+      System.out.println("Pretend: Metrics: Export finished in: " + (t1 - t0));
     }
-    public String escapeCell(Object cellValue) {
-        if (cellValue instanceof String s) {
-            if (!s.contains("\n")) return s;
-            return "\"" + s.replace("\"", "\"\"") + "\"";
-        } else {
-            return Objects.toString(cellValue);
-        }
+  }
+
+  public String escapeCell(Object cellValue) {
+    if (cellValue instanceof String s) {
+      if (!s.contains("\n")) return s;
+      return "\"" + s.replace("\"", "\"\"") + "\"";
+    } else {
+      return Objects.toString(cellValue);
     }
-    abstract protected  void writeContent(Writer writer) throws IOException;
+  }
+
 }
-class ProductFileExporter extends FileExporter {
-    private final ProductRepo productRepo;
-    public ProductFileExporter(File exportFolder, ProductRepo productRepo) {
-        super(exportFolder);
-        this.productRepo = productRepo;
-    }
-    @Override
-    protected void writeContent(Writer writer) throws IOException {
-        writer.write("ProductID;Name\n");
-        for (Product product : productRepo.findAll()) {
-            String csv = product.getId() + ";" + product.getName() + "\n";
-            writer.write(csv);
-        }
-    }
+interface ContentWriter {
+    void writeContent(Writer writer) throws IOException;
 }
-class OrderFileExporter extends FileExporter {
-     private final OrderRepo orderRepo;
-    public OrderFileExporter(File exportFolder, OrderRepo orderRepo) {
-        super(exportFolder);
-        this.orderRepo = orderRepo;
+
+@RequiredArgsConstructor
+class ProductContentWriter implements ContentWriter {
+  private final ProductRepo productRepo;
+
+  @Override
+  public void writeContent(Writer writer) throws IOException {
+    writer.write("ProductID;Name\n");
+    for (Product product : productRepo.findAll()) {
+      String csv = product.getId() + ";" + product.getName() + "\n";
+      writer.write(csv);
     }
-    @Override
-    protected void writeContent(Writer writer) throws IOException {
-        writer.write("OrderID;Date\n");
-        for (Order order : orderRepo.findByActiveTrue()) {
-            String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
-            writer.write(csv);
-        }
+  }
+}
+
+@RequiredArgsConstructor
+class OrderContentWriter implements ContentWriter {
+  private final OrderRepo orderRepo;
+
+  @Override
+  public void writeContent(Writer writer) throws IOException {
+    writer.write("OrderID;Date\n");
+    for (Order order : orderRepo.findByActiveTrue()) {
+      String csv = order.getId() + ";" + order.getCustomerId() + ";" + order.getAmount() + "\n";
+      writer.write(csv);
     }
+  }
 }
