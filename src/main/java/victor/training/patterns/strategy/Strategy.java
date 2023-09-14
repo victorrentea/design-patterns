@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.function.Function;
 
 enum CountryEnum {
     RO, ES, FR, UK,CN
@@ -29,6 +30,7 @@ class CustomsService {
         return taxCalculator.calculate(parcel);
     }
 
+//    private Function<Parcel, Double> selectTaxCalculator(Parcel parcel) {
     private TaxCalculator selectTaxCalculator(Parcel parcel) {
 //        return switch (parcel.originCountry()) {
 //            case "UK" -> ukTaxCalculator;
@@ -38,23 +40,24 @@ class CustomsService {
 //        };
         switch (parcel.originCountry()) {
             case "UK":
-                return ukTaxCalculator;
+                return parcel1 -> ukTaxCalculator.calculate(parcel1);
             case "CN":
-                return chinaTaxCalculator;
+                return chinaTaxCalculator::calculate;
             case "FR":
             case "ES": // other EU country codes...
             case "RO":
-                return euTaxCalculator;
+                return euTaxCalculator::calculate;
             default:
                 throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
         }
     }
 }
+@FunctionalInterface // adica vreao sa o iau ƛ
 interface TaxCalculator {
     double calculate(Parcel parcel);
 }
 @Service
-class EUTaxCalculator implements TaxCalculator{
+class EUTaxCalculator {
     public double calculate(Parcel parcel) {
         // logica groasa
         return parcel.tobaccoValue() / 3 +f(parcel);
@@ -65,14 +68,14 @@ class EUTaxCalculator implements TaxCalculator{
     }
 }
 @Service
-class ChinaTaxCalculator implements TaxCalculator{
+class ChinaTaxCalculator {
     public double calculate(Parcel parcel) {
         return parcel.tobaccoValue() + parcel.regularValue();
     }
 
 }
 @Service
-class UKTaxCalculator implements TaxCalculator{
+class UKTaxCalculator {
    public double calculate(Parcel parcel) {
         // if
         // if
