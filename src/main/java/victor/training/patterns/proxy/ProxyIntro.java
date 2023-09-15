@@ -29,7 +29,7 @@ public class ProxyIntro {
         };
         Maths proxy = (Maths) Enhancer.create(Maths.class, h);
 
-        SecondGrade secondGrade = new SecondGrade();
+        SecondGrade secondGrade = new SecondGrade(proxy);
 
         secondGrade.mathClass();
     }

@@ -7,8 +7,9 @@ public class Showcase {
 
       // minimal constructor + chained withers
       Address address = new Address("91", "Dristorului", "Bucharest")
-              .withAptNumber("1")
-              .withFloorNumber("a");
+//              .withApt(new Apt("1","a")) // new immutable
+              .withAptNumber("1") // new immutable
+              .withFloorNumber("a"); // new immutable
 
       System.out.println("I live at " + address);
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+// NU folosi @Data pe @Entity
 class Customer {
     private String name;
     private List<String> labels = new ArrayList<>();
