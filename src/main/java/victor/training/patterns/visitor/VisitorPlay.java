@@ -7,6 +7,8 @@ import victor.training.patterns.visitor.model.Square;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.sun.tools.javac.main.Option.X;
+
 public class VisitorPlay {
 
     public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class VisitorPlay {
 
         System.out.println("Total perimeter: " + oop(shapes));
         System.out.println("Total perimeter: " + visitor(shapes));
-//        System.out.println("Total perimeter: " + sealed(shapes));
+        System.out.println("Total perimeter: " + sealed(shapes));
 
         double totalArea = 0;// TODO
         System.out.println("Total area: " + totalArea);
@@ -27,10 +29,28 @@ public class VisitorPlay {
         double total = 0;
         for (Shape shape : shapes) {
             // TODO calculate perimeter depending on the type of the shape (Circle, Square,...)
+            // 2 PI R.  4 E
+//            total += shape.perimeter();
+
+            if (shape instanceof Square square) {
+                total += 4 * square.edge();
+            } else if (shape instanceof Circle circle) {
+                total += 2 * Math.PI * circle.radius();
+            } else {
+                // Acoperim RISK: mai adaugam noi tipuri de Shape
+                // tot throws la runtime
+                throw new IllegalArgumentException();
+            }
         }
         return total;
     }
 
+    // constrangeri: nu vrei/nu poti sa pui logica IN clasa Square/Circle
+    // - e din jar
+    // - e plin (e mare deja Square eg 600 linii)
+    // - logica de pus in fiecare ARE MULTE IN COMUN eg. draw with ascii art
+    ///    vreau cohesion
+    // n-ai voie OOP: nu pui logica in clasele cu date
 
     //<editor-fold desc="Visitor Pattern">
     private static double visitor(List<Shape> shapes) {
@@ -43,14 +63,16 @@ public class VisitorPlay {
     //</editor-fold>
 
     //<editor-fold desc="java 19 + sealed Shape interface">
-//    private static double sealed(List<Shape> shapes) {
-//        return shapes.stream()
-//                .mapToDouble(shape -> switch (shape) {
-//                    case Square s -> s.edge() * 4;
-//                    case Circle c -> c.radius() * Math.PI * 2;
-//                })
-//                .sum();
-//    }
+    private static double sealed(List<Shape> shapes) {
+        return shapes.stream()
+                .mapToDouble(shape -> switch (shape) {
+                    case Square s -> s.edge() * 4;
+                    case Circle c -> c.radius() * Math.PI * 2;
+                    // nu e default, caci Shape e sealed enumerand
+                    // toate subtipurile posibile
+                })
+                .sum();
+    }
     //</editor-fold>
 }
 

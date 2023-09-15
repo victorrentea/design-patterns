@@ -9,4 +9,9 @@ public record Square(int edge) implements Shape {
 		visitor.visit(this);
 	}
 
+	@Override
+	public double perimeter() {
+		return 4 * edge;
+	}
+
 }
