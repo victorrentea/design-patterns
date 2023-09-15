@@ -54,23 +54,24 @@ public class VisitorPlay {
     //<editor-fold desc="Visitor Pattern">
     private static double visitor(List<Shape> shapes) {
         PerimeterVisitor perimeterCalculator = new PerimeterVisitor();
-        for (Shape shape : shapes) {
-            shape.accept(perimeterCalculator);
-        }
+//        for (Shape shape : shapes) {
+//            shape.accept(perimeterCalculator);
+//        }
         return perimeterCalculator.getTotalPerimeter();
     }
     //</editor-fold>
 
     //<editor-fold desc="java 19 + sealed Shape interface">
     private static double sealed(List<Shape> shapes) {
-        return shapes.stream()
-                .mapToDouble(shape -> switch (shape) {
-                    case Square s -> s.edge() * 4;
-                    case Circle c -> c.radius() * Math.PI * 2;
-                    // nu e default, caci Shape e sealed enumerand
-                    // toate subtipurile posibile
-                })
-                .sum();
+//        return shapes.stream()
+//                .mapToDouble(shape -> switch (shape) {
+//                    case Square s -> s.edge() * 4;
+//                    case Circle c -> c.radius() * Math.PI * 2;
+//                    // nu e default, caci Shape e sealed enumerand
+//                    // toate subtipurile posibile
+//                })
+//                .sum();
+        return 0;
     }
     //</editor-fold>
 }
