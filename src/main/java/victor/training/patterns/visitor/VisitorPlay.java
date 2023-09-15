@@ -7,7 +7,6 @@ import victor.training.patterns.visitor.model.Square;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sun.tools.javac.main.Option.X;
 
 public class VisitorPlay {
 
