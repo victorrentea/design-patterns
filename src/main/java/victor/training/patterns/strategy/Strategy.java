@@ -20,6 +20,8 @@ record Parcel(CountryEnum originCountry, double tobaccoValue, double regularValu
 @Data
 @ConfigurationProperties(prefix = "customs")
 class CustomsService {
+  //	private Map<String, Class<? extends TaxCalculator>> calculators; // configured in application.properties 😮
+
   public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
     return selectCalculator(parcel.originCountry()).calculate(parcel);
   }
