@@ -51,14 +51,6 @@ public class ProxyIntro {
   }
 }
 
-//class LoggedMath extends Maths {
-//  @Override
-//  public int sum(int a, int b) {
-//    System.out.println("Method sum called with args: " + a + ", " + b);
-//    return super.sum(a, b);
-//  }
-//}
-
 //without changing any line of code below, print the arguments of any invocation of a method in Maths
 @InterceptorBinding // this
 @Inherited
