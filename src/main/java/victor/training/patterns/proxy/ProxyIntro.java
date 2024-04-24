@@ -119,7 +119,6 @@ class SecondGrade {
 class Maths {
   //  @Secured("DOCTOR_ROLE")
 //  @MyTransactional
-  // @Cache
 //  @Timed
   @Timed
   public int sum(int a, int b) {
