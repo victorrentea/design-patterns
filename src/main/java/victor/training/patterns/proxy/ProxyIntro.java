@@ -1,34 +1,31 @@
 package victor.training.patterns.proxy;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
-
 public class ProxyIntro {
     public static void main(String[] args) {
         // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        Maths maths = new Maths();
+        Maths maths = new MathsProxy();
 
         SecondGrade secondGrade = new SecondGrade(maths);
 
-        new ProxyIntro().run(secondGrade);
-
-    }
-    // =============== THE LINE =================
-
-    public void run(SecondGrade secondGrade) {
         System.out.println("At runtime...");
         secondGrade.mathClass();
     }
 }
+class MathsProxy extends Maths {
+    @Override
+    public int sum(int a, int b) {
+        System.out.println("sum(" + a + "," + b + ")");
+        return super.sum(a, b);
+    }
+}
+
+//without changing any line of code below, print the arguments of any invocation of a method in Maths
 
 class SecondGrade {
     private final Maths maths;
-
     SecondGrade(Maths maths) {
         this.maths = maths;
     }
@@ -44,13 +41,13 @@ class Maths {
     public int sum(int a, int b) {
         return a + b;
     }
-
     public int product(int a, int b) {
-        int total = 0;
-        for (int i = 0; i < a; i++) {
-            total = sum(total, b);
-        }
-        return total;
+//        int total = 0;
+//        for (int i = 0; i < a; i++) {
+//            total = sum(total, b);
+//        }
+//        return total;
+        return a * b;
     }
 }
 
