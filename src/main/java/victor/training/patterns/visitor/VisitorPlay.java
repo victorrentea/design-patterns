@@ -33,12 +33,20 @@ public class VisitorPlay {
 //        }
 
         // #3 Visitor pattern - the ugliest design pattern in the GoF set.
+//        AreaVisitor areaVisitor = new AreaVisitor();
+//        for (Shape shape : shapes) {
+//            shape.accept(areaVisitor);
+//        }
+//        totalArea= areaVisitor.getTotalArea();
 
-        AreaVisitor areaVisitor = new AreaVisitor();
+// let {a,b} = f();
         for (Shape shape : shapes) {
-            shape.accept(areaVisitor);
+            totalArea += switch (shape) { // java 21
+                case Circle(int radius) -> Math.PI * radius * radius;
+                case Square(int edge) -> edge * edge;
+            }; // scala, kotlin, clojure....
         }
-        totalArea= areaVisitor.getTotalArea();
+
 
         System.out.println("Total area: " + totalArea);
     }
