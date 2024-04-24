@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 
 public class StartCDI {
   public static void main(String[] args) throws IOException {
-    Weld weld = new Weld().beanClasses(LoggedInterceptor.class, SimpleService.class, Greeter.class)
+    Weld weld = new Weld().beanClasses(LoggedInterceptor.class, SimpleService.class, Greeter.class, HelloWorld.class)
         .disableDiscovery()
         .interceptors(LoggedInterceptor.class);
     WeldContainer container = weld.initialize();
