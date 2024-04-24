@@ -26,6 +26,7 @@ class CustomsService {
 
 //  @Resource
 //  Map<String, Class<? extends TaxCalculator>> CALCULATORS; // configured in application.properties 😮
+//  Map<String, Function<Parcel, Double>> CALCULATORS; // configured in application.properties 😮
 
   //@Inject// if I had CDI on
   private List<TaxCalculator> allCalculators = List.of(new BrexitTaxCalculator(), new ChinaTaxCalculator(), new EUTaxCalculator());
