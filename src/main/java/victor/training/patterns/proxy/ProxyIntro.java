@@ -88,7 +88,7 @@ class LoggedInterceptor implements Serializable {
   }
 }
 
-@Timed
+@Logged
 @Interceptor
 class TimedInterceptor implements Serializable {
   @AroundInvoke
