@@ -5,10 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 
-@SpringBootApplication
 public class ProxyIntro {
     public static void main(String[] args) {
-        // Play the role of Spring here (there's no framework)
         // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
@@ -19,21 +17,15 @@ public class ProxyIntro {
 
         new ProxyIntro().run(secondGrade);
 
-        // TODO 4 : let Spring do its job, and do the same with an Aspect
-        // SpringApplication.run(ProxyIntro.class, args);
     }
-
     // =============== THE LINE =================
 
-    @Autowired
     public void run(SecondGrade secondGrade) {
         System.out.println("At runtime...");
         secondGrade.mathClass();
     }
-
 }
 
-@Service
 class SecondGrade {
     private final Maths maths;
 
@@ -48,7 +40,6 @@ class SecondGrade {
     }
 }
 
-@Facade
 class Maths {
     public int sum(int a, int b) {
         return a + b;

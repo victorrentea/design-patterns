@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <interceptors>
+        <class>victor.training.patterns.proxy.cdi.LoggedInterceptor</class>
+    </interceptors>
+</beans>

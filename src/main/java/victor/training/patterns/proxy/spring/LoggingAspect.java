@@ -1,4 +1,4 @@
-package victor.training.patterns.proxy;
+package victor.training.patterns.proxy.spring;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
