@@ -1,16 +1,8 @@
 package victor.training.patterns.proxy;
 
 import jakarta.inject.Inject;
-import jakarta.interceptor.AroundInvoke;
-import jakarta.interceptor.Interceptor;
-import jakarta.interceptor.InterceptorBinding;
-import jakarta.interceptor.InvocationContext;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-
-import java.io.Serializable;
-import java.lang.annotation.*;
-import java.util.Arrays;
 
 public class ProxyIntro {
 //    public static void main(String[] args) {
@@ -40,9 +32,9 @@ public class ProxyIntro {
 
   public static void main(String[] args) {
     // CDI
-    Weld weld = new Weld().beanClasses(LoggedInterceptor.class,SecondGrade.class, Maths.class)
+    Weld weld = new Weld().beanClasses(SecondGrade.class, Maths.class)
         .disableDiscovery()
-        .interceptors(LoggedInterceptor.class)
+//        .interceptors(LoggedInterceptor.class)
         ;
     WeldContainer container = weld.initialize();
     SecondGrade service = container.instance().select(SecondGrade.class).get();
@@ -51,29 +43,6 @@ public class ProxyIntro {
 }
 
 //without changing any line of code below, print the arguments of any invocation of a method in Maths
-@InterceptorBinding // this
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-@interface Logged {
-}
-
-
-@Logged
-@Interceptor
-class LoggedInterceptor implements Serializable {
-  @AroundInvoke
-  public Object logMethodEntry(InvocationContext invocationContext) throws Exception {
-    System.out.println("Entering method: "
-                       + invocationContext.getMethod().getName() + " in class "
-                       + invocationContext.getMethod().getDeclaringClass().getName() +
-                       " with args: " + Arrays.toString(invocationContext.getParameters()));
-
-    return invocationContext.proceed(); // allows the real method to be executed
-  }
-}
-
-
 
 class SecondGrade {
   @Inject
@@ -86,11 +55,7 @@ class SecondGrade {
   }
 }
 
-  @Logged
 class Maths {
-//  @Secured("DOCTOR_ROLE")
-//  @MyTransactional
-//  @Timed
   public int sum(int a, int b) {
     return a + b;
   }
