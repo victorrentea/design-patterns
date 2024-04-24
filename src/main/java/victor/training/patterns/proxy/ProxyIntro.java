@@ -24,7 +24,8 @@ public class ProxyIntro {
                 return r;
             }
         };
-        Maths proxy = (Maths) Enhancer.create(Maths.class, h); // generate a dynamic subclass of your bean
+        Maths proxy = (Maths) Enhancer.create(Maths.class, h); // generate a dynamic subclass of your bean with the
+        // CGLIB,Bytebuggy,javaassist framewokrk
 
         SecondGrade secondGrade = new SecondGrade(proxy);
 
