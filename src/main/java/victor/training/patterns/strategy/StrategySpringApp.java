@@ -21,10 +21,10 @@ public class StrategySpringApp implements CommandLineRunner {
     // TODO [3] Wire with Spring
     public void run(String... args) {
         System.out.println("Tax for (RO,100,100) = " + service.calculateCustomsTax(
-                new Parcel("RO", 100, 100, LocalDate.now())));
+                new Parcel(CountryEnum.valueOf("RO"), 100, 100, LocalDate.now())));
         System.out.println("Tax for (CN,100,100) = " + service.calculateCustomsTax(
-                new Parcel("CN", 100, 100, LocalDate.now())));
+                new Parcel(CountryEnum.valueOf("CN"), 100, 100, LocalDate.now())));
         System.out.println("Tax for (UK,100,100) = " + service.calculateCustomsTax(
-                new Parcel("UK", 100, 100, LocalDate.now())));
+                new Parcel(CountryEnum.valueOf("UK"), 100, 100, LocalDate.now())));
     }
 }
