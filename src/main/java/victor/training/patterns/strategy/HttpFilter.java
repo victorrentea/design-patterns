@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class HttpFilter implements Filter { // javax.filter
+public class HttpFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
@@ -17,12 +17,3 @@ public class HttpFilter implements Filter { // javax.filter
 
     }
 }
-/// web.xml
-// <filter>
-//     <filter-name>httpFilter</filter-name>
-//     <filter-class>victor.training.patterns.strategy.HttpFilter</filter-class>
-// </filter>
-// <filter>
-//     <filter-name>httpFilter</filter-name>
-//     <filter-class>victor.training.patterns.strategy.HttpFilter</filter-class>
-// </filter>
