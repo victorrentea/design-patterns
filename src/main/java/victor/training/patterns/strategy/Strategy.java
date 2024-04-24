@@ -29,7 +29,7 @@ class CustomsService {
     };
   }
 }
-interface  {
+interface TaxCalculator {
   double calculate(Parcel parcel);
 }
 class BrexitTaxCalculator implements TaxCalculator{
