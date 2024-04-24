@@ -19,9 +19,7 @@ public class ProxyIntro {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 System.out.println("Method " + method.getName() + " called with args: " + Arrays.toString(args));
-                Object r = method.invoke(realInstance, args);
-                System.out.println("Returning " + r);
-                return r;
+                return method.invoke(realInstance, args);
             }
         };
         Maths proxy = (Maths) Enhancer.create(Maths.class, h); // generate a dynamic subclass of your bean
