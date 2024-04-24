@@ -1,5 +1,7 @@
 package victor.training.patterns.proxy;
 
+import com.google.common.collect.ImmutableList;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,10 +26,14 @@ public class Immutable {
     }
 
     public List<String> getList() {
-        return Collections.unmodifiableList(list);
+        return Collections.unmodifiableList(list); // violates Liskov Substitution Principle
     }
-}
 
+    // guava is today the most used library in java.
+//    public ImmutableList<String> getList2() {
+//        return Collections.unmodifiableList(list); // violates Liskov Substitution Principle
+//    }
+}
 
 class Play {
     public static void main(String[] args) {
@@ -36,6 +42,8 @@ class Play {
         System.out.println("Before: " + obj);
 
         // --- can I change object's state here?
+        obj.getList().add("b"); // > in Kotlin this does not compile. To compile the returbn type should be MutableList extends List
+//        obj.getList2().add("b"); // >compiler warning
 
         System.out.println("After: " + obj);
     }
