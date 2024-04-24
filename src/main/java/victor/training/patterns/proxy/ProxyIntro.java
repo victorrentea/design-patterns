@@ -40,9 +40,10 @@ public class ProxyIntro {
 
   public static void main(String[] args) {
     // CDI
-    Weld weld = new Weld().beanClasses(LoggedInterceptor.class,SecondGrade.class, Maths.class)
+    Weld weld = new Weld().beanClasses(LoggedInterceptor.class,SecondGrade.class, Maths.class, TimedInterceptor.class)
         .disableDiscovery()
-        .interceptors(LoggedInterceptor.class)
+        .interceptors(LoggedInterceptor.class, TimedInterceptor.class)
+        // @Cacheable @Secured(DOCTOR)
         ;
     WeldContainer container = weld.initialize();
     SecondGrade service = container.instance().select(SecondGrade.class).get();
@@ -57,7 +58,12 @@ public class ProxyIntro {
 @Target({ElementType.METHOD, ElementType.TYPE})
 @interface Logged {
 }
-
+@InterceptorBinding // this
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+@interface Timed {
+}
 
 @Logged
 @Interceptor
@@ -70,6 +76,20 @@ class LoggedInterceptor implements Serializable {
                        " with args: " + Arrays.toString(invocationContext.getParameters()));
 
     return invocationContext.proceed(); // allows the real method to be executed
+  }
+}
+
+@Logged
+@Interceptor
+class TimedInterceptor implements Serializable {
+  @AroundInvoke
+  public Object logMethodEntry(InvocationContext invocationContext) throws Exception {
+    System.out.println("Enter TImed");
+    long start = System.currentTimeMillis();
+    Object result = invocationContext.proceed();
+    long duration = System.currentTimeMillis() - start;
+    System.out.println("Method " + invocationContext.getMethod().getName() + " took " + duration + " ms");
+    return result;
   }
 }
 
@@ -91,6 +111,7 @@ class Maths {
 //  @Secured("DOCTOR_ROLE")
 //  @MyTransactional
 //  @Timed
+    @Timed
   public int sum(int a, int b) {
     return a + b;
   }
