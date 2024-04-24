@@ -1,24 +1,33 @@
 package victor.training.patterns.proxy;
 
+import org.springframework.cglib.proxy.Callback;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.InvocationHandler;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 public class ProxyIntro {
     public static void main(String[] args) {
         // TODO 1 : LOG the arguments of any invocation of a method in Maths w/ decorator
         // TODO 2 : without changing anything below the line (w/o any interface)
         // TODO 3 : so that any new methods in Maths are automatically logged [hard]
 
-        Maths maths = new MathsProxy();
+        Maths realInstance = new Maths();
 
-        SecondGrade secondGrade = new SecondGrade(maths);
+        Callback h = new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                System.out.println("Method " + method.getName() + " called with args: " + Arrays.toString(args));
+                return method.invoke(realInstance, args);
+            }
+        };
+        Maths proxy = (Maths) Enhancer.create(Maths.class, h); // generate a dynamic subclass of your bean
+
+        SecondGrade secondGrade = new SecondGrade(proxy);
 
         System.out.println("At runtime...");
         secondGrade.mathClass();
-    }
-}
-class MathsProxy extends Maths {
-    @Override
-    public int sum(int a, int b) {
-        System.out.println("sum(" + a + "," + b + ")");
-        return super.sum(a, b);
     }
 }
 
