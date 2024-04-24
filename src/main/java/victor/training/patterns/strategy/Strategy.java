@@ -21,24 +21,15 @@ class CustomsService {
   //	private Map<String, Class<? extends TaxCalculator>> calculators; // configured in application.properties 😮
 
   public double calculateCustomsTax(Parcel parcel) { // UGLY API we CANNOT change
-    return selectCalculator(parcel.originCountry()).calculate(parcel);
-  }
-
-  public TaxCalculator selectCalculator(String originCountryIso) {
-    return switch (originCountryIso) {
-      case "UK" -> new BrexitTaxCalculator();
-      case "CN" -> new ChinaTaxCalculator();
-      case "FR", "ES", "RO" -> new EUTaxCalculator();
-      default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + originCountryIso);
+    return switch (parcel.originCountry()) {
+      case "UK" -> new BrexitTaxCalculator().calculate(parcel);
+      case "CN" -> new ChinaTaxCalculator().calculate(parcel);
+      case "FR", "ES", "RO" -> new EUTaxCalculator().calculate(parcel);
+      default -> throw new IllegalArgumentException("Not a valid country ISO2 code: " + parcel.originCountry());
     };
   }
-
-  // A) a map links iso -> impl = STRATEGY PATTERN
-  // B) each implementation tells what it applies for = CHAIN OF RESPONSIBILITY PATTERN
-  // C) switch(enum)
 }
 interface TaxCalculator {
-//  boolean isApplicable(Parcel parcel); >>>> Chain of Responsibility pattern
   double calculate(Parcel parcel);
 }
 class BrexitTaxCalculator implements TaxCalculator{
