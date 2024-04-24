@@ -40,7 +40,7 @@ public class ProxyIntro {
 
   public static void main(String[] args) {
     // CDI
-    Weld weld = new Weld().beanClasses(LoggedInterceptor.class, SecondGrade.class, Maths.class, TimedInterceptor.class)
+    Weld weld = new Weld().beanClasses(LoggedInterceptor.class,SecondGrade.class, Maths.class, TimedInterceptor.class)
         .disableDiscovery()
         .interceptors(LoggedInterceptor.class, TimedInterceptor.class)
         // @Cacheable @Secured(DOCTOR)
@@ -58,7 +58,6 @@ public class ProxyIntro {
 @Target({ElementType.METHOD, ElementType.TYPE})
 @interface Logged {
 }
-
 @InterceptorBinding // this
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
@@ -95,34 +94,35 @@ class TimedInterceptor implements Serializable {
 }
 
 
+
 class SecondGrade {
   @Inject
   private Maths maths;
 
   public void mathClass() {
-    System.out.println("Who are you? " + maths.getClass());
     System.out.println("2+4=" + maths.sum(2, 4));
     System.out.println("1+5=" + maths.sum(1, 5));
     System.out.println("2x3=" + maths.product(2, 3));
   }
 }
 
-@Logged
+  @Logged
 class Maths {
-  //  @Secured("DOCTOR_ROLE")
+//  @Secured("DOCTOR_ROLE")
 //  @MyTransactional
 //  @Timed
-  @Timed
+    @Timed
   public int sum(int a, int b) {
     return a + b;
   }
 
   public int product(int a, int b) {
-    int r = 0;
-    for (int i = 0; i < a; i++) {
-      r = sum(r, b); // local method calls do NOT go through CDI interceptors called by @
-    }
-    return r;
+//        int total = 0;
+//        for (int i = 0; i < a; i++) {
+//            total = sum(total, b);
+//        }
+//        return total;
+    return a * b;
   }
 }
 
