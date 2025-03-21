@@ -32,7 +32,6 @@ class ShoppingCart {
 
 
 class LockedState implements ShoppingCartState {
-
    @Override
    public ShoppingCartState handle(Signal signal) {
       return switch (signal) {

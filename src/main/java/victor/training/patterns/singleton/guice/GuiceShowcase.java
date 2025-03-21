@@ -21,6 +21,7 @@ public class GuiceShowcase {
             // optional customization
 //            bind(SomeInterface.class).to(SomeImpl.class);
             bind(Config.class).toProvider(() -> Config.readFromFile()).in(Scopes.SINGLETON);
+//            bind(X.class)
 //            bind(ExternalClient.class).toProvider(() -> Mockito.mock(ExternalClient)).in(Scopes.SINGLETON);
 
             Properties properties = new Properties();
@@ -40,6 +41,8 @@ public class GuiceShowcase {
             } catch (IOException e) {
                System.out.println("I/O Exception during loading configuration");
             }
+            bind(X.class);
+//            bind(X.class);
          }
       });
       A instance = injector.getInstance(A.class);
@@ -49,6 +52,13 @@ public class GuiceShowcase {
       injector.getInstance(B.class).methodB();
    }
 }
+
+class X {
+   @Inject
+   private Y y;
+}
+class Y{}
+
 
 class A {
    @Inject // com.google.inject or javax.inject
